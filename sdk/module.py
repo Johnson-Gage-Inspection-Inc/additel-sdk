@@ -45,6 +45,8 @@ class Module:
         Returns:
             None
         """
+        if index not in range(5):
+            raise ValueError("Module index must be between 0 and 4 inclusive.")
         command = f'MODule:LABel {index},"{label}"'
         self.parent.send_command(command)
 
@@ -62,6 +64,8 @@ class Module:
         Returns:
             List[DIFunctionChannelConfig]: A list of channel configurations for the specified module.
         """
+        if module_index not in range(5):
+            raise ValueError("Module index must be between 0 and 4 inclusive.")
         response = self.parent.send_command(f"JSON:MODule:CONFig? {module_index}")
         if response:
             return [DIFunctionChannelConfig(**config) for config in json.loads(response)]
