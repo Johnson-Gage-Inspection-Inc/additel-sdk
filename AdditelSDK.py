@@ -1859,3 +1859,87 @@ class Additel:
                 None
             """
             self.parent.send_command(f'DISPaly:THEMe {theme}')
+
+    # Section 1.7 - Function module commands
+
+    class Pattern:
+        def __init__(self, parent):
+            self.parent = parent
+
+            # 1.7.1
+            def patterns(self, function, otherParams):
+                """Switch main interface function
+                
+                Command:
+                    PATTern:MAIN:PATTerns Dual|SCMM|SConn[,<”otherParams”>]
+
+                Parameters:
+                    function (str): The function to switch to.
+                    otherParams (str): Other parameters.
+
+                Returns:
+                    None
+                """
+                self.parent.send_command(f'PATTern:MAIN:PATTerns {function},{otherParams}')
+
+            # 1.7.2
+            def setMatch(self, paramIndex, matchStr: str = ""):
+                """Set the match ing conditions of the intelligent wiring base
+
+                Command:
+                    PATTern:MAIN:MATCH <paramIndex>[,<” matchStr” >]
+
+                Parameters:
+                    paramIndex (int): The parameter index corresponding to:
+                        1 = ChannelInfo1
+                        2 = ChannelInfo2
+                        3 = ChannelInfo3
+                        other = close match;
+                    matchStr (str):  A matching string with quotes.
+
+                Returns:
+                    None
+                """
+                if matchStr:
+                    self.parent.send_command(f'PATTern:MAIN:MATCH {paramIndex},{matchStr}')
+                else:
+                    self.parent.send_command(f'PATTern:MAIN:MATCH {paramIndex}')
+
+
+    # Section 1.8 - Unit commands
+    class Unit:
+        def __init__(self, parent):
+            self.parent = parent
+
+        # 1.8.2
+        def setUnitTemp(self, unit_ID, unit_name):
+            """Set the temperature of the device
+
+            Command:
+                UNIT:TEMPerature <unit_ID>|<unit_name>
+
+
+            Parameters:
+                Unit: unit name or unit ID unit_name is the character string with quotation
+                unit_ID: digit
+
+            Returns:
+                None
+            """
+            self.parent.send_command(f'UNIT:TEMPerature {unit_ID}|{unit_name}')
+
+        # 1.8.3
+        def getUnitTemp(self) -> str:
+            """Query the temperature of the device
+
+            Command:
+                UNIT:TEMPerature?
+
+            Returns:
+                str: Name of temperature unit
+                digit: temperature unit id
+            """
+            if response := self.parent.send_command("UNIT:TEMPerature?"):
+                return response.split(",")
+            raise ValueError("No temperature information returned.")
+        
