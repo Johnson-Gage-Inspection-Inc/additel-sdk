@@ -1,3 +1,4 @@
+# display.py - This file contains the display commands for the SDK.
 
 # Section 1.6 - Display commands
 

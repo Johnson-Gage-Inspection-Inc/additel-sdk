@@ -1,3 +1,5 @@
+# unit.py - This file contains the class for the Unit commands.
+
 # Section 1.8 - Unit commands
 class Unit:
     def __init__(self, parent):

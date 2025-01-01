@@ -1,3 +1,5 @@
+# channel.py
+
 from customTypes import DIFunctionChannelConfig
 import json
 

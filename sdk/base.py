@@ -1,4 +1,4 @@
-# Description: Base class for Additel
+# base.py - Base class for Additel SDK.
 
 import socket
 from typing import Optional

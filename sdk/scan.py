@@ -1,3 +1,5 @@
+# scan.py - This file contains the class for the Scan commands.
+
 from typing import List, Optional
 from customTypes import DIScanInfo
 import json

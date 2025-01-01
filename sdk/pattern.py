@@ -1,3 +1,5 @@
+# pattern.py - This file contains the Pattern class which contains the commands for the Pattern module.
+
 # Section 1.7 - Function module commands
 
 class Pattern:

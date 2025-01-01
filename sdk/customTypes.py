@@ -1,3 +1,5 @@
+# customTypes.py: Custom data structures for the Additel SDK.
+
 from typing import List, Optional
 
 class DIModuleInfo:

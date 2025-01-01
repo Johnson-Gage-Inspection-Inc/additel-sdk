@@ -1,3 +1,8 @@
+# module.py - Additel Module class
+# Description: Contains the Additel Module class with methods for acquiring module information and configuring junction box modules.
+
+# Section 1.2 - Measurement and configuration commands
+
 from typing import List
 from customTypes import DIModuleInfo, DIFunctionChannelConfig
 import json
