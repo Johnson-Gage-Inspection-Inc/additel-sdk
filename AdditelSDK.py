@@ -12,10 +12,15 @@ class Additel:
         self.timeout = timeout  # Timeout for socket connections
         self.retries = retries  # Number of retry attempts for commands
         self.connection = None  # Placeholder for the connection object
-        self.module = self.Module(self)
-        self.scan = self.Scan(self)
-        self.channel = self.Channel(self)
-        self.calibration = self.Calibration(self)
+        self.Module = self.Module(self)
+        self.Scan = self.Scan(self)
+        self.Channel = self.Channel(self)
+        self.Calibration = self.Calibration(self)
+        self.System = self.System(self)
+        self.Program = self.Program(self)
+        self.Display = self.Display(self)
+        self.Pattern = self.Pattern(self)
+        self.Unit = self.Unit(self)
 
     def __enter__(self):
         # Enable use of the class in a context manager to ensure proper resource handling
@@ -1718,6 +1723,7 @@ class Additel:
             raise ValueError("No program state information returned.")
         
     # Section 1.6 - Display commands
+
     class Display:
         def __init__(self, parent):
             self.parent = parent
@@ -1754,9 +1760,6 @@ class Additel:
             if response := self.parent.send_command(f'DISPaly:BRIGHTness? {type}'):
                 return int(response.strip())
             raise ValueError("No brightness information returned.")
-    
-        def __init__(self, parent):
-            self.parent = parent
 
         # 1.6.3
         def getLanguage(self) -> str:
@@ -1843,7 +1846,7 @@ class Additel:
             """
             if response := self.parent.send_command("DISPaly:THEMe:ALLNames?"):
                 return response.strip()
-            raise ValueError("No theme information returned.")
+            raise ValueError("No theme names information returned.")
         
         # 1.6.10
         def setTheme(self, theme):
