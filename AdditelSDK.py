@@ -953,11 +953,69 @@ class Additel:
             command = f"SYSTem:BEEPer:TOUCh {int(enable)}"
             self.parent.send_command(command)
 
+        class Password():
+            def __init__(self, parent):
+                self.parent = parent
+
+            # 1.4.40
+            def setPassword(self, old_password: str, new_password: str, new_password_confirm: str):
+                """
+                Edit the user password
+
+                Command:
+                    SYSTem:PASSword <password>
+
+                Parameters:
+                    old_password (str): The old password.
+                    new_password (str): The new password.
+                    new_password_confirm (str): The new password confirmation.
+
+                Returns:
+                    None
+                """
+                self.parent.send_command(f"SYSTem:PASSword {old_password},{new_password},{new_password_confirm}")
+
+            # 1.4.41
+            def getProtection(self) -> bool:
+                """
+                Query that the protection of sensor bank
+                password is opened or not
+
+                Command:
+                    SYSTem:PASSword:ENABle:SENSor?
+                
+                Parameters:
+                    None
+
+                Returns:
+                    bool: True if the protection of sensor bank password is opened, False if not.
+                """
+                if response := self.parent.send_command("SYSTem:PASSword:ENABle:SENSor?"):
+                    return bool(response.strip())
+                raise ValueError("No protection information returned.")
+            
+            # 1.4.42
+            def setProtection(self, enable: bool):
+                """
+                Set the protection of sensor bank password
+
+                Command:
+                    SYSTem:PASSword:ENABle:SENSor <enable>
+
+                Parameters:
+                    enable (bool): Set to True to enable the protection of sensor bank password.
+
+                Returns:
+                    None
+                """
+                self.parent.send_command(f"SYSTem:PASSword:ENABle:SENSor {int(enable)}")
+
         class Communicate:
             def __init__(self, parent):
                 self.parent = parent
                 self.WLAN = self.WLAN(self)
                 self.Ethernet = self.Ethernet(self)
+                self.Bluetooth = self.Bluetooth(self)
 
             class WLAN:
                 def __init__(self, parent):
@@ -1534,4 +1592,76 @@ class Additel:
                     assert(keyName in ["HKEY_LOCAL_MACHINE", "HKEY_CLASSES_ROOT", "HKEY_CURRENT_USER", "HKEY_USERS", "ALL"])
                     self.parent.send_command(f"SYSTem:REGistry:SAVE {keyName}")
 
-        
+            class Bluetooth:
+                def __init__(self, parent):
+                    self.parent = parent
+
+                # 1.4.43
+                def setstate(self, enable: bool):
+                    """
+                    Set the state of the system's Bluetooth functionality.
+
+                    Command:
+                        SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe] <Boolean>|ON|OFF
+
+                    Parameters:
+                        enable (bool): Set to True to enable Bluetooth (ON) or False to disable it (OFF).
+
+                    Returns:
+                        None
+                    """
+                    command = f"SYSTem:COMMunicate:SOCKet:BLUetooth:STATe {int(enable)}"
+                    self.parent.send_command(command)
+
+                # 1.4.44
+                def getstate(self) -> bool:
+                    """
+                    Query the state of the system's Bluetooth functionality.
+
+                    Command:
+                        SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe]?
+
+                    Parameters:
+                        None
+
+                    Returns:
+                        bool: True if Bluetooth is enabled (ON), False if disabled (OFF).
+                    """
+                    response = self.parent.send_command("SYSTem:COMMunicate:SOCKet:BLUetooth:STATe?")
+                    if response:
+                        return bool(response.strip())
+                    raise ValueError("No Bluetooth state information returned.")
+                
+                # 1.4.45
+                def getName(self) -> str:
+                    """
+                    Query the name of the Bluetooth device.
+
+                    Command:
+                        SYSTem:COMMunicate:BLUEtooth:NAMe?
+
+                    Parameters:
+                        None
+
+                    Returns:
+                        str: The name of the Bluetooth device.
+                    """
+                    if response := self.parent.send_command("SYSTem:COMMunicate:BLUEtooth:NAMe?"):
+                        return response.strip()
+                    raise ValueError("No Bluetooth name information returned.")
+                    
+                # 1.4.46 (SYSTem:COMMunicate:BLUEtooth:NAMe<UnquoStr>))
+                def setName(self, name: str):
+                    """
+                    Set the name of the Bluetooth device.
+
+                    Command:
+                        SYSTem:COMMunicate:BLUEtooth:NAMe <UnquoStr>
+
+                    Parameters:
+                        name (str): The name to set.
+
+                    Returns:
+                        None
+                    """
+                    self.parent.send_command(f"SYSTem:COMMunicate:BLUEtooth:NAMe {name}")
