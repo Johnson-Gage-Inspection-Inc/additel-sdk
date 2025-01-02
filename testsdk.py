@@ -1,5 +1,4 @@
 from sdk.base import Additel
-import json
 
 def testIdentify(a: Additel):
     identity = a.identify()
