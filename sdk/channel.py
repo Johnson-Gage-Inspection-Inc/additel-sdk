@@ -1,13 +1,13 @@
 # channel.py
 
-from customTypes import DIFunctionChannelConfig
+from .customTypes import type
 import json
 
 class Channel:
     def __init__(self, parent):
         self.parent = parent
 
-    def get_configuration(self, channel_name: str) -> DIFunctionChannelConfig:
+    def get_configuration(self, channel_name: str) -> type.DIFunctionChannelConfig:
         """Acquire the configuration of a specific channel.
 
         This command retrieves the configuration for a specified channel.
@@ -29,7 +29,7 @@ class Channel:
                     * Voltage (m=1): High impedance or not
                     * Current (m=0): None
                     * Resistance (m=2): Wires, open positive/negative current
-                    * RTD/SPRT/Custom RTD (m=6): Wires, sensor name, sensor serial number, sensor ID, 
+                    * RTD/SPRT/Custom RTD (m=6): Wires, sensor name, sensor serial number, sensor ID,
                     whether to open 1.4x current, compensation interval
                     * Thermistors (m=4): Wires, sensor name, sensor serial number, sensor ID
                     * TC/Standard TC (m=7): Break detection, sensor name, sensor serial number, sensor ID,
@@ -38,16 +38,16 @@ class Channel:
         """
         response = self.parent.send_command(f'JSON:CHANnel:CONFig? "{channel_name}"')
         if response:
-            return DIFunctionChannelConfig(**json.loads(response))
+            return type.DIFunctionChannelConfig(**json.loads(response))
         return None
 
-    def configure(self, channel_config: DIFunctionChannelConfig):
+    def configure(self, channel_config: type.DIFunctionChannelConfig):
         """Acquire channel configuration in JSON format.
 
         This command retrieves configuration data for one or more channels in JSON format.
 
         Parameters:
-            channel_names (DIFunctionChannelConfig): A list of channel configurations. Each configuration includes:
+            channel_names (type.DIFunctionChannelConfig): A list of channel configurations. Each configuration includes:
                 channel_name (str): The name of the channel to configure.
                 enabled (int): Enable or disable the channel (1 for enabled, 0 for disabled).
                 label (str): A custom label for the channel.
@@ -73,11 +73,11 @@ class Channel:
                     - Voltage: High impedance or not.
                     - Current: None.
                     - Resistance: Wires, whether to open positive and negative current.
-                    - RTD/SPRT/Custom RTD: Sensor name, wires, sensor serial number, sensor ID, 
+                    - RTD/SPRT/Custom RTD: Sensor name, wires, sensor serial number, sensor ID,
                     whether to open 1.4 times current, compensation interval.
                     - Thermistor: Sensor name, wires, sensor serial number, sensor ID.
-                    - TC/Standard TC: Break detection, sensor name, sensor serial number, 
-                    sensor ID, cold junction type (0 internal, 1 external, 2 custom), 
+                    - TC/Standard TC: Break detection, sensor name, sensor serial number,
+                    sensor ID, cold junction type (0 internal, 1 external, 2 custom),
                     cold end fixed value, external cold junction channel name.
                     - Switch: Switch type.
                     - Current/Voltage Transmitter: Wires, sensor name, sensor serial number, sensor ID.

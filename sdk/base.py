@@ -13,6 +13,7 @@ from .program import Program
 from .display import Display, Diagnostic
 from .pattern import Pattern
 from .unit import Unit
+from .customTypes import type
 
 class Additel:
     def __init__(self, ip: str, port: int = 8000, timeout: int = 10, retries: int = 1):
@@ -21,6 +22,8 @@ class Additel:
         self.timeout = timeout
         self.retries = retries
         self.connection = None
+
+        # Initialize the submodules
         self.Module = Module(self)
         self.Scan = Scan(self)
         self.Channel = Channel(self)
@@ -31,6 +34,7 @@ class Additel:
         self.Diagnostic = Diagnostic(self)
         self.Pattern = Pattern(self)
         self.Unit = Unit(self)
+        self.type = type()
 
     def __enter__(self):
         # Enable use of the class in a context manager to ensure proper resource handling
@@ -66,7 +70,7 @@ class Additel:
                 # Send the command to the device, ensuring proper newline termination
                 self.connection.sendall(f"{command}\n".encode())
                 # Receive the response, with a buffer size sufficient for JSON data
-                return self.connection.recv(4096).decode().strip()
+                return self.connection.recv(16384).decode().strip()
             except socket.timeout:
                 # Handle command timeout and retry if necessary
                 print(f"Timeout on attempt {attempt + 1} for command '{command}'. Retrying...")
@@ -87,10 +91,10 @@ class Additel:
             dict: The parsed JSON as a Python dictionary, or an empty dictionary if parsing fails.
         """
         try:
-                # Attempt to parse the JSON response
+            # Attempt to parse the JSON response
             return json.loads(response)
         except json.JSONDecodeError as e:
-                # Log an error if parsing fails
+            # Log an error if parsing fails
             print(f"Error decoding JSON response: {e}")
         return {}  # Return an empty dictionary for invalid or missing responses
 
@@ -99,7 +103,9 @@ class Additel:
     ## Section 1 - Commands Instruction
 
     ### Section 1.1 - IEEE488.2 common commands
-    def clear_status(self):
+
+    # 1.1.1 *CLS - Clear Status Command
+    def clear_status(self):  # NOTE: Not tested
         """Clear the device status.
 
         This command eliminates the following registers:
@@ -117,7 +123,8 @@ class Additel:
         """
         self.send_command("*CLS")
 
-    def identify(self):
+    # 1.1.2
+    def identify(self) -> str:
         """Query the device identification.
 
         This command queries the instrument's identification details. The returned data is divided into two parts:
@@ -132,7 +139,8 @@ class Additel:
         """
         return self.send_command("*IDN?")
 
-    def reset(self):
+    # 1.1.3
+    def reset(self):  # NOTE: Not tested
         """Perform a software reset.
 
         This command resets the device's main software, reinitializing its state.

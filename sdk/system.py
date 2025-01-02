@@ -1,5 +1,5 @@
 # system.py = This file contains the class for the System commands.
-
+from datetime import date, time, datetime
 from typing import Optional
 from .communicate import Communicate
 from .password import Password
@@ -83,7 +83,7 @@ class System:
         self.parent.send_command(command)
 
     # 1.4.4
-    def get_date(self) -> dict:
+    def get_date(self) -> date:
         """
         Query the system date.
 
@@ -94,19 +94,10 @@ class System:
             None
 
         Returns:
-            dict: A dictionary containing:
-                - "year" (int): Current year.
-                - "month" (int): Current month.
-                - "day" (int): Current day.
+            date: The current system date.
         """
-        response = self.parent.send_command("SYSTem:DATE?")
-        if response:
-            parts = response.split(",")
-            return {
-                "year": int(parts[0]),
-                "month": int(parts[1]),
-                "day": int(parts[2])
-            }
+        if response := self.parent.send_command("SYSTem:DATE?"):
+            return date(*map(int, response.split(",")))
         raise ValueError("No date information returned.")
 
     # 1.4.5
@@ -163,7 +154,7 @@ class System:
         if response:
             return bool(response.strip())
         raise ValueError("No lock state information returned.")
-    
+
     # 1.4.8
     def set_warning_tone(self, enable: bool):
         """
