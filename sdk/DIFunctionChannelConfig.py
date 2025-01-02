@@ -162,3 +162,11 @@ class DIFunctionChannelConfig:
         """Convert the DIFunctionChannelConfig object to a string representation."""
         keys = self.get_keys_and_types(ElectricalFunctionType=self.ElectricalFunctionType).keys()
         return ','.join(str(getattr(self, key, '')) for key in keys)
+
+    def __str__(self):
+        """Override the built-in str() function."""
+        return self.to_str()
+
+    def __repr__(self):
+        """Override the built-in repr() function with the one from the dict class"""
+        return self.to_json().__repr__()
