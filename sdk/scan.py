@@ -1,14 +1,14 @@
 # scan.py - This file contains the class for the Scan commands.
 
 from typing import List, Optional
-from .customTypes import type
+from .customTypes import DI
 import json
 
 class Scan:
     def __init__(self, parent):
         self.parent = parent
 
-    def start(self, scan_info: type.DIScanInfo):
+    def start(self, scan_info: DI.DIScanInfo):
         """Set the configuration and start scanning.
 
         This command configures the scanning parameters and starts the scan.
@@ -26,7 +26,7 @@ class Scan:
         command = f'JSON:SCAN:STARt {json_params}'
         self.parent.send_command(command)
 
-    def get_configuration(self) -> type.DIScanInfo:
+    def get_configuration(self) -> DI.DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -43,7 +43,7 @@ class Scan:
         """
         response = self.parent.send_command("JSON:SCAN:STARt?")
         if response:
-            return type.DIScanInfo(**json.loads(response))
+            return DI.DIScanInfo(**json.loads(response))
         return None
 
     def stop(self):

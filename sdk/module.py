@@ -4,7 +4,7 @@
 # Section 1.2 - Measurement and configuration commands
 
 from typing import List
-from .customTypes import type
+from .customTypes import DI
 import json
 
 class Module:
@@ -12,7 +12,7 @@ class Module:
         self.parent = parent
 
     # 1.2.1
-    def info_str(self) -> List[type.DIModuleInfo]:
+    def info_str(self) -> List[DI.DIModuleInfo]:
         """Acquire module information.
 
         This command retrieves information about the front panel and junction box modules.
@@ -23,7 +23,7 @@ class Module:
         if response := self.parent.send_command("MODule:INFormation?"):
             modules = response.split(';')
             return [
-                type.DIModuleInfo(
+                DI.DIModuleInfo(
                     Index=mod.split(',')[0],
                     Category=mod.split(',')[1],
                     SN=mod.split(',')[2],
@@ -38,7 +38,7 @@ class Module:
         return []
 
     # 1.2.2
-    def info(self) -> List[type.DIModuleInfo]:
+    def info(self) -> List[DI.DIModuleInfo]:
         """Acquire module information.
 
         This command retrieves information about the front panel and junction box modules.
@@ -53,7 +53,7 @@ class Module:
             for mod in modules:
                 del mod['$type']
                 assert list(mod) == ['Index', 'Category', 'SN', 'HwVersion', 'SwVersion', 'TotalChannelCount', 'Label', 'ClassName'], "Unexpected keys in module info"
-            return [type.DIModuleInfo.from_json(mod) for mod in modules]
+            return [DI.DIModuleInfo.from_json(mod) for mod in modules]
         raise ValueError("No module information received")
 
     def set_label(self, index: int, label: str):
@@ -76,7 +76,7 @@ class Module:
         command = f'MODule:LABel {index},"{label}"'
         self.parent.send_command(command)
 
-    def getConfiguration(self, module_index: int) -> List[type.DIFunctionChannelConfig]:
+    def getConfiguration(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box.
 
         This command retrieves the channel configuration for a specified junction box module.
@@ -85,18 +85,18 @@ class Module:
             module_index (int): The module id (0: Front panel, 1: Embedded junction box, 2, 3, 4: Serial-wound junction boxes)
 
         Returns:
-            List[type.DIFunctionChannelConfig]: A list of channel configurations for the specified module.
+            List[DI.DIFunctionChannelConfig]: A list of channel configurations for the specified module.
         """
         # FIXME: For module_index = 0, it's fine, but for module_index = 1, the response is too long and is getting truncated, so the parsing is failing
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         response = self.parent.send_command(f"MODule:CONFig? {module_index}")
         if response:
-            return [type.DIFunctionChannelConfig.from_str(config) for config in response.split(';') if config]
-            # return [type.DIFunctionChannelConfig.from_json(config) for config in json.loads(response)['$values']]
+            return [DI.DIFunctionChannelConfig.from_str(config) for config in response.split(';') if config]
+            # return [DI.DIFunctionChannelConfig.from_json(config) for config in json.loads(response)['$values']]
         return []
 
-    def configure(self, module_index: int, params: List[type.DIFunctionChannelConfig]):
+    def configure(self, module_index: int, params: List[DI.DIFunctionChannelConfig]):
         """Set the channel configuration of a specified junction box in JSON format.
 
         This command configures the channel settings for a specified module using JSON.
