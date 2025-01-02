@@ -51,5 +51,4 @@ if __name__ == '__main__':
         testModuleConfig(testQueryChannelConfig, additel)
         scanTest = testScanGetConfig(additel)
 
-
         pass
