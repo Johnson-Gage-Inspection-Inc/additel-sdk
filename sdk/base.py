@@ -13,7 +13,7 @@ from .program import Program
 from .display import Display, Diagnostic
 from .pattern import Pattern
 from .unit import Unit
-from .customTypes import type
+from .customTypes import DI
 
 class Additel:
     def __init__(self, ip: str, port: int = 8000, timeout: int = 10, retries: int = 1):
@@ -34,7 +34,7 @@ class Additel:
         self.Diagnostic = Diagnostic(self)
         self.Pattern = Pattern(self)
         self.Unit = Unit(self)
-        self.type = type()
+        self.DI = DI(self)
 
     def __enter__(self):
         # Enable use of the class in a context manager to ensure proper resource handling

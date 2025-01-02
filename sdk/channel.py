@@ -1,13 +1,13 @@
 # channel.py
 
-from .customTypes import type
+from .customTypes import DI
 import json
 
 class Channel:
     def __init__(self, parent):
         self.parent = parent
 
-    def get_configuration(self, channel_name: str) -> type.DIFunctionChannelConfig:
+    def get_configuration(self, channel_name: str) -> DI.DIFunctionChannelConfig:
         """Acquire the configuration of a specific channel.
 
         This command retrieves the configuration for a specified channel.
@@ -38,16 +38,16 @@ class Channel:
         """
         response = self.parent.send_command(f'JSON:CHANnel:CONFig? "{channel_name}"')
         if response:
-            return type.DIFunctionChannelConfig(**json.loads(response))
+            return DI.DIFunctionChannelConfig(**json.loads(response))
         return None
 
-    def configure(self, channel_config: type.DIFunctionChannelConfig):
+    def configure(self, channel_config: DI.DIFunctionChannelConfig):
         """Acquire channel configuration in JSON format.
 
         This command retrieves configuration data for one or more channels in JSON format.
 
         Parameters:
-            channel_names (type.DIFunctionChannelConfig): A list of channel configurations. Each configuration includes:
+            channel_names (DI.DIFunctionChannelConfig): A list of channel configurations. Each configuration includes:
                 channel_name (str): The name of the channel to configure.
                 enabled (int): Enable or disable the channel (1 for enabled, 0 for disabled).
                 label (str): A custom label for the channel.
