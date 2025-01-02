@@ -26,7 +26,7 @@ class Scan:
         command = f'JSON:SCAN:STARt {json_params}'
         self.parent.send_command(command)
 
-    def get_configuration(self) -> DI.DIScanInfo:
+    def get_configuration_json(self) -> DI.DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -43,8 +43,10 @@ class Scan:
         """
         response = self.parent.send_command("JSON:SCAN:STARt?")
         if response:
-            return DI.DIScanInfo(**json.loads(response))
-        return None
+            raw_data = json.loads(response)
+            dTypes = raw_data.pop('$type').split(',')
+            assert 'TAU.Module.Channels.DI.DIScanInfo' in dTypes, "Unexpected type"
+            return DI.DIScanInfo(**raw_data)
 
     def stop(self):
         """Stop scanning.

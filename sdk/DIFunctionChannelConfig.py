@@ -170,3 +170,7 @@ class DIFunctionChannelConfig:
     def __repr__(self):
         """Override the built-in repr() function with the one from the dict class"""
         return self.to_json().__repr__()
+
+    def __dict__(self):
+        """Override the built-in dict() function."""
+        return self.to_json()

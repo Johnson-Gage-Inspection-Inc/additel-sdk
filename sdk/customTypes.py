@@ -1,8 +1,10 @@
-from typing import List, Optional
+from typing import Optional
 from .DIFunctionChannelConfig import DIFunctionChannelConfig as FCC
+from .DIScanInfo import DIScanInfo as DSI
 
 class DI:
     DIFunctionChannelConfig = FCC
+    DIScanInfo = DSI
 
     def __init__(self, parent):
         self.parent = parent
@@ -72,19 +74,3 @@ class DI:
                     Label=data['Label']
                 )
             raise NotImplementedError(f"Invalid data type for DIModuleInfo.from_json: {type(data)}")
-
-    class DIScanInfo:
-        """Data structure for scanning information.
-
-        Each configuration includes:
-            nplc (int): Number of Power Line Cycles (NPLC).
-            sampling_frequency (int): Sampling frequency cycle.
-            channels (List[str]): List of channels being scanned.
-        """
-        def __init__(self,
-                    nplc: int,
-                    sampling_frequency: int,
-                    channels: List[str]):
-            self.nplc = nplc  # Number of Power Line Cycles (NPLC)
-            self.sampling_frequency = sampling_frequency  # Sampling frequency cycle
-            self.channels = channels  # List of channels being scanned

@@ -85,8 +85,8 @@ class Channel:
         Returns:
             None
         """
-        json_params = json.dumps(channel_config.__dict__)
-        command = f'JSON:CHANnel:CONFig {json_params}'
+        raise NotImplementedError("This function is not implemented yet.")
+        command = f'CHANnel:CONFig {channel_config.to_str()}'
         self.parent.send_command(command)
 
     def set_zero(self, enable: bool):
