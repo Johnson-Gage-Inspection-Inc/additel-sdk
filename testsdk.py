@@ -19,10 +19,22 @@ def testQueryChannelConfig(a: Additel):
         assert isinstance(c, a.type.DIFunctionChannelConfig), "Channel config is not a DIFunctionChannelConfig object"
     return config
 
+def testQueryChannelConfig_json(a: Additel):
+    config = a.Module.getConfiguration_json(module_index=0)
+    assert isinstance(config, list), "Channel config is not a list"
+    for c in config:
+        assert isinstance(c, a.type.DIFunctionChannelConfig), "Channel config is not a DIFunctionChannelConfig object"
+    return config
+
 if __name__ == '__main__':
     # Create an instance of the Additel class
     with Additel('192.168.1.222') as additel:
         identity = testIdentify(additel)
-        moduleInfo = testModuleInfo(additel)
-        config = testQueryChannelConfig(additel)
+        print("Identity check passed.")
+        moduleInfo = testModuleInfo(additel)  # Passed
+        print("Module info check passed.")
+        config = testQueryChannelConfig(additel)  # Passed
+        print("Query channel config check passed.")
+        config_json = testQueryChannelConfig_json(additel)
+        print("Query channel config json check passed.")
         pass

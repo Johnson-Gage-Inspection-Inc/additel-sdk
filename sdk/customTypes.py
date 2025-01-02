@@ -224,18 +224,6 @@ class type:
 
             self.validateLength(self.len(), M=M)
 
-            # self.Wire = Wire
-            # self.CompensateInterval = CompensateInterval
-            # self.IsSquareRooting2Current = IsSquareRooting2Current
-            # self.IsCurrentCommutation = IsCurrentCommutation
-            # self.SensorName = SensorName
-            # self.SensorSN = SensorSN
-            # self.Id = Id
-            # self.ChannelInfo1 = ChannelInfo1
-            # self.ChannelInfo2 = ChannelInfo2
-            # self.ChannelInfo3 = ChannelInfo3
-            # self.ClassName = ClassName
-
         @classmethod
         def len(self):
             # Count the number of parameters
@@ -251,29 +239,29 @@ class type:
             Returns:
                 DIFunctionChannelConfig: An instance of DIFunctionChannelConfig populated with the JSON data.
             """
-            if isinstance(data, dict):
-                return cls(
-                    Name=data['Name'],
-                    Enabled=data['Enabled'],
-                    Label=data['Label'],
-                    ElectricalFunctionType=data['ElectricalFunctionType'],
-                    Range=data['Range'],
-                    Delay=data['Delay'],
-                    IsAutoRange=data['IsAutoRange'],
-                    FilteringCount=data['FilteringCount'],
-                    Wire=data.get('Wire', 0),
-                    CompensateInterval=data.get('CompensateInterval', 0),
-                    IsSquareRooting2Current=data.get('IsSquareRooting2Current', False),
-                    IsCurrentCommutation=data.get('IsCurrentCommutation', False),
-                    SensorName=data.get('SensorName', ''),
-                    SensorSN=data.get('SensorSN', ''),
-                    Id=data.get('Id', ''),
-                    ChannelInfo1=data.get('ChannelInfo1', ''),
-                    ChannelInfo2=data.get('ChannelInfo2', ''),
-                    ChannelInfo3=data.get('ChannelInfo3', ''),
-                    ClassName=data.get('ClassName', '')
-                )
-            raise NotImplementedError(f"Invalid data type for DIFunctionChannelConfig.from_json: {type(data)}")
+            del data['$type']
+            return cls(**data)
+            return cls(
+                Name=data['Name'],
+                Enabled=data['Enabled'],
+                Label=data['Label'],
+                ElectricalFunctionType=data['ElectricalFunctionType'],
+                Range=data['Range'],
+                Delay=data['Delay'],
+                IsAutoRange=data['IsAutoRange'],
+                FilteringCount=data['FilteringCount'],
+                Wire=data.get('Wire', 0),
+                CompensateInterval=data.get('CompensateInterval', 0),
+                IsSquareRooting2Current=data.get('IsSquareRooting2Current', False),
+                IsCurrentCommutation=data.get('IsCurrentCommutation', False),
+                SensorName=data.get('SensorName', ''),
+                SensorSN=data.get('SensorSN', ''),
+                Id=data.get('Id', ''),
+                ChannelInfo1=data.get('ChannelInfo1', ''),
+                ChannelInfo2=data.get('ChannelInfo2', ''),
+                ChannelInfo3=data.get('ChannelInfo3', ''),
+                ClassName=data.get('ClassName', '')
+            )
 
         @classmethod
         def from_str(cls, data: str):
@@ -285,77 +273,75 @@ class type:
             Returns:
                 DIFunctionChannelConfig: An instance of DIFunctionChannelConfig populated with the string data.
             """
-            if isinstance(data, str):
-                # Split the string into a list of values
-                values = data.split(',')
-                # Check if the list contains the expected number of values
-                if len(values) >= 8:
-                    # Extract the values from the list
-                    funcType = int(values[3])
+            # Split the string into a list of values
+            values = data.split(',')
+            # Check if the list contains enough values
+            if len(values) >= 8:
+                # Extract the values from the list
+                funcType = int(values[3])
 
-                    # Required variables:
-                    payload = {
-                        "Name": values[0],                          # 1. Channel name.
-                        "Enabled": bool(int(values[1])),            # 2. Enable or not
-                        "Label": values[2],                         # 3. Label
-                        "ElectricalFunctionType": funcType,         # 4. Function type
-                        "Range": int(values[4]),                    # 5. Range index
-                        "Delay": int(values[5]),                    # 6. Channel delay
-                        "IsAutoRange": bool(int(values[6])),        # 7. Automatic range or not
-                        "FilteringCount": int(values[7])            # 8. Filter
-                    }
+                # Required variables:
+                payload = {
+                    "Name": values[0],                          # 1. Channel name.
+                    "Enabled": bool(int(values[1])),            # 2. Enable or not
+                    "Label": values[2],                         # 3. Label
+                    "ElectricalFunctionType": funcType,         # 4. Function type
+                    "Range": int(values[4]),                    # 5. Range index
+                    "Delay": int(values[5]),                    # 6. Channel delay
+                    "IsAutoRange": bool(int(values[6])),        # 7. Automatic range or not
+                    "FilteringCount": int(values[7])            # 8. Filter
+                }
 
-                    # M additional parmeters (M depends on electrical logging type):
-                    if funcType == 0:
-                        M = 1
-                        payload['highImpedance'] = int(values[8])
-                        raise NotImplementedError("Voltage function not implemented")
+                # M additional parmeters (M depends on electrical logging type):
+                if funcType == 0:
+                    M = 1
+                    payload['highImpedance'] = int(values[8])
+                    raise NotImplementedError("Voltage function not implemented")
 
-                    elif funcType == 1:
-                        M = 0
-                        cls.validateLength(values, M=0)
-                        raise NotImplementedError("Current function not implemented")
+                elif funcType == 1:
+                    M = 0
+                    cls.validateLength(values, M=0)
+                    raise NotImplementedError("Current function not implemented")
 
-                    elif funcType == 2:
-                        M = 2
-                        payload['Wire'] = values[8]
-                        raise NotImplementedError("Resistance function not implemented")
+                elif funcType == 2:
+                    M = 2
+                    payload['Wire'] = values[8]
+                    raise NotImplementedError("Resistance function not implemented")
 
-                    elif funcType in [3, 102, 106]:
-                        M = 6
-                        payload['Wire'] = values[8]
-                        payload['SensorName'] = values[9]
-                        payload['SensorSN'] = values[10]
-                        payload['Id'] = values[11]
-                        payload['IsSquareRooting2Current'] = bool(int(values[12]))
-                        payload['CompensateInterval'] = int(values[13])
-                        pass
+                elif funcType in [3, 102, 106]:
+                    M = 6
+                    payload['Wire'] = values[8]
+                    payload['SensorName'] = values[9]
+                    payload['SensorSN'] = values[10]
+                    payload['Id'] = values[11]
+                    payload['IsSquareRooting2Current'] = bool(int(values[12]))
+                    payload['CompensateInterval'] = int(values[13])
+                    pass
 
-                    elif funcType in [100, 105]:
-                        M = 7
-                        payload['IsOpenDetect'] = bool(int(values[8]))
-                        payload['SensorName'] = values[9]
-                        payload['SensorSN'] = values[10]
-                        payload['Id'] = values[11]
-                        payload['CjcType'] = int(values[12])
-                        payload['CJCFixedValue'] = float(values[13])
-                        payload['CjcChannelName'] = values[14]
+                elif funcType in [100, 105]:
+                    M = 7
+                    payload['IsOpenDetect'] = bool(int(values[8]))
+                    payload['SensorName'] = values[9]
+                    payload['SensorSN'] = values[10]
+                    payload['Id'] = values[11]
+                    payload['CjcType'] = int(values[12])
+                    payload['CJCFixedValue'] = float(values[13])
+                    payload['CjcChannelName'] = values[14]
 
-                    elif funcType in [4, 103, 104]:
-                        M = 4
-                        payload['Wire'] = values[8]
-                        payload['SensorName'] = values[9]
-                        payload['SensorSN'] = values[10]
-                        payload['id'] = values[11]
-                        raise NotImplementedError("Thermistor and Current/Voltage Transmitter functions not implemented")
+                elif funcType in [4, 103, 104]:
+                    M = 4
+                    payload['Wire'] = values[8]
+                    payload['SensorName'] = values[9]
+                    payload['SensorSN'] = values[10]
+                    payload['id'] = values[11]
+                    raise NotImplementedError("Thermistor and Current/Voltage Transmitter functions not implemented")
 
-                    else:
-                        raise ValueError(f"Invalid ElectricalFunctionType: {funcType}")
+                else:
+                    raise ValueError(f"Invalid ElectricalFunctionType: {funcType}")
 
-                    cls.validateLength(values, M=M)
-                    return cls(**payload)
-                raise ValueError(f"Invalid number of values for DIFunctionChannelConfig: {len(values)}")
-            raise NotImplementedError(f"Invalid data type for DIFunctionChannelConfig.from_str: {type(data)}")
+                cls.validateLength(values, M=M)
+                return cls(**payload)
+            raise ValueError(f"Invalid number of values for DIFunctionChannelConfig: {len(values)}")
 
         @classmethod
         def validateLength(cls, values, M):
