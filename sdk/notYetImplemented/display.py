@@ -20,8 +20,8 @@ class Display:
         Returns:
             None
         """
-        self.parent.send_command(f'DISPaly:BRIGHTness {type},{level}')
-    
+        self.parent.cmd(f'DISPaly:BRIGHTness {type},{level}')
+
     # 1.6.2
     def getBrightness(self, type) -> int:
         """Query the brightness of the display
@@ -35,7 +35,7 @@ class Display:
         Returns:
             int: The value of brightness
         """
-        if response := self.parent.send_command(f'DISPaly:BRIGHTness? {type}'):
+        if response := self.parent.cmd(f'DISPaly:BRIGHTness? {type}'):
             return int(response.strip())
         raise ValueError("No brightness information returned.")
 
@@ -50,7 +50,7 @@ class Display:
         Returns:
             str: The language of the display
         """
-        if response := self.parent.send_command("DISPaly:LANGuage?"):
+        if response := self.parent.cmd("DISPaly:LANGuage?"):
             return response.strip()
         raise ValueError("No language information returned.")
 
@@ -63,11 +63,11 @@ class Display:
 
         Parameters:
             message (_type_): _description_
-        
+
         Returns:
             None
         """
-        self.parent.send_command(f'DISPlay:MESSagebox "{message}"')
+        self.parent.cmd(f'DISPlay:MESSagebox "{message}"')
 
     # 1.6.6
     def getHome(self) -> str:
@@ -79,10 +79,10 @@ class Display:
         Returns:
             str: The home page of the display
         """
-        if response := self.parent.send_command("DISPaly:HOME?"):
+        if response := self.parent.cmd("DISPaly:HOME?"):
             return response.strip()
         raise ValueError("No home page information returned.")
-    
+
     # 1.6.7
     def getTheme(self) -> str:
         """Query the theme of the display
@@ -93,10 +93,10 @@ class Display:
         Returns:
             str: The theme of the display
         """
-        if response := self.parent.send_command("DISPaly:THEMe?"):
+        if response := self.parent.cmd("DISPaly:THEMe?"):
             return response.strip()
         raise ValueError("No theme information returned.")
-    
+
     # 1.6.9
     def themeAllNames(self) -> str:
         """Query all the names of the theme
@@ -107,10 +107,10 @@ class Display:
         Returns:
             str: All the names of the theme
         """
-        if response := self.parent.send_command("DISPaly:THEMe:ALLNames?"):
+        if response := self.parent.cmd("DISPaly:THEMe:ALLNames?"):
             return response.strip()
         raise ValueError("No theme information returned.")
-    
+
     # 1.6.10
     def setTheme(self, theme):
         """Set system theme( work after restarting)
@@ -124,18 +124,18 @@ class Display:
         Returns:
             None
         """
-        self.parent.send_command(f'DISPaly:THEMe {theme}')
+        self.parent.cmd(f'DISPaly:THEMe {theme}')
 
 class Diagnostic:
     def __init__(self, parent):
         self.parent = parent
-        
+
     # 1.6.4
     def setLanguage(self, lcid, reboot: bool = False):
         """Set the language of the display
 
         Command:
-            DIAGnostic:LANGuage <lcid>[,<reboot>] 
+            DIAGnostic:LANGuage <lcid>[,<reboot>]
 
         Parameters:
             lcid (str): The language of the display
@@ -144,4 +144,4 @@ class Diagnostic:
         Returns:
             None
         """
-        self.parent.send_command(f'DISPaly:LANGuage {lcid},{int(reboot)}')
+        self.parent.cmd(f'DISPaly:LANGuage {lcid},{int(reboot)}')

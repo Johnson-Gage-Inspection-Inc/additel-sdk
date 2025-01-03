@@ -89,4 +89,3 @@ def load_mapping():
     }
 
     return map
-

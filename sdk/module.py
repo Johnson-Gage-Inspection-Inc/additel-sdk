@@ -20,7 +20,7 @@ class Module:
         Returns:
             List[DIModuleInfo]: A list of parsed module information objects.
         """
-        if response := self.parent.send_command("MODule:INFormation?"):
+        if response := self.parent.cmd("MODule:INFormation?"):
             modules = response.split(';')
             return [
                 DI.DIModuleInfo(
@@ -46,7 +46,7 @@ class Module:
         Returns:
             List[DIModuleInfo]: A list of parsed module information objects.
         """
-        response = self.parent.send_command("JSON:MODule:INFormation?")
+        response = self.parent.cmd("JSON:MODule:INFormation?")
         if response:
             raw_data = json.loads(response)
             modules = raw_data.get('$values', [])
@@ -74,7 +74,7 @@ class Module:
         if index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         command = f'MODule:LABel {index},"{label}"'
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.2.4
     def getConfiguration(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:
@@ -90,7 +90,7 @@ class Module:
         """
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
-        response = self.parent.send_command(f"MODule:CONFig? {module_index}")
+        response = self.parent.cmd(f"MODule:CONFig? {module_index}")
         if response:
             array = response.split(';')
             if not array[-1]:
@@ -114,7 +114,7 @@ class Module:
         """
         # FIXME: For module_index = 0, it's fine, but for module_index = 1, the response is too long and is getting truncated, so the parsing is failing
         assert module_index in range(5), "Module index must be between 0 and 4 inclusive."
-        if response := self.parent.send_command(f"JSON:MODule:CONFig? {module_index}"):
+        if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
             try:
                 return [type.DIFunctionChannelConfig.from_json(config) for config in json.loads(response)['$values']]
             except json.JSONDecodeError as e:
@@ -160,6 +160,16 @@ class Module:
         Returns:
             dict: The JSON response from the device confirming the configuration.
         """
+        # Validate parameters
+        if not isinstance(module_index, int):
+            raise TypeError(f"Invalid parameter type: {type(module_index)}. Expected int.")
+        if not isinstance(params, List):
+            raise TypeError(f"Invalid parameter type: {type(params)}. Expected List.")
+        for param in params:
+            if not isinstance(param, DI.DIFunctionChannelConfig):
+                raise TypeError(f"Invalid parameter type: List[{type(param)}]. List[Expected DIFunctionChannelConfig].")
+
+        # Send the command
         json_params = json.dumps([param.__dict__ for param in params])
         command = f'JSON:MODule:CONFig {module_index},{json_params}'
-        self.parent.send_command(command)
+        self.parent.cmd(command)

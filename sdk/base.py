@@ -62,7 +62,7 @@ class Additel:
             self.connection.close()
             self.connection = None
 
-    def send_command(self, command: str) -> Optional[str]:
+    def cmd(self, command: str) -> Optional[str]:
         """Send a command to the Additel device and receive the response, with retry logic."""
         for attempt in range(self.retries):
             try:
@@ -123,7 +123,7 @@ class Additel:
         Returns:
             None
         """
-        self.send_command("*CLS")
+        self.cmd("*CLS")
 
     # 1.1.2
     def identify(self) -> str:
@@ -139,7 +139,7 @@ class Additel:
         Returns:
             str: A string containing the product sequence number and software version number.
         """
-        return self.send_command("*IDN?")
+        return self.cmd("*IDN?")
 
     # 1.1.3
     def reset(self):  # NOTE: Not tested
@@ -153,4 +153,4 @@ class Additel:
         Returns:
             None
         """
-        self.send_command("*RST")
+        self.cmd("*RST")

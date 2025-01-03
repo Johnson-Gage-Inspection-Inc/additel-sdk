@@ -33,7 +33,7 @@ class System:
             {"SCIP": "v1.0", "Application": "v1.2"}
         """
         command = f'SYSTem:VERSion? {module}' if module else 'SYSTem:VERSion?'
-        response = self.parent.send_command(command)
+        response = self.parent.cmd(command)
         if response:
             return {key_value.split(":")[0]: key_value.split(":")[1] for key_value in response.split(",")}
         return {}
@@ -54,7 +54,7 @@ class System:
         Raises:
             ValueError: If no error information is returned.
         """
-        response = self.parent.send_command("SYSTem:ERRor:NEXT?")
+        response = self.parent.cmd("SYSTem:ERRor:NEXT?")
         if response:
             parts = response.split(",")
             return {
@@ -80,7 +80,7 @@ class System:
             None
         """
         command = f"SYSTem:DATE {year},{month},{day}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.4
     def get_date(self) -> date:
@@ -96,7 +96,7 @@ class System:
         Returns:
             date: The current system date.
         """
-        if response := self.parent.send_command("SYSTem:DATE?"):
+        if response := self.parent.cmd("SYSTem:DATE?"):
             return date(*map(int, response.split(",")))
         raise ValueError("No date information returned.")
 
@@ -117,7 +117,7 @@ class System:
             None
         """
         command = f"SYSTem:TIME {hour},{minute},{second}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.6
     def set_local_lock(self, lock: bool):
@@ -134,7 +134,7 @@ class System:
             None
         """
         command = f"SYSTem:KLOCk {int(lock)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.7
     def get_local_lock(self) -> bool:
@@ -150,7 +150,7 @@ class System:
         Returns:
             bool: True if the system is locked (ON), False if unlocked (OFF).
         """
-        response = self.parent.send_command("SYSTem:KLOCk?")
+        response = self.parent.cmd("SYSTem:KLOCk?")
         if response:
             return bool(response.strip())
         raise ValueError("No lock state information returned.")
@@ -170,7 +170,7 @@ class System:
             None
         """
         command = f"SYSTem:BEEPer:ALARm {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.9
     def set_keypad_tone(self, enable: bool):
@@ -187,4 +187,4 @@ class System:
             None
         """
         command = f"SYSTem:BEEPer:TOUCh {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)

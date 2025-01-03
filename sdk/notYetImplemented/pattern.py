@@ -9,7 +9,7 @@ class Pattern:
         # 1.7.1
         def patterns(self, function, otherParams):
             """Switch main interface function
-            
+
             Command:
                 PATTern:MAIN:PATTerns Dual|SCMM|SConn[,<”otherParams”>]
 
@@ -20,7 +20,7 @@ class Pattern:
             Returns:
                 None
             """
-            self.parent.send_command(f'PATTern:MAIN:PATTerns {function},{otherParams}')
+            self.parent.cmd(f'PATTern:MAIN:PATTerns {function},{otherParams}')
 
         # 1.7.2
         def setMatch(self, paramIndex, matchStr: str = ""):
@@ -41,6 +41,6 @@ class Pattern:
                 None
             """
             if matchStr:
-                self.parent.send_command(f'PATTern:MAIN:MATCH {paramIndex},{matchStr}')
+                self.parent.cmd(f'PATTern:MAIN:MATCH {paramIndex},{matchStr}')
             else:
-                self.parent.send_command(f'PATTern:MAIN:MATCH {paramIndex}')
+                self.parent.cmd(f'PATTern:MAIN:MATCH {paramIndex}')

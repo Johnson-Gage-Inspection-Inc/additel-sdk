@@ -26,7 +26,7 @@ class Scan:
         raise NotImplementedError("This command is not yet implemented.")
         json_params = json.dumps(scan_info.__dict__)
         command = f'JSON:SCAN:STARt {json_params}'
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     def get_configuration_json(self) -> DI.DIScanInfo:  # Tested!
         """Acquire the scanning configuration.
@@ -43,7 +43,7 @@ class Scan:
                 - NPLC value
                 - Channel name
         """
-        response = self.parent.send_command("JSON:SCAN:STARt?")
+        response = self.parent.cmd("JSON:SCAN:STARt?")
         if response:
             raw_data = json.loads(response)
             dTypes = raw_data.pop('$type').split(',')
@@ -67,7 +67,7 @@ class Scan:
                 - NPLC value
                 - Channel name
         """
-        response = self.parent.send_command("SCAN:STARt?")
+        response = self.parent.cmd("SCAN:STARt?")
         if response:
             assert response == DI.DIScanInfo.from_str(response).to_str(), "Unexpected response"
             return DI.DIScanInfo.from_str(response)
@@ -84,7 +84,7 @@ class Scan:
             None
         """
         raise NotImplementedError("This command is not yet implemented.")
-        self.parent.send_command("SCAN:STOP")
+        self.parent.cmd("SCAN:STOP")
 
     def get_latest_data(self, format=2) -> DI.DIReading:  # Tested!
         """This command retrieves the latest scanning data for all active channels. Optionally, the `time` parameter specifies
@@ -142,7 +142,7 @@ class Scan:
             raise ValueError("Invalid format. Must be 1 or 2.")
         if format == 1:
             raise NotImplementedError("This format is not implemented.")
-        response = self.parent.send_command(f"SCAN:DATA:Last? {format}")
+        response = self.parent.cmd(f"SCAN:DATA:Last? {format}")
         return DI.DIReading.from_str(response)
 
     def get_scan_data_json(self, count: int = 1) -> List[DI.DIReading]:  # Tested!
@@ -161,6 +161,6 @@ class Scan:
                 - Additional parameters depending on the measurement type
         """
         assert count > 0, "Count must be greater than 0."
-        if response := self.parent.send_command(f"JSON:SCAN:DATA? {count}"):
+        if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
             return coerce(response)
         return []

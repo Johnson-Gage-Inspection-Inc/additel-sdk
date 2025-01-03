@@ -44,7 +44,7 @@ class Calibration:
             if mode != 0:
                 raise ValueError("Only mode 0 (active calibration) is supported")
             command = f'CALibration:ElECtricity:SCAN {mode},{function},{range_}'
-            self.parent.parent.send_command(command)
+            self.parent.parent.cmd(command)
 
         def get_scan_data(self) -> dict:
             """
@@ -66,7 +66,7 @@ class Calibration:
                     - 'data': The original value as a float if the status is available, otherwise None.
             """
 
-            response = self.parent.parent.send_command("CALibration:ElECtricity:SCAN?")
+            response = self.parent.parent.cmd("CALibration:ElECtricity:SCAN?")
             if response:
                 parts = response.split(",")
                 return {
@@ -136,7 +136,7 @@ class Calibration:
             command = (f'CALibration:ElECtricity:DATA {manufacturer_or_user},{password},'
                         f'{channel},{function},{range_},{unit_id},{count},'
                         f'"{points_str}","{values_str}",{year},{month},{day}')
-            self.parent.parent.send_command(command)
+            self.parent.parent.cmd(command)
 
         def get_calibration_data(self, manufacturer_or_user: str, password: str, channel: int,
                                     function: int, range_: int) -> dict:
@@ -181,8 +181,8 @@ class Calibration:
                     - "day": Calibration day.
             """
             command = f'CALibration:ElECtricity:DATA? {manufacturer_or_user},{password},{channel},{function},{range_}'
-            response = self.parent.parent.send_command(command)
-            
+            response = self.parent.parent.cmd(command)
+
             if response:
                 parts = response.split(",")
                 return {
@@ -211,7 +211,7 @@ class Calibration:
             """
 
             command = f'CALibration:ELECtricity:CJCenable {int(enable)}'
-            self.parent.parent.send_command(command)
+            self.parent.parent.cmd(command)
 
         def get_cjc_data(self, manufacturer_or_user: str, password: str, location: int, channel: int) -> dict:
             """
@@ -242,7 +242,7 @@ class Calibration:
                     - "day": Calibration day.
             """
             command = f'CALibration:ELECtricity:DATA:CJC? {manufacturer_or_user},{password},{location},{channel}'
-            response = self.parent.parent.send_command(command)
+            response = self.parent.parent.cmd(command)
 
             if response:
                 parts = response.split(",")
@@ -284,4 +284,4 @@ class Calibration:
 
             command = (f'CALibration:ELECtricity:DATA:CJC {manufacturer_or_user},{password},'
                         f'{location},{channel},{offset},{year},{month},{day}')
-            self.parent.parent.send_command(command)
+            self.parent.parent.cmd(command)

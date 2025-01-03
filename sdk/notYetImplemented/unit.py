@@ -20,7 +20,7 @@ class Unit:
         Returns:
             None
         """
-        self.parent.send_command(f'UNIT:TEMPerature {unit_ID}|{unit_name}')
+        self.parent.cmd(f'UNIT:TEMPerature {unit_ID}|{unit_name}')
 
     # 1.8.3
     def getUnitTemp(self) -> str:
@@ -33,7 +33,6 @@ class Unit:
             str: Name of temperature unit
             digit: temperature unit id
         """
-        if response := self.parent.send_command("UNIT:TEMPerature?"):
+        if response := self.parent.cmd("UNIT:TEMPerature?"):
             return response.split(",")
         raise ValueError("No temperature information returned.")
-    

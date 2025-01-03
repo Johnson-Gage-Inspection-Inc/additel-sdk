@@ -17,7 +17,7 @@ class Program:
             progname (str): The name of the program to run.
             parameters (str): The parameters of the program.
         """
-        self.parent.send_command(f'PROGram:RUN "{progname}" "{parameters}"')
+        self.parent.cmd(f'PROGram:RUN "{progname}" "{parameters}"')
 
     # 1.5.2
     def exit(self, progname: str = ""):
@@ -28,7 +28,7 @@ class Program:
         Command:
             PROGram:EXIT [<progname>]
         """
-        self.parent.send_command(f'PROGram:EXIT "{progname}"'.strip())
+        self.parent.cmd(f'PROGram:EXIT "{progname}"'.strip())
 
     # 1.5.3
     def state(self, progname: str = "") -> str:
@@ -47,6 +47,6 @@ class Program:
         Returns:
             str: The state of the program.
         """
-        if response := self.parent.send_command(f'PROGram:STATe "{progname}"'):
+        if response := self.parent.cmd(f'PROGram:STATe "{progname}"'):
             return response.strip()
         raise ValueError("No program state information returned.")

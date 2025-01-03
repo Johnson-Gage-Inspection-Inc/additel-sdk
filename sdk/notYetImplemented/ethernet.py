@@ -19,11 +19,11 @@ class Ethernet:
         Returns:
             bool: True if DHCP is open (1), False if closed (0).
         """
-        response = self.parent.send_command("SYSTem:COMMunicate:SOCKet:ETHernet:DHCP?")
+        response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:ETHernet:DHCP?")
         if response:
             return bool(response.strip())
         raise ValueError("No DHCP state information returned.")
-    
+
     # 1.4.27
     def setDHCP(self, enable: bool):
         """
@@ -39,7 +39,7 @@ class Ethernet:
             None
         """
         command = f"SYSTem:COMMunicate:SOCKet:ETHernet:DHCP {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.28
     def getIP(self) -> str:
@@ -55,10 +55,10 @@ class Ethernet:
         Returns:
             str: The IP address.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess?"):
             return response.strip()
         raise ValueError("No IP address information returned.")
-    
+
     # 1.4.29
     def setIP(self, ip_address: str):
         """
@@ -73,10 +73,10 @@ class Ethernet:
         Returns:
             None
         """
-        if response := self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"):
+        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"):
             return response.strip()
         raise ValueError("No IP address information returned.")
-    
+
     # 1.4.30
     def getMASK(self) -> str:
         """
@@ -91,10 +91,10 @@ class Ethernet:
         Returns:
             str: The subnet mask.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:ETHernet:MASK?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:ETHernet:MASK?"):
             return response.strip()
         raise ValueError("No subnet mask information returned.")
-    
+
     # 1.4.31
     def setMASK(self, subnet_mask: str):
         """
@@ -109,10 +109,10 @@ class Ethernet:
         Returns:
             None
         """
-        if response := self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:ETHernet:MASK {subnet_mask}"):
+        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:MASK {subnet_mask}"):
             return response.strip()
         raise ValueError("No subnet mask information returned.")
-    
+
     # 1.4.32
     def getGATEway(self) -> str:
         """
@@ -127,10 +127,10 @@ class Ethernet:
         Returns:
             str: The gateway.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:ETHernet:GATEway?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:ETHernet:GATEway?"):
             return response.strip()
         raise ValueError("No gateway information returned.")
-    
+
     # 1.4.33
     def setGATEway(self, gateway: str):
         """
@@ -145,10 +145,10 @@ class Ethernet:
         Returns:
             None
         """
-        if response := self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:ETHernet:GATEway {gateway}"):
+        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:GATEway {gateway}"):
             return response.strip()
         raise ValueError("No gateway information returned.")
-    
+
     # 1.4.34
     def getMAC(self) -> str:
         """
@@ -163,10 +163,10 @@ class Ethernet:
         Returns:
             str: The MAC address.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:ETHernet:MAC?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:ETHernet:MAC?"):
             return response.strip()
         raise ValueError("No MAC address information returned.")
-    
+
     # 1.4.35
     def initialize(self, enable: bool):
         """
@@ -181,7 +181,7 @@ class Ethernet:
         Returns:
             None
         """
-        self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:ETHernet:INITialize {int(enable)}")
+        self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:INITialize {int(enable)}")
 
     # 1.4.36
     def setKey(self, path: str, name: str, keyValue: str, valueType):
@@ -216,7 +216,7 @@ class Ethernet:
         Returns:
             None
         """
-        self.parent.send_command(f"SYSTem:REGistry:DATA{path},{name},{keyValue},{valueType}")
+        self.parent.cmd(f"SYSTem:REGistry:DATA{path},{name},{keyValue},{valueType}")
 
     # 1.4.37
     def getKey(self, path: str, name: str) -> str:
@@ -233,10 +233,10 @@ class Ethernet:
         Returns:
             str: The value of the key.
         """
-        if response := self.parent.send_command(f"SYSTem:REGistry:DATA? {path},{name}"):
+        if response := self.parent.cmd(f"SYSTem:REGistry:DATA? {path},{name}"):
             return response.strip()
         raise ValueError("No key value information returned.")
-    
+
     # 1.4.38
     def deleteKey(self, path: str, name: str):
         """
@@ -252,7 +252,7 @@ class Ethernet:
         Returns:
             None
         """
-        self.parent.send_command(f"SYSTem:REGistry:DELete {path},{name}")
+        self.parent.cmd(f"SYSTem:REGistry:DELete {path},{name}")
 
     # 1.4.39
     def saveRegistry(self, keyName: str):
@@ -264,9 +264,9 @@ class Ethernet:
 
         Parameters:
             keyName (str): The key name to save.
-        
+
         Returns:
             None
         """
         assert(keyName in ["HKEY_LOCAL_MACHINE", "HKEY_CLASSES_ROOT", "HKEY_CURRENT_USER", "HKEY_USERS", "ALL"])
-        self.parent.send_command(f"SYSTem:REGistry:SAVE {keyName}")
+        self.parent.cmd(f"SYSTem:REGistry:SAVE {keyName}")

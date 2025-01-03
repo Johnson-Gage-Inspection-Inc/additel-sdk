@@ -36,7 +36,7 @@ class Channel:
                     cold junction type, cold junction fixed value, custom cold junction channel name
                     * Current/Voltage Transmitters (m=4): Wires, sensor name, sensor serial number, sensor ID
         """
-        response = self.parent.send_command(f'JSON:CHANnel:CONFig? "{channel_name}"')
+        response = self.parent.cmd(f'JSON:CHANnel:CONFig? "{channel_name}"')
         if response:
             return DI.DIFunctionChannelConfig(**json.loads(response))
         return None
@@ -87,7 +87,7 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f'CHANnel:CONFig {channel_config.to_str()}'
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     def set_zero(self, enable: bool):
         """Enable or disable zero clearing for a single channel.
@@ -101,4 +101,4 @@ class Channel:
             None
         """
         command = f"CHANnel:ZERo {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)

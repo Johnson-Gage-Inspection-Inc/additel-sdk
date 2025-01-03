@@ -114,7 +114,7 @@ class DIFunctionChannelConfig:
         ])
 
     @classmethod
-    def from_json(self, data: dict):
+    def from_json(self, data: dict) -> "DIFunctionChannelConfig":
         """Create a DIFunctionChannelConfig object from a JSON object.
 
 
@@ -128,6 +128,7 @@ class DIFunctionChannelConfig:
         keys_and_types = self.get_keys_and_types(ElectricalFunctionType=data["ElectricalFunctionType"])
         keys = list(keys_and_types.keys())
         assert all(key in data for key in keys), f"Missing keys: {keys}"
+        assert all(key in keys for key in data), f"Extra keys: {data.keys()}"
         kwargs = {key: (keys_and_types[key](data[key])) for key in keys}
         return self(**kwargs)
 
@@ -159,13 +160,13 @@ class DIFunctionChannelConfig:
         return ','.join('' if getattr(self, key) is None else str(getattr(self, key)) for key in keys)
 
     def __str__(self):
-        """Override the built-in str() function."""
+        """Convert the DIFunctionChannelConfig object to a string."""
         return self.to_str()
 
     def __repr__(self):
-        """Override the built-in repr() function with the one from the dict class"""
+        """Represent the DIFunctionChannelConfig object as a string."""
         return self.to_json().__repr__()
 
     def __dict__(self):
-        """Override the built-in dict() function."""
+        """Convert the DIFunctionChannelConfig object to a dictionary."""
         return self.to_json()

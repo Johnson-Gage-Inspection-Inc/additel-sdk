@@ -20,7 +20,7 @@ class WLAN:
             None
         """
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:STATe {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.11
     def getstate(self) -> bool:
@@ -36,11 +36,11 @@ class WLAN:
         Returns:
             bool: True if WiFi is enabled (ON), False if disabled (OFF).
         """
-        response = self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:STATe?")
+        response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:STATe?")
         if response:
             return bool(response.strip())
         raise ValueError("No WiFi state information returned.")
-    
+
     # 1.4.12
     def set_wlan_ip_address(self, ip_address: str):
         """
@@ -63,7 +63,7 @@ class WLAN:
         """
         # FIXME: Validate IP address format
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:ADDRess {ip_address}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.13
     def get_ip_address(self) -> str:
@@ -79,10 +79,10 @@ class WLAN:
         Returns:
             str: The IP address.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:ADDRess?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:ADDRess?"):
             return response.strip()
         raise ValueError("No IP address information returned.")
-    
+
     # 1.4.14
     def set_subnet_mask(self, subnet_mask: str):
         """
@@ -97,7 +97,7 @@ class WLAN:
         Returns:
             None
         """
-        if response := self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"):
+        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"):
             return response.strip()
         raise ValueError("No subnet mask information returned.")
 
@@ -115,10 +115,10 @@ class WLAN:
         Returns:
             str: The subnet mask.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:MASK?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:MASK?"):
             return response.strip()
         raise ValueError("No subnet mask information returned.")
-    
+
     # 1.4.16
     def setGateway(self, IPaddress: str):
         """
@@ -133,10 +133,10 @@ class WLAN:
         Returns:
             None
         """
-        if response := self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}"):
+        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}"):
             return response.strip()
         raise ValueError("No gateway information returned.")
-    
+
     # 1.4.17
     def getGateway(self) -> str:
         """
@@ -151,10 +151,10 @@ class WLAN:
         Returns:
             str: The gateway.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:GATEway?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:GATEway?"):
             return response.strip()
         raise ValueError("No gateway information returned.")
-    
+
     # 1.4.18
     def getMAC(self) -> str:
         """
@@ -169,10 +169,10 @@ class WLAN:
         Returns:
             str: The MAC address.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:MAC?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:MAC?"):
             return response.strip()
         raise ValueError("No MAC address information returned.")
-    
+
     # 1.4.19
     def setDHCP(self, enable: bool):
         """
@@ -188,7 +188,7 @@ class WLAN:
             None
         """
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:DHCP {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.20
     def getDHCP(self) -> bool:
@@ -204,11 +204,11 @@ class WLAN:
         Returns:
             bool: True if DHCP is open (1), False if closed (0).
         """
-        response = self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:DHCP?")
+        response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:DHCP?")
         if response:
             return bool(response.strip())
         raise ValueError("No DHCP state information returned.")
-    
+
     # 1.4.21
     def setSSID(self, ssid: str):
         """
@@ -232,10 +232,10 @@ class WLAN:
         Returns:
             {[“ssid: way of encryption”]}
         """
-        if response := self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:WLAN:SSID {ssid}"):
+        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:WLAN:SSID {ssid}"):
             return response.strip()
         raise ValueError("No SSID information returned.")
-    
+
     # 1.4.22
     def connect(self, ssid: str, password: str):
         """
@@ -253,7 +253,7 @@ class WLAN:
             None
         """
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
-        self.parent.send_command(command)
+        self.parent.cmd(command)
 
     # 1.4.23
     def getConnection(self) -> str:
@@ -269,10 +269,10 @@ class WLAN:
         Returns:
             str: The connection status.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:CONNect?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:CONNect?"):
             return response.strip()
         raise ValueError("No connection information returned.")
-    
+
     # 1.4.24
     def disconnect(self):
         """
@@ -287,7 +287,7 @@ class WLAN:
         Returns:
             None
         """
-        self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:DISConnect")
+        self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:DISConnect")
 
     # 1.4.25
     def getDBM(self):
@@ -302,7 +302,6 @@ class WLAN:
         Returns:
             str: The signal strength and dBm value.
         """
-        if response := self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:DBM?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:DBM?"):
             return response.strip()
         raise ValueError("No signal strength information returned.")
-    
