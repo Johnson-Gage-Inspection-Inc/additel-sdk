@@ -23,11 +23,12 @@ class Scan:
         Returns:
             None
         """
+        raise NotImplementedError("This command is not yet implemented.")
         json_params = json.dumps(scan_info.__dict__)
         command = f'JSON:SCAN:STARt {json_params}'
         self.parent.send_command(command)
 
-    def get_configuration_json(self) -> DI.DIScanInfo:
+    def get_configuration_json(self) -> DI.DIScanInfo:  # Tested!
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -51,7 +52,7 @@ class Scan:
             assert dType == 'DIScanInfo', f"Unexpected class name: {dType}"
             return DI.DIScanInfo(**raw_data)
 
-    def get_configuration(self) -> DI.DIScanInfo:
+    def get_configuration(self) -> DI.DIScanInfo:  # Tested!
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -85,7 +86,7 @@ class Scan:
         raise NotImplementedError("This command is not yet implemented.")
         self.parent.send_command("SCAN:STOP")
 
-    def get_latest_data(self, format=2) -> DI.DIReading:
+    def get_latest_data(self, format=2) -> DI.DIReading:  # Tested!
         """This command retrieves the latest scanning data for all active channels. Optionally, the `time` parameter specifies
         the desired timestamp format:
             - 1: "yyyy:MM:dd HH:mm:ss fff" format
@@ -144,7 +145,7 @@ class Scan:
         response = self.parent.send_command(f"SCAN:DATA:Last? {format}")
         return DI.DIReading.from_str(response)
 
-    def get_scan_data_json(self, count: int = 1) -> List[dict]:
+    def get_scan_data_json(self, count: int = 1) -> List[DI.DIReading]:  # Tested!
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of data points.

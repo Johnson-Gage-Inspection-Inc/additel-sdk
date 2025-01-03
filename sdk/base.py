@@ -6,13 +6,13 @@ import time
 import json
 from .module import Module
 from .scan import Scan
-from .channel import Channel
-from .calibration import Calibration
-from .system import System
-from .program import Program
-from .display import Display, Diagnostic
-from .pattern import Pattern
-from .unit import Unit
+# from .channel import Channel
+# from .calibration import Calibration
+# from .system import System
+# from .program import Program
+# from .display import Display, Diagnostic
+# from .pattern import Pattern
+# from .unit import Unit
 from .customTypes import DI
 
 class Additel:
@@ -26,14 +26,14 @@ class Additel:
         # Initialize the submodules
         self.Module = Module(self)
         self.Scan = Scan(self)
-        self.Channel = Channel(self)
-        self.Calibration = Calibration(self)
-        self.System = System(self)
-        self.Program = Program(self)
-        self.Display = Display(self)
-        self.Diagnostic = Diagnostic(self)
-        self.Pattern = Pattern(self)
-        self.Unit = Unit(self)
+        # self.Channel = Channel(self)
+        # self.Calibration = Calibration(self)
+        # self.System = System(self)
+        # self.Program = Program(self)
+        # self.Display = Display(self)
+        # self.Diagnostic = Diagnostic(self)
+        # self.Pattern = Pattern(self)
+        # self.Unit = Unit(self)
         self.DI = DI(self)
 
         self.date_format = '%Y-%m-%d %H:%M:%S %f'

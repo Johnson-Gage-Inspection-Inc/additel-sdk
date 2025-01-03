@@ -51,8 +51,9 @@ def testScanGetConfig(a: Additel):
 def testScan(testScanGetConfigJson, testScanGetConfig, additel):
     scanTestJson = testScanGetConfigJson(additel)
     scanTest = testScanGetConfig(additel)
-    scanTestJson.to_str() == scanTest.to_str()
-    scanTestJson.to_json() == scanTest.to_json()
+    assert scanTestJson.to_str() == scanTest.to_str(), "Scan config from json and scan config from string are not equal"
+    assert scanTestJson.to_json() == scanTest.to_json(), "Scan config from json and scan config from string are not equal"
+    pass
 
 def test_get_scan_data_json(a: Additel, count: int = 1):
     data = a.Scan.get_scan_data_json(count)
