@@ -36,6 +36,8 @@ class Additel:
         self.Unit = Unit(self)
         self.DI = DI(self)
 
+        self.date_format = '%Y-%m-%d %H:%M:%S %f'
+
     def __enter__(self):
         # Enable use of the class in a context manager to ensure proper resource handling
         self.connect()  # FIXME: Enable the use of USB, Ethernet, and other connection types

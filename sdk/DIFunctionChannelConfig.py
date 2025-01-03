@@ -12,12 +12,12 @@ class DIFunctionChannelConfig:
     def get_keys_and_types(self, **kwargs):
         types = {
             "Name": str,  # Channel name
-            "Enabled": bool,  # Enable or not
+            "Enabled": int,  # Enable or not
             "Label": str,  # Label
             "ElectricalFunctionType": int,  # Function type
             "Range": int,  # Range index
             "Delay": int,  # Channel delay
-            "IsAutoRange": bool,  # Automatic range or not
+            "IsAutoRange": int,  # Automatic range or not
             "FilteringCount": int,  # Filter
         }
 
@@ -28,14 +28,14 @@ class DIFunctionChannelConfig:
             1: {},  # Current
             2: {  # Resistance
                 "Wire": int,  # wires
-                "IsOpenDetect": bool,  # whether to open positive or negative current
+                "IsOpenDetect": int,  # whether to open positive or negative current
             },
             3: {  # RTD
                 "Wire": int,  # wires
                 "SensorName": str,  # sensor name
                 "SensorSN": str,  # sensor serial number
                 "Id": str,  # sensor Id
-                "IsSquareRooting2Current": bool,  # whether to open 1.4 times current
+                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
                 "CompensateInterval": int,  # compensation interval
             },
             4: {  # Thermistor
@@ -45,12 +45,12 @@ class DIFunctionChannelConfig:
                 "Id": str,  # sensor Id
             },
             100: {  # Thermocouple (TC)
-                "IsOpenDetect": bool,  # Whether the break detection
+                "IsOpenDetect": int,  # Whether the break detection
                 "SensorName": str,  # sensor name
                 "SensorSN": str,  # sensor serial number
                 "Id": str,  # sensor Id
                 "CjcType": int,  # cold junction type
-                "CJCFixedValue": float,  # cold junction fixed value
+                "CJCFixedValue": int,  # Was float, but we're trying int.,  # cold junction fixed value
                 "CjcChannelName": str,  # custom cold junction channel name
             },
             101: {  # Switch
@@ -61,18 +61,18 @@ class DIFunctionChannelConfig:
                 "SensorName": str,  # sensor name
                 "SensorSN": str,  # sensor serial number
                 "Id": str,  # sensor Id
-                "IsSquareRooting2Current": bool,  # whether to open 1.4 times current
+                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
                 "CompensateInterval": int,  # compensation interval
             },
             103: {"Wire": int, "SensorName": str, "SensorSN": str, "Id": str},  # Voltage Transmitter
             104: {"Wire": int, "SensorName": str, "SensorSN": str, "Id": str},  # Current Transmitter
             105: {  # Standard TC
-                "IsOpenDetect": bool,  # Whether the break detection
+                "IsOpenDetect": int,  # Whether the break detection
                 "SensorName": str,  # sensor name
                 "SensorSN": str,  # sensor serial number
                 "Id": str,  # sensor Id
                 "CjcType": int,  # cold junction type
-                "CJCFixedValue": float,  # cold junction fixed value
+                "CJCFixedValue": int,  # Was float, but we're trying int.,  # cold junction fixed value
                 "CjcChannelName": str,  # custom cold junction channel name
             },
             106: {  # Custom RTD
@@ -80,7 +80,7 @@ class DIFunctionChannelConfig:
                 "SensorName": str,  # sensor name
                 "SensorSN": str,  # sensor serial number
                 "Id": str,  # sensor Id
-                "IsSquareRooting2Current": bool,  # whether to open 1.4 times current
+                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
                 "CompensateInterval": int,  # compensation interval
             },
             110: {  # Standard Resistance
@@ -134,6 +134,8 @@ class DIFunctionChannelConfig:
     @classmethod
     def from_str(self, data: str):
         """Parse the channel configuration from a string."""
+        if not data:
+            return None
         values = data.split(',')
         func_type = int(values[3])
         keys_and_types = self.get_keys_and_types(ElectricalFunctionType=func_type)
@@ -143,13 +145,6 @@ class DIFunctionChannelConfig:
         }
         assert len(kwargs) == len(keys), f"Missing keys: {keys}"
         return self(**kwargs)
-
-    # def validate_types(self):
-    #     keys_and_types = self.get_keys_and_types(ElectricalFunctionType=self.ElectricalFunctionType)
-    #     for key, expected_type in keys_and_types.items():
-    #         value = getattr(self, key)
-    #         if value is not None and (not isinstance(value, expected_type)):
-    #             raise TypeError(f"Key '{key}' expects {expected_type}, got {type(value)}.")
 
     def to_json(self):
         """Convert the DIFunctionChannelConfig object to a JSON-compatible dictionary."""
@@ -161,7 +156,7 @@ class DIFunctionChannelConfig:
     def to_str(self):
         """Convert the DIFunctionChannelConfig object to a string representation."""
         keys = self.get_keys_and_types(ElectricalFunctionType=self.ElectricalFunctionType).keys()
-        return ','.join(str(getattr(self, key, '')) for key in keys)
+        return ','.join('' if getattr(self, key) is None else str(getattr(self, key)) for key in keys)
 
     def __str__(self):
         """Override the built-in str() function."""

@@ -9,11 +9,9 @@ class DIScanInfo:
     """
     def __init__(self,
                 NPLC: int,
-                ChannelName: str,
-                ClassName: str):
+                ChannelName: str):
         self.NPLC = NPLC  # Number of Power Line Cycles (NPLC)
         self.ChannelName = ChannelName  # Sampling frequency cycle
-        self.ClassName = ClassName
 
     @classmethod
     def from_json(cls, data: dict):
@@ -27,8 +25,7 @@ class DIScanInfo:
         """
         return cls(
             NPLC=data.get("NPLC"),
-            ChannelName=data.get("ChannelName"),
-            ClassName=data.get("ClassName", [])
+            ChannelName=data.get("ChannelName")
         )
 
     @classmethod
@@ -43,21 +40,19 @@ class DIScanInfo:
         """
         values = data.split(',')
         NPLC = int(values[0])
-        ChannelName = int(values[1])
-        ClassName = values[2:]
-        return cls(NPLC=NPLC, ChannelName=ChannelName, ClassName=ClassName)
+        ChannelName = str(values[1])
+        return cls(NPLC=NPLC, ChannelName=ChannelName)
 
     def to_json(self):
         """Convert the DIScanInfo object to a JSON-compatible dictionary."""
         return {
             "NPLC": self.NPLC,
-            "ChannelName": self.ChannelName,
-            "ClassName": self.ClassName
+            "ChannelName": self.ChannelName
         }
 
     def to_str(self):
         """Convert the DIScanInfo object to a string representation."""
-        return f"{self.NPLC},{self.ChannelName},{','.join(self.ClassName)}"
+        return f"{self.NPLC},{self.ChannelName}"
 
     def __str__(self):
         """Override the built-in str() function."""

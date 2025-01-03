@@ -1,6 +1,6 @@
 # scan.py - This file contains the class for the Scan commands.
 
-from typing import List, Optional
+from typing import List
 from .customTypes import DI
 import json
 
@@ -46,7 +46,29 @@ class Scan:
             raw_data = json.loads(response)
             dTypes = raw_data.pop('$type').split(',')
             assert 'TAU.Module.Channels.DI.DIScanInfo' in dTypes, "Unexpected type"
+            dType = raw_data.pop('ClassName')
+            assert dType == 'DIScanInfo', f"Unexpected class name: {dType}"
             return DI.DIScanInfo(**raw_data)
+
+    def get_configuration(self) -> DI.DIScanInfo:
+        """Acquire the scanning configuration.
+
+        This command retrieves the current scanning configuration, including:
+            - NPLC (Number of Power Line Cycles)
+            - The name of the current scanning channel
+
+        Parameters:
+            None
+
+        Returns:
+            str: A comma-separated string containing the scanning configuration:
+                - NPLC value
+                - Channel name
+        """
+        response = self.parent.send_command("SCAN:STARt?")
+        if response:
+            assert response == DI.DIScanInfo.from_str(response).to_str(), "Unexpected response"
+            return DI.DIScanInfo.from_str(response)
 
     def stop(self):
         """Stop scanning.
@@ -59,18 +81,17 @@ class Scan:
         Returns:
             None
         """
+        raise NotImplementedError("This command is not yet implemented.")
         self.parent.send_command("SCAN:STOP")
 
-    def get_latest_data(self, time_format: Optional[str] = None) -> Optional[str]:
-        """Acquire the most recent scanning data.
-
-        This command retrieves the latest scanning data for all active channels. Optionally, the `time` parameter specifies
+    def get_latest_data(self, format=2) -> DI.DIReading:
+        """This command retrieves the latest scanning data for all active channels. Optionally, the `time` parameter specifies
         the desired timestamp format:
             - 1: "yyyy:MM:dd HH:mm:ss fff" format
-            - 2: Long format
+            - 2: Long format (ticks since 1/1/0001)
 
         Parameters:
-            time (str, optional): Timestamp format. Defaults to an empty string, indicating no specific time format.
+            format (int): The desired timestamp format (1: "yyyy:MM:dd HH:mm:ss fff", 2: long format)). Default is 2.
 
         Returns:
             str: A semicolon-separated string where each entry represents data for a channel. Each entry includes:
@@ -115,12 +136,14 @@ class Scan:
                     * Number of input signals
                     * Input signal data
         """
-        command = "SCAN:DATA:Last?"
-        if time_format:
-            command += f" {time_format}"
-        return self.parent.send_command(command)
+        if format not in [1, 2]:
+            raise ValueError("Invalid format. Must be 1 or 2.")
+        if format == 1:
+            raise NotImplementedError("This format is not implemented.")
+        response = self.parent.send_command(f"SCAN:DATA:Last? {format}")
+        return DI.DIReading.from_str(response)
 
-    def get_data_json(self, count: int) -> List[dict]:
+    def get_latest_data_json(self, count: int = 1) -> List[dict]:
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of data points.
@@ -138,5 +161,10 @@ class Scan:
         command = f"JSON:SCAN:DATA? {count}"
         response = self.parent.send_command(command)
         if response:
-            return json.loads(response)
+            dictionary = json.loads(response)
+            typeStr = dictionary.pop('$type')
+            assert typeStr == 'System.Collections.Generic.List`1[[TAU.Module.Channels.DI.DIReading, TAU.Module.Channels]], mscorlib'
+            values = dictionary['$values']  # For some reason, it's always a list of length 1
+            assert len(values) == 1, f"Unexpected number of values: {len(values)}"
+            return DI.DIReading.from_json(values[0])
         return []

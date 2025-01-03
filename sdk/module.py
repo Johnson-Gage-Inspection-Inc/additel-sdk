@@ -92,10 +92,13 @@ class Module:
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         response = self.parent.send_command(f"MODule:CONFig? {module_index}")
         if response:
-            return [DI.DIFunctionChannelConfig.from_str(config) for config in response.split(';') if config]
-            # return [DI.DIFunctionChannelConfig.from_json(config) for config in json.loads(response)['$values']]
-            return [type.DIFunctionChannelConfig.from_str(config) for config in response.split(';') if config]
-        return []
+            array = response.split(';')
+            if not array[-1]:
+                array.pop()
+            for string in array:
+                rebuilt_str = DI.DIFunctionChannelConfig.from_str(string).to_str()
+                assert string == rebuilt_str, f"Unexpected response: {string}\nExpected: {rebuilt_str}"
+            return [DI.DIFunctionChannelConfig.from_str(string) for string in array if string]
 
     # 1.2.5
     def getConfiguration_json(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:

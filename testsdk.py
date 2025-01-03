@@ -38,10 +38,37 @@ def testModuleConfig(testQueryChannelConfig, additel):
         for key in configuration.to_json().keys():
             assert key in configfromjson2[i].to_json().keys(), f"Key {key} not found in config from json2"
 
-def testScanGetConfig(a: Additel):
+def testScanGetConfigJson(a: Additel):
     scan_config = a.Scan.get_configuration_json()
     assert isinstance(scan_config, a.DI.DIScanInfo), "Scan config is not a DIScanInfo object"
     return scan_config
+
+def testScanGetConfig(a: Additel):
+    scan_config = a.Scan.get_configuration()
+    assert isinstance(scan_config, a.DI.DIScanInfo), "Scan config is not a DIScanInfo object"
+    return scan_config
+
+def testScan(testScanGetConfigJson, testScanGetConfig, additel):
+    scanTestJson = testScanGetConfigJson(additel)
+    scanTest = testScanGetConfig(additel)
+    scanTestJson.to_str() == scanTest.to_str()
+    scanTestJson.to_json() == scanTest.to_json()
+
+def test_get_latest_data_json(a: Additel, count: int = 1):
+    data = a.Scan.get_latest_data_json(count)
+    assert isinstance(data, a.DI.DIReading), "Data is not a DIScanData object"
+    return data
+
+def test_get_latest_data(a: Additel):
+    data = a.Scan.get_latest_data()
+    assert isinstance(data, a.DI.DIReading), "Data is not a DIScanData object"
+    return data
+
+def testScanLast(n_data=1):
+    data_json = test_get_latest_data_json(additel, n_data)
+    print(data_json)
+    data = test_get_latest_data(additel)
+    assert data_json == data, "Data from json and data from string are not equal"
 
 if __name__ == '__main__':
     # Create an instance of the Additel class
@@ -49,6 +76,6 @@ if __name__ == '__main__':
         identity = testIdentify(additel)
         moduleInfo = testModuleInfo(additel)
         testModuleConfig(testQueryChannelConfig, additel)
-        scanTest = testScanGetConfig(additel)
-
+        testScan(testScanGetConfigJson, testScanGetConfig, additel)
+        testScanLast()
         pass
