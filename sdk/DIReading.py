@@ -174,6 +174,9 @@ class DIReading:
         assert input == newObject.to_str(), f"Expected {input}, got {newObject.to_str()}"
         return newObject
 
+
+
+
     @staticmethod
     def ticksToDatetime(ticks: int) -> datetime:
         return datetime(1, 1, 1) + timedelta(seconds=int(ticks) / 10_000_000)
