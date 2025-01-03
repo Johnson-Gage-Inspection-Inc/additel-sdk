@@ -3,6 +3,7 @@
 from typing import List
 from .customTypes import DI
 import json
+from .coerce import coerce
 
 class Scan:
     def __init__(self, parent):
@@ -143,7 +144,7 @@ class Scan:
         response = self.parent.send_command(f"SCAN:DATA:Last? {format}")
         return DI.DIReading.from_str(response)
 
-    def get_latest_data_json(self, count: int = 1) -> List[dict]:
+    def get_scan_data_json(self, count: int = 1) -> List[dict]:
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of data points.
@@ -158,13 +159,7 @@ class Scan:
                 - Filtered data
                 - Additional parameters depending on the measurement type
         """
-        command = f"JSON:SCAN:DATA? {count}"
-        response = self.parent.send_command(command)
-        if response:
-            dictionary = json.loads(response)
-            typeStr = dictionary.pop('$type')
-            assert typeStr == 'System.Collections.Generic.List`1[[TAU.Module.Channels.DI.DIReading, TAU.Module.Channels]], mscorlib'
-            values = dictionary['$values']  # For some reason, it's always a list of length 1
-            assert len(values) == 1, f"Unexpected number of values: {len(values)}"
-            return DI.DIReading.from_json(values[0])
+        assert count > 0, "Count must be greater than 0."
+        if response := self.parent.send_command(f"JSON:SCAN:DATA? {count}"):
+            return coerce(response)
         return []

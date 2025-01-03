@@ -1,14 +1,15 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 import re
+import logging
 
-def coerce(adt: dict, map: dict = None):
+def coerce(adt: Union[dict, str], map: dict = None):
     """
     Dynamically coerces a dictionary-based object to its appropriate type
     using a provided type mapping.
 
     Args:
-        adt (dict): The dictionary containing the Additel-formatted data to coerce.
+        adt (dict or str): The dictionary containing the Additel-formatted data to coerce.
         map (dict): A mapping of type strings to Python types/classes.
         date_format (str): Optional format string for parsing datetime objects.
 
@@ -18,37 +19,60 @@ def coerce(adt: dict, map: dict = None):
     Raises:
         TypeError: If `$type` is missing or not recognized in the provided map.
     """
+    adt = json(adt)  # Ensure it's a dictionary
+
     if not map:
         map = load_mapping()
-    if not isinstance(adt, dict):
-        return adt
-    typeStr = adt.pop('$type', None)
-    if typeStr is None:
-        return adt
-    listIndicator = r'System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)'
-    if match := re.match(listIndicator, typeStr):
-        type = List[map[match.group(1)]]
-        adt = adt['$values']
-        return [coerce(v, map) if isinstance(v, dict) else v for v in adt]
-    else:
-        typeStr, _ = typeStr.split(',')
-        type = map[typeStr]
 
-    if typeStr not in map:
-        raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
+    if typeStr := adt.pop('$type', None):
+        listIndicator = r'System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)'
+        if match := re.match(listIndicator, typeStr):
+            typ = List[map[match.group(1)]]
+            adt = adt['$values']
+            return [coerce(v, map) if isinstance(v, dict) else v for v in adt]
+        else:
+            typeStr, _ = typeStr.split(',')
+            typ = map[typeStr]
 
-    # Handle date formatting
-    if type == datetime:
-        return datetime.strptime(adt['TickTime'], '%Y-%m-%d %H:%M:%S %f')
+        if typeStr not in map:
+            raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
 
-    # Recursively coerce nested dictionaries:
-    for key, value in adt.items():
-        if isinstance(value, dict):
-            adt[key] = coerce(value, map)
-        elif isinstance(value, list):
-            adt[key] = [coerce(v, map) for v in value]
+        # Handle date formatting
+        if typ == datetime:
+            return datetime.strptime(adt['TickTime'], '%Y-%m-%d %H:%M:%S %f')
 
-    return type(**adt)
+        # Recursively coerce nested dictionaries:
+        for key, value in adt.items():
+            if isinstance(value, dict):
+                adt[key] = coerce(value, map)
+            elif isinstance(value, list):
+                adt[key] = [coerce(v, map) for v in value]
+
+        return typ(**adt)    # Instantiate the type with the coerced dictionary
+
+    # If you made it this far, the dictionary was already coerced
+    # Prevent an infinite loop by returning the dictionary if no type is specified
+    return adt  # Return the already coerced dictionary
+
+def json(obj) -> dict:
+    """Coerce an object to a dictionary.
+
+    Args:
+        obj: A dictionary or JSON string.
+
+    Returns:
+        dict: The dictionary representation of the object.
+    """
+    if isinstance(obj, str):
+        from json import loads
+        try:
+            obj = loads(obj)
+        except ValueError:
+            logging.warning(f"Failed to parse JSON string: {obj}")
+            return obj
+    if isinstance(obj, dict):
+        return obj
+    raise NotImplementedError(f"Unsupported type for dictionary coercion: {type(obj)}")
 
 def load_mapping():
     from .customTypes import DI
@@ -65,3 +89,4 @@ def load_mapping():
     }
 
     return map
+
