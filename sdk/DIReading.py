@@ -2,6 +2,7 @@
 from typing import List
 from datetime import datetime, timedelta
 from .coerce import coerce
+import logging
 
 class DIReading:
     """
@@ -78,7 +79,7 @@ class DIReading:
             if not n:
                 n = self.TempDecimals
             return [f"{round(float(x), n):.{n}f}" for x in li]
-        DateTimeTicks = [int(self.datetimeToTicks(x) / 1000) * 1000 for x in self.DateTimeTicks]
+        DateTimeTicks = [self.datetimeToTicks(x) for x in self.DateTimeTicks]
         Values = rnd(self.Values)
         ValuesFiltered = rnd(self.ValuesFiltered)
         TempValues = rnd(self.TempValues, 4)
@@ -95,30 +96,65 @@ class DIReading:
         return self.to_str()
 
     @classmethod
-    def from_json(self, dict):
+    def from_json(self, dict: dict):
         return DIReading(**dict)
 
     def keys(self):
         return self.__dict__.keys()
 
+    # DateTimeTicks = [self.ticksToDatetime(int(first[3]))]
+    # Values = [float(first[4])]
+    # ValuesFiltered = [float(first[5])]
+    # TempValues=[float(first[8])]
     @classmethod
     def from_str(self, input: str):
-        dictionaries = []
-        for string in input[1:-1].split(';')[0:-1]:
-            # if string starts and ends with double quotes, remove them
-            array = string.split(',')
-            keys = ['ChannelName', 'Unit', '?', 'DateTimeTicks', 'Values', 'ValuesFiltered', 'TempUnit', '?', 'TempValues']
-            dictionary = dict(zip(keys, array))
-            dictionary['TempDecimals'] = len(str(array[4]).split('.')[1])
-            dictionaries.append(dictionary)
-        assert all(dictionaries[i]['ChannelName'] == dictionaries[i + 1]['ChannelName'] for i in range(len(dictionaries) - 1)), "Channel names do not match"
-        ChannelName = dictionaries[0]['ChannelName']
-        assert all(dictionaries[i]['Unit'] == dictionaries[i + 1]['Unit'] for i in range(len(dictionaries) - 1)), f"Units do not match for channel {ChannelName}: {[dictionaries[i]['Unit'] for i in range(len(dictionaries))]}"
-        Unit = dictionaries[0]['Unit']
-        assert all(dictionaries[i]['TempUnit'] == dictionaries[i + 1]['TempUnit'] for i in range(len(dictionaries) - 1)), f"Temperature units do not match for channel {ChannelName}"
-        TempUnit = dictionaries[0]['TempUnit']
-        assert all(dictionaries[i]['TempDecimals'] == dictionaries[i + 1]['TempDecimals'] for i in range(len(dictionaries) - 1)), f"Temperature decimals do not match for channel {ChannelName}"
-        TempDecimals = dictionaries[0]['TempDecimals']
+        strings = input[1:-1].split(';')[0:-1]
+        first = strings[0].split(',')
+
+        # Static variables:
+        ChannelName = first[0]
+        Unit = first[1]
+        # ?=first[2],  # FIXME: Figure out what this is
+        TempUnit = first[6]
+        # ?=first[7],  # FIXME: Figure out what this is
+        TempDecimals=len(str(first[4]).split('.')[1])
+
+        # if there is only one string... (This part is actually redundant, but it's here for clarity)
+        if len(strings) == 1:
+            return DIReading(ChannelName=ChannelName,
+                             Unit=Unit,
+                             # ?=first[2],  # FIXME: Figure out what this is
+                             DateTimeTicks=[self.ticksToDatetime(int(first[3]))],
+                             Values=[float(first[4])],
+                             ValuesFiltered=[float(first[5])],
+                             TempUnit=TempUnit,
+                             # ?=first[7],  # FIXME: Figure out what this is
+                             TempValues=[float(first[8])],
+                             TempDecimals=TempDecimals
+                             )
+        
+        # otherwise, if there are multiple strings...
+        logging.debug(f"{len(strings)} strings were produced by DIReading.from_str")
+
+        def packDicts(strings):
+            dictionaries = []
+            for string in strings:
+                array = string.split(',')
+                keys = ['ChannelName', 'Unit', '?', 'DateTimeTicks', 'Values', 'ValuesFiltered', 'TempUnit', '?', 'TempValues']  # FIXME: Figure out what the other keys are
+                dictionary = dict(zip(keys, array))
+                dictionary['TempDecimals'] = len(str(array[4]).split('.')[1])
+                dictionaries.append(dictionary)
+            return dictionaries
+        def validate(d):
+            for i in range(len(d) - 1):
+                assert d[i]['ChannelName'] == d[i + 1]['ChannelName'],  f"Channel names do not match: {d[i]['ChannelName']} != {d[i + 1]['ChannelName']}"
+                assert d[i]['Unit'] == d[i + 1]['Unit'],                f"Units do not match: {d[i]['Unit']} != {d[i + 1]['Unit']}"
+                assert d[i]['TempUnit'] == d[i + 1]['TempUnit'],        f"Temperature units do not match: {d[i]['TempUnit']} != {d[i + 1]['TempUnit']}"
+                assert d[i]['TempDecimals'] == d[i + 1]['TempDecimals'],f"Temperature decimals do not match: {d[i]['TempDecimals']} != {d[i + 1]['TempDecimals']}"
+
+        dictionaries = packDicts(strings)
+        validate(dictionaries)
+
         DateTimeTicks = [self.ticksToDatetime(d['DateTimeTicks']) for d in dictionaries]
         Values = [float(d['Values']) for d in dictionaries]
         ValuesFiltered = [float(d['ValuesFiltered']) for d in dictionaries]
@@ -138,10 +174,13 @@ class DIReading:
         assert input == newObject.to_str(), f"Expected {string}, got {newObject.to_str()}"
         return newObject
 
+
+
+
     @staticmethod
-    def ticksToDatetime(ticks):
+    def ticksToDatetime(ticks: int) -> datetime:
         return datetime(1, 1, 1) + timedelta(seconds=int(ticks) / 10_000_000)
 
     @staticmethod
-    def datetimeToTicks(dt):
-        return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
+    def datetimeToTicks(dt: datetime) -> int:
+        return int((dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000) * 1_000
