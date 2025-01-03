@@ -61,7 +61,7 @@ class Module:
 
         This command assigns a custom label to a specified module.
 
-        Parameters:
+        Args:
             index (int): The identifier of the junction box. Values:
                 - 0: Front panel
                 - 1: Embedded junction box
@@ -127,7 +127,7 @@ class Module:
 
         This command configures the channel settings for a specified module using JSON.
 
-        Parameters:
+        Args:
             module_index (int): The identifier of the module to configure. Values:
                 - 0: Front panel
                 - 1: Embedded junction box

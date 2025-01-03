@@ -13,7 +13,7 @@ class Pattern:
             Command:
                 PATTern:MAIN:PATTerns Dual|SCMM|SConn[,<”otherParams”>]
 
-            Parameters:
+            Args:
                 function (str): The function to switch to.
                 otherParams (str): Other parameters.
 
@@ -29,7 +29,7 @@ class Pattern:
             Command:
                 PATTern:MAIN:MATCH <paramIndex>[,<” matchStr” >]
 
-            Parameters:
+            Args:
                 paramIndex (int): The parameter index corresponding to:
                     1 = ChannelInfo1
                     2 = ChannelInfo2

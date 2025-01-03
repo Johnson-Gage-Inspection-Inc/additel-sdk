@@ -86,7 +86,7 @@ class Additel:
     def parse_json(self, response: str) -> dict:
         """Parse a JSON response from the device.
 
-        Parameters:
+        Args:
             response (str): The JSON string received from the device.
 
         Returns:
@@ -117,7 +117,7 @@ class Additel:
         - Status byte register
         - Error queue
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -133,7 +133,7 @@ class Additel:
         - Product sequence number
         - Software version number
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -147,7 +147,7 @@ class Additel:
 
         This command resets the device's main software, reinitializing its state.
 
-        Parameters:
+        Args:
             None
 
         Returns:

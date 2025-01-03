@@ -13,7 +13,7 @@ class Display:
         Command:
             DISPaly:BRIGHTness <type>,<level>
 
-        Parameters:
+        Args:
             type (float): The type of display (Percentage)
             level (int): The value of brightness
 
@@ -29,7 +29,7 @@ class Display:
         Command:
             DISPaly:BRIGHTness? <type>
 
-        Parameters:
+        Args:
             type (float): The type of display (Percentage)
 
         Returns:
@@ -61,7 +61,7 @@ class Display:
         Command:
             DISPlay:MESSagebox < "Message ">
 
-        Parameters:
+        Args:
             message (_type_): _description_
 
         Returns:
@@ -118,7 +118,7 @@ class Display:
         Command:
             DISPaly:THEMe <theme>
 
-        Parameters:
+        Args:
             theme (str): A supported theme name.
 
         Returns:
@@ -137,7 +137,7 @@ class Diagnostic:
         Command:
             DIAGnostic:LANGuage <lcid>[,<reboot>]
 
-        Parameters:
+        Args:
             lcid (str): The language of the display
             reboot (bool): Set to True to reboot the display
 

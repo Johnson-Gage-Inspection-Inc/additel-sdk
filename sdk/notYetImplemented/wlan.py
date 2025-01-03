@@ -13,7 +13,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN[:STATe] <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable WiFi (ON) or False to disable it (OFF).
 
         Returns:
@@ -30,7 +30,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN[:STATe]?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -55,7 +55,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:ADDRess <ip_address>
 
-        Parameters:
+        Args:
             ip_address (str): The IP address to set.
 
         Returns:
@@ -73,7 +73,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:ADDRess?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -91,7 +91,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MASK <subnet_mask>
 
-        Parameters:
+        Args:
             subnet_mask (str): The subnet mask to set.
 
         Returns:
@@ -109,7 +109,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MASK?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -127,7 +127,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:GATEway <gateway>
 
-        Parameters:
+        Args:
             IPaddress (str): The gateway to set.
 
         Returns:
@@ -145,7 +145,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:GATEway?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -163,7 +163,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MAC?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -181,7 +181,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DHCP <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable DHCP (ON) or False to disable it (OFF).
 
         Returns:
@@ -198,7 +198,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DHCP?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -226,7 +226,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:SSID <ssid>
 
-        Parameters:
+        Args:
             ssid (str): The SSID to set.
 
         Returns:
@@ -244,7 +244,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:CONNect <ssid>,<password>
 
-        Parameters:
+        Args:
             ssid (str): hot spot name, the character string with quotation
             encryptionMode, WEP_OFF, WEP_ON, WEP_AUTO, WPA_PSK, WPA_TKIP, WPA2_PSK, WPA2_AES,CCKM_TKIP, WEP_CKIP, WEP_AUTO_CKIP, CCKM_AES, WPA_PSK_AES, WPA_AES, WPA2_PSK_TKIP, WPA2_TKIP, WAPI_PSK, WAPI_CERT
             password (str): The password for the WiFi network, the character string with quotation
@@ -263,7 +263,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:CONNect?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -281,7 +281,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DISConnect
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -296,7 +296,7 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DBM?
 
-        Parameters:
+        Args:
             None
 
         Returns:

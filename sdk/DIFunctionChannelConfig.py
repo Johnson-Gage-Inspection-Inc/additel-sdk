@@ -118,7 +118,7 @@ class DIFunctionChannelConfig:
         """Create a DIFunctionChannelConfig object from a JSON object.
 
 
-        Parameters:
+        Args:
             data (dict): A dictionary containing the channel configuration.
 
 

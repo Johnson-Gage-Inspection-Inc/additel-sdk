@@ -13,7 +13,7 @@ class Program:
         Command:
             PROGram:RUN <progname>[,<parameters>]
 
-        Parameters:
+        Args:
             progname (str): The name of the program to run.
             parameters (str): The parameters of the program.
         """
@@ -41,7 +41,7 @@ class Program:
         Command:
             PROGram:STATe [<progname>]
 
-        Parameters:
+        Args:
             progname (str): The name of the program to query.
 
         Returns:

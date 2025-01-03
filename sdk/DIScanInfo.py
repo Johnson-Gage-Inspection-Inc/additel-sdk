@@ -17,7 +17,7 @@ class DIScanInfo:
     def from_json(cls, data: dict):
         """Create a DIScanInfo object from a JSON object.
 
-        Parameters:
+        Args:
             data (dict): A dictionary containing the scan information.
 
         Returns:
@@ -32,7 +32,7 @@ class DIScanInfo:
     def from_str(cls, data: str):
         """Parse the scanning information from a string.
 
-        Parameters:
+        Args:
             data (str): A comma-separated string containing the scan information.
 
         Returns:

@@ -48,7 +48,7 @@ class DIModuleInfo:
     def from_json(cls, data: dict):
         """Create a DIModuleInfo object from a JSON object.
 
-        Parameters:
+        Args:
             data (dict): A dictionary containing the module information.
 
         Returns:

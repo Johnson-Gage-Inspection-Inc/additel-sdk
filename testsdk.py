@@ -26,7 +26,7 @@ def testQueryChannelConfig_json(a: Additel, module_index=0):
         assert isinstance(c, a.DI.DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
-def testModuleConfig(testQueryChannelConfig, additel):
+def testModuleConfig(additel):
     config1 = testQueryChannelConfig(additel)
     configfromjson1 = testQueryChannelConfig(additel)
     for i, configuration in enumerate(config1):
@@ -48,7 +48,7 @@ def testScanGetConfig(a: Additel):
     assert isinstance(scan_config, a.DI.DIScanInfo), "Scan config must be a DIScanInfo object"
     return scan_config
 
-def testScan(testScanGetConfigJson, testScanGetConfig, additel):
+def testScan(additel):
     scanTestJson = testScanGetConfigJson(additel)
     scanTest = testScanGetConfig(additel)
     assert scanTestJson.to_str() == scanTest.to_str(), "Scan config from json and scan config from string are not equal"
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     with Additel('192.168.1.223') as additel:
         identity = testIdentify(additel)
         moduleInfo = testModuleInfo(additel)
-        testModuleConfig(testQueryChannelConfig, additel)
-        testScan(testScanGetConfigJson, testScanGetConfig, additel)
+        testModuleConfig(additel)
+        testScan(additel)
         testScanLast()
         pass

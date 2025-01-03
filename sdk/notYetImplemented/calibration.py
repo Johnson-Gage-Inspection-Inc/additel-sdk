@@ -19,7 +19,7 @@ class Calibration:
             This method initiates a calibration scan for electrical parameters
             based on the specified mode, function, and range.
 
-            Parameters:
+            Args:
                 mode (int): The mode of calibration. Only `0` (active calibration) is supported.
                 function (int): The function type for calibration:
                     - 0: Voltage
@@ -53,7 +53,7 @@ class Calibration:
             Command:
                 CALibration:ElECtricity:SCAN?
 
-            Parameters:
+            Args:
                 None
 
             Returns:
@@ -90,7 +90,7 @@ class Calibration:
                 CALibration:ElECtricity:DATA <Manufacturer|User>,<password>,<channel>,<function>,<range>,
                                             <unitID>,<count>,<points>,<values>,<year>,<month>,<day>
 
-            Parameters:
+            Args:
                 manufacturer_or_user (str): Specifies factory ("Manufactor") or user calibration ("User").
                 password (str): Password for authentication.
                 channel (int): Channel number for calibration:
@@ -146,7 +146,7 @@ class Calibration:
             Command:
                 CALibration:ElECtricity:DATA? <Manufacturer|User>,<password>,<channel>,<function>,<range>
 
-            Parameters:
+            Args:
                 manufacturer_or_user (str): Specifies whether to retrieve factory ("Manufactor") or user calibration ("User").
                 password (str): Password for authentication.
                 channel (int): Channel number for calibration:
@@ -203,7 +203,7 @@ class Calibration:
             Command:
                 CALibration:ELECtricity:CJCenable <enable>
 
-            Parameters:
+            Args:
                 enable (bool): Set to True to enable cold junction calibration or False to disable it.
 
             Returns:
@@ -220,7 +220,7 @@ class Calibration:
             Command:
                 CALibration:ELECtricity:DATA:CJC? <Manufacturer|User>,<password>,<location>,<channel>
 
-            Parameters:
+            Args:
                 manufacturer_or_user (str): Specifies factory ("Manufactor") or user calibration ("User").
                 password (str): Authentication password.
                 location (int): Calibration location:
@@ -266,7 +266,7 @@ class Calibration:
             Command:
                 CALibration:ELECtricity:DATA:CJC <Manufacturer|User>,<password>,<location>,<channel>,<offset>,<year>,<month>,<day>
 
-            Parameters:
+            Args:
                 manufacturer_or_user (str): Specifies factory ("Manufactor") or user calibration ("User").
                 password (str): Authentication password.
                 location (int): Calibration location:

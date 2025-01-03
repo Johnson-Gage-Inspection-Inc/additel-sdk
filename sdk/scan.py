@@ -14,7 +14,7 @@ class Scan:
 
         This command configures the scanning parameters and starts the scan.
 
-        Parameters:
+        Args:
             params (str): A comma-separated string containing:
                 - NPLC (Number of Power Line Cycles)
                 - Sample work frequency cycle (100, 1000, or 4000)
@@ -35,7 +35,7 @@ class Scan:
             - NPLC (Number of Power Line Cycles)
             - The name of the current scanning channel
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -59,7 +59,7 @@ class Scan:
             - NPLC (Number of Power Line Cycles)
             - The name of the current scanning channel
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -77,7 +77,7 @@ class Scan:
 
         This command stops any active scanning process on the device.
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -92,7 +92,7 @@ class Scan:
             - 1: "yyyy:MM:dd HH:mm:ss fff" format
             - 2: Long format (ticks since 1/1/0001)
 
-        Parameters:
+        Args:
             format (int): The desired timestamp format (1: "yyyy:MM:dd HH:mm:ss fff", 2: long format)). Default is 2.
 
         Returns:
@@ -150,7 +150,7 @@ class Scan:
 
         This command retrieves scanning data in JSON format for the specified number of data points.
 
-        Parameters:
+        Args:
             count (int): The number of scanning data points to retrieve.
 
         Returns:

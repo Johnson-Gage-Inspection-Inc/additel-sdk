@@ -12,7 +12,7 @@ class Bluetooth:
         Command:
             SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe] <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable Bluetooth (ON) or False to disable it (OFF).
 
         Returns:
@@ -29,7 +29,7 @@ class Bluetooth:
         Command:
             SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe]?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -48,7 +48,7 @@ class Bluetooth:
         Command:
             SYSTem:COMMunicate:BLUEtooth:NAMe?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -66,7 +66,7 @@ class Bluetooth:
         Command:
             SYSTem:COMMunicate:BLUEtooth:NAMe <UnquoStr>
 
-        Parameters:
+        Args:
             name (str): The name to set.
 
         Returns:

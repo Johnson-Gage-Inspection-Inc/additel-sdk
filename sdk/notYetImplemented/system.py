@@ -20,7 +20,7 @@ class System:
         Command:
             SYSTem:VERSion? [<module>]
 
-        Parameters:
+        Args:
             module (str, optional): The module for which to retrieve version information.
                 Valid options include "APPLication", "ElECtricity:FIRMware", "ElECtricity:HARDware",
                 "OS:FIRMware", "OS:HARDware", "JUNCtion:HARDware", "JUNCtion:FIRMware".
@@ -71,7 +71,7 @@ class System:
         Command:
             SYSTem:DATE <year>,<month>,<day>
 
-        Parameters:
+        Args:
             year (int): Year to set.
             month (int): Month to set (1-12).
             day (int): Day to set (1-31).
@@ -90,7 +90,7 @@ class System:
         Command:
             SYSTem:DATE?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -108,7 +108,7 @@ class System:
         Command:
             SYSTem:TIME <hour>,<minute>,<second>
 
-        Parameters:
+        Args:
             hour (int): Hour to set (0-23).
             minute (int): Minute to set (0-59).
             second (int): Second to set (0-59).
@@ -127,7 +127,7 @@ class System:
         Command:
             SYSTem:KLOCk <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             lock (bool): Set to True to lock the system (ON) or False to unlock it (OFF).
 
         Returns:
@@ -144,7 +144,7 @@ class System:
         Command:
             SYSTem:KLOCk?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -163,7 +163,7 @@ class System:
         Command:
             SYSTem:BEEPer:ALARm <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable the warning tone (ON) or False to disable it (OFF).
 
         Returns:
@@ -180,7 +180,7 @@ class System:
         Command:
             SYSTem:BEEPer:TOUCh <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable the keypad tone (ON) or False to disable it (OFF).
 
         Returns:

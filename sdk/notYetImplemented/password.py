@@ -12,7 +12,7 @@ class Password():
         Command:
             SYSTem:PASSword <password>
 
-        Parameters:
+        Args:
             old_password (str): The old password.
             new_password (str): The new password.
             new_password_confirm (str): The new password confirmation.
@@ -31,7 +31,7 @@ class Password():
         Command:
             SYSTem:PASSword:ENABle:SENSor?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -49,7 +49,7 @@ class Password():
         Command:
             SYSTem:PASSword:ENABle:SENSor <enable>
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable the protection of sensor bank password.
 
         Returns:

@@ -12,7 +12,7 @@ class Channel:
 
         This command retrieves the configuration for a specified channel.
 
-        Parameters:
+        Args:
             channel_name (str): The name of the channel to query.
 
         Returns:
@@ -46,7 +46,7 @@ class Channel:
 
         This command retrieves configuration data for one or more channels in JSON format.
 
-        Parameters:
+        Args:
             channel_names (DI.DIFunctionChannelConfig): A list of channel configurations. Each configuration includes:
                 channel_name (str): The name of the channel to configure.
                 enabled (int): Enable or disable the channel (1 for enabled, 0 for disabled).
@@ -94,7 +94,7 @@ class Channel:
 
         This command sets or cancels zero clearing for a specific channel.
 
-        Parameters:
+        Args:
             enable (int): 1 to enable zero clearing, 0 to cancel.
 
         Returns:

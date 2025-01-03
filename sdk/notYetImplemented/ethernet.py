@@ -13,7 +13,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:DHCP?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -32,7 +32,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:DHCP <Boolean>|ON|OFF
 
-        Parameters:
+        Args:
             enable (bool): Set to True to enable DHCP (ON) or False to disable it (OFF).
 
         Returns:
@@ -49,7 +49,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -67,7 +67,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess <ip_address>
 
-        Parameters:
+        Args:
             ip_address (str): The IP address to set.
 
         Returns:
@@ -85,7 +85,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MASK?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -103,7 +103,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MASK <subnet_mask>
 
-        Parameters:
+        Args:
             subnet_mask (str): The subnet mask to set.
 
         Returns:
@@ -121,7 +121,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:GATEway?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -139,7 +139,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:GATEway <gateway>
 
-        Parameters:
+        Args:
             gateway (str): The gateway to set.
 
         Returns:
@@ -157,7 +157,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MAC?
 
-        Parameters:
+        Args:
             None
 
         Returns:
@@ -175,7 +175,7 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:INITialize
 
-        Parameters:
+        Args:
             enable (bool): Set to True to initialize the Ethernet registry.
 
         Returns:
@@ -226,7 +226,7 @@ class Ethernet:
         Command:
             SYSTem:REGistry:DATA? <QuoteStr>,<QuoteStr>
 
-        Parameters:
+        Args:
             path (str): The path of the key.
             name (str): The name of the key.
 
@@ -245,7 +245,7 @@ class Ethernet:
         Command:
             SYSTem:REGistry:DELete<QuoteStr>,<QuoteStr>
 
-        Parameters:
+        Args:
             path (str): The path of the key.
             name (str): The name of the key.
 
@@ -262,7 +262,7 @@ class Ethernet:
         Command:
             SYSTem:REGistry:SAVE HKEY_LOCAL_MACHINE|HKEY_CLASSES_ROOT|HKEY_CURRENT_USER|HKEY_USERS| ALL
 
-        Parameters:
+        Args:
             keyName (str): The key name to save.
 
         Returns:
