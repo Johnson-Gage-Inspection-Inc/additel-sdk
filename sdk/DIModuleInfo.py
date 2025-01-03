@@ -66,3 +66,23 @@ class DIModuleInfo:
                 Label=data['Label']
             )
         raise NotImplementedError(f"Invalid data type for DIModuleInfo.from_json: {type(data)}")
+
+    def to_json(self) -> dict:
+        """Return a JSON representation of the module information.
+
+        Returns:
+            dict: A dictionary containing the module information.
+        """
+        return {
+            'ClassName': 'DIModuleInfo',
+            'Index': self.Index,
+            'Category': self.Category,
+            'SN': self.SN,
+            'HwVersion': self.HwVersion,
+            'SwVersion': self.SwVersion,
+            'TotalChannelCount': self.TotalChannelCount,
+            'Label': self.Label
+        }
+
+    def __repr__(self):
+        return str(self.to_json())
