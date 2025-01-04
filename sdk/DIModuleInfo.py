@@ -36,16 +36,16 @@ class DIModuleInfo:
                  SwVersion: str,
                  TotalChannelCount: int,
                  Label: Optional[str] = None):
-        self.Index = Index  # Identifier of the module
-        self.Category = Category  # Box type (0: front panel, 1: temperature box, 2: process box)
-        self.SN = SN  # Serial number of the module
-        self.HwVersion = HwVersion  # Hardware version
-        self.SwVersion = SwVersion  # Software version
-        self.TotalChannelCount = TotalChannelCount  # Total number of channels
-        self.Label = Label  # Optional label for the module
+        self.Index = int(Index)  # Identifier of the module
+        self.Category = int(Category)  # Box type (0: front panel, 1: temperature box, 2: process box)
+        self.SN = str(SN)  # Serial number of the module
+        self.HwVersion = str(HwVersion)  # Hardware version
+        self.SwVersion = str(SwVersion)  # Software version
+        self.TotalChannelCount = int(TotalChannelCount)  # Total number of channels
+        self.Label = str(Label)  # Optional label for the module
 
     @classmethod
-    def from_json(cls, data: dict):
+    def from_json(self, data: dict):
         """Create a DIModuleInfo object from a JSON object.
 
         Args:
@@ -56,7 +56,7 @@ class DIModuleInfo:
         """
         if isinstance(data, dict):
             assert data['ClassName'] == 'DIModuleInfo', f"Class name mismatch: {data['ClassName']}"
-            return cls(
+            return self(
                 Index=data['Index'],
                 Category=data['Category'],
                 SN=data['SN'],
@@ -86,3 +86,33 @@ class DIModuleInfo:
 
     def __repr__(self):
         return str(self.to_json())
+
+    @classmethod
+    def from_str(self, string):
+        # FIXME:  These mappings are not confirmed.
+        return [
+            self(
+                Index=mod.split(',')[0],
+                Category=mod.split(',')[2],
+                SN=mod.split(',')[1],
+                HwVersion=mod.split(',')[3],
+                SwVersion=mod.split(',')[4],
+                TotalChannelCount=mod.split(',')[5],
+                Label=mod.split(',')[6]
+            )
+            for mod in string.split(';')
+            if mod
+        ]
+
+    def to_str(self):
+        return '";'.join([
+            f"{self.Index},{self.Category},{self.SN},{self.HwVersion},{self.SwVersion},{self.TotalChannelCount},{self.Label}"
+        ]) + ';"'
+
+    @classmethod
+    def __str__(self):
+        return self.to_str()
+
+    @classmethod
+    def keys(self):
+        return self.to_json().keys()
