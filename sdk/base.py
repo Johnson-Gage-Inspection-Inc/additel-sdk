@@ -1,93 +1,45 @@
-# base.py - Base class for Additel SDK.
-
-import socket
-from typing import Optional
-import json
-from .module import Module
-from .scan import Scan
-from .channel import Channel
-# from .calibration import Calibration
-# from .system import System
-# from .program import Program
-# from .display import Display, Diagnostic
-# from .pattern import Pattern
-# from .unit import Unit
-from .customTypes import DI
 import logging
+from connection import Connection
 
 class Additel:
-    def __init__(self, ip: str, port: int = 8000, timeout: int = 1):
-        self.ip = ip
-        self.port = port
-        self.timeout = timeout
-        self.connection = self.connect()
+    """Base class for interacting with an Additel device using different connection types."""
 
-        # Initialize the submodules
-        self.Module = Module(self)
-        self.Scan = Scan(self)
-        self.Channel = Channel(self)
-        # self.Calibration = Calibration(self)
-        # self.System = System(self)
-        # self.Program = Program(self)
-        # self.Display = Display(self)
-        # self.Diagnostic = Diagnostic(self)
-        # self.Pattern = Pattern(self)
-        # self.Unit = Unit(self)
-        self.DI = DI(self)
-
-        self.date_format = '%Y-%m-%d %H:%M:%S %f'
+    def __init__(self, connection_type='wlan', **kwargs):
+        self.connection_type = connection_type
+        self.connection = Connection(self, connection_type, **kwargs)
 
     def __enter__(self):
-        # Enable use of the class in a context manager to ensure proper resource handling
-        self.connect()  # FIXME: Enable the use of USB, Ethernet, and other connection types
+        self.connection.connect()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        # Ensure the connection is closed when exiting the context
-        self.disconnect()
+        self.connection.disconnect()
 
-    def connect(self):
-        """Establish a connection to the Additel device."""
+    def send_command(self, command):
+        """Send a command to the connected device and return the response."""
         try:
-            # Create a socket connection to the device
-            self.connection = socket.create_connection((self.ip, self.port), timeout=self.timeout)
+            if hasattr(self.connection.connection, 'send_command'):
+                self.connection.connection.send_command(command)
+            else:
+                raise NotImplementedError("The current connection type does not support sending commands.")
         except Exception as e:
-            print(f"Error connecting to Additel device: {e}")
+            logging.error(f"Error sending command '{command}': {e}")
+            raise
 
-    def disconnect(self):
-        """Close the connection to the Additel device."""
-        if self.connection:
-            # Safely close the socket connection
-            self.connection.close()
-            self.connection = None
-
-    def cmd(self, command: str) -> Optional[str]:
-        """Send a command to the Additel device and receive the response, with retry logic."""
+    def read_response(self):
+        """Read the response from the connected device."""
         try:
-            self.connection.sendall(f"{command}\n".encode())
-            return self.connection.recv(16384).decode().strip()
-        except socket.timeout:
-            logging.debug(f"Command timed out: {command}")
-            return None  # Return None if the command times out
+            if hasattr(self.connection.connection, 'read_response'):
+                return self.connection.connection.read_response()
+            else:
+                raise NotImplementedError("The current connection type does not support reading responses.")
+        except Exception as e:
+            logging.error(f"Error reading response: {e}")
+            raise
 
-    def parse_json(self, response: str) -> dict:
-        """Parse a JSON response from the device.
-
-        Args:
-            response (str): The JSON string received from the device.
-
-        Returns:
-            dict: The parsed JSON as a Python dictionary, or an empty dictionary if parsing fails.
-        """
-        try:
-            # Attempt to parse the JSON response
-            return json.loads(response)
-        except json.JSONDecodeError as e:
-            # Log an error if parsing fails
-            print(f"Error decoding JSON response: {e}")
-        return {}  # Return an empty dictionary for invalid or missing responses
-
-    # Wrapped commands:
+    def cmd(self, command):
+        self.send_command(command)
+        return self.read_response()
 
     ## Section 1 - Commands Instruction
 
@@ -110,10 +62,10 @@ class Additel:
         Returns:
             None
         """
-        self.cmd("*CLS")
+        self.send_command("*CLS")
 
     # 1.1.2
-    def identify(self) -> str:
+    def identify(self) -> str:  # Tested!
         """Query the device identification.
 
         This command queries the instrument's identification details. The returned data is divided into two parts:
@@ -140,4 +92,4 @@ class Additel:
         Returns:
             None
         """
-        self.cmd("*RST")
+        self.send_command("*RST")
