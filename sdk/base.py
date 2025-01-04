@@ -6,7 +6,7 @@ import time
 import json
 from .module import Module
 from .scan import Scan
-# from .channel import Channel
+from .channel import Channel
 # from .calibration import Calibration
 # from .system import System
 # from .program import Program
@@ -26,7 +26,7 @@ class Additel:
         # Initialize the submodules
         self.Module = Module(self)
         self.Scan = Scan(self)
-        # self.Channel = Channel(self)
+        self.Channel = Channel(self)
         # self.Calibration = Calibration(self)
         # self.System = System(self)
         # self.Program = Program(self)

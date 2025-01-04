@@ -29,21 +29,22 @@ def testQueryChannelConfig_json(a: Additel, module_index=0):
         assert isinstance(c, a.DI.DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
-def testModuleConfig(additel):
+def testModuleConfig(additel):  # Tested!
     config1 = testQueryChannelConfig(additel)
     configfromjson1 = testQueryChannelConfig_json(additel)
     compare_keys(config1, configfromjson1)
     config2 = testQueryChannelConfig(additel, 1)
+    return config2
     # configfromjson2 = testQueryChannelConfig_json(additel, 1)  # This doesn't work because the response gets cut off
     # compare_keys(config2, configfromjson2)
 
 def compare_keys(a, b):
     for i, x in enumerate(a):
-        for key in x.to_json().keys():
-            assert key in b[i].to_json().keys(), f"Key {key} not found"
+        for key in x.keys():
+            assert key in b[i].keys(), f"Key {key} not found"
     for i, x in enumerate(b):
-        for key in x.to_json().keys():
-            assert key in a[i].to_json().keys(), f"Key {key} not found"
+        for key in x.keys():
+            assert key in a[i].keys(), f"Key {key} not found"
 
 def testScanGetConfigJson(a: Additel):
     scan_config = a.Scan.get_configuration_json()
@@ -58,8 +59,8 @@ def testScanGetConfig(a: Additel):
 def testScan(additel):
     scanTestJson = testScanGetConfigJson(additel)
     scanTest = testScanGetConfig(additel)
-    assert scanTestJson.to_str() == scanTest.to_str(), "Scan config from json and scan config from string are not equal"
-    assert scanTestJson.to_json() == scanTest.to_json(), "Scan config from json and scan config from string are not equal"
+    assert str(scanTestJson) == str(scanTest), "Scan config from json and scan config from string are not equal"
+    assert scanTestJson == scanTest, "Scan config from json and scan config from string are not equal"
     pass
 
 def test_get_scan_data_json(a: Additel, count: int = 1):
@@ -79,6 +80,16 @@ def testScanLast(n_data=1):
     print([data])
     # assert data_json == [data], "Data from json and data from string are not equal"  # They kinda are, but not there's some differences in rounding and they're actually representing different data, I think
 
+def testGetChannelConfig(a: Additel):
+    config = a.Channel.get_configuration('REF1')
+    assert isinstance(config, a.DI.DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
+    return config
+
+def testGetChannelConfig_json(a: Additel):
+    config = a.Channel.get_configuration_json(['REF1', 'REF2'])
+    assert all(isinstance(x, a.DI.DIFunctionChannelConfig) for x in config), "Channel config must be a DIFunctionChannelConfig object"
+    return config
+
 if __name__ == '__main__':
     # Create an instance of the Additel class
     with Additel('192.168.1.223') as additel:
@@ -87,4 +98,7 @@ if __name__ == '__main__':
         testModuleConfig(additel)
         testScan(additel)
         testScanLast()
-        pass
+        channelConfig = testGetChannelConfig(additel)
+        channelConfigJson = testGetChannelConfig_json(additel)
+
+        print("All tests passed!")
