@@ -2,7 +2,6 @@
 
 import socket
 from typing import Optional
-import time
 import json
 from .module import Module
 from .scan import Scan
@@ -14,14 +13,14 @@ from .channel import Channel
 # from .pattern import Pattern
 # from .unit import Unit
 from .customTypes import DI
+import logging
 
 class Additel:
-    def __init__(self, ip: str, port: int = 8000, timeout: int = 10, retries: int = 1):
+    def __init__(self, ip: str, port: int = 8000, timeout: int = 1):
         self.ip = ip
         self.port = port
         self.timeout = timeout
-        self.retries = retries
-        self.connection = None
+        self.connection = self.connect()
 
         # Initialize the submodules
         self.Module = Module(self)
@@ -64,24 +63,12 @@ class Additel:
 
     def cmd(self, command: str) -> Optional[str]:
         """Send a command to the Additel device and receive the response, with retry logic."""
-        for attempt in range(self.retries):
-            try:
-                if not self.connection:
-                    # Re-establish the connection if it's not active
-                    self.connect()
-                # Send the command to the device, ensuring proper newline termination
-                self.connection.sendall(f"{command}\n".encode())
-                # Receive the response, with a buffer size sufficient for JSON data
-                return self.connection.recv(16384).decode().strip()
-            except socket.timeout:
-                # Handle command timeout and retry if necessary
-                print(f"Timeout on attempt {attempt + 1} for command '{command}'. Retrying...")
-                time.sleep(1)  # Introduce a delay before retrying
-            except Exception as e:
-                # Handle other exceptions and abort retries
-                print(f"Error sending command '{command}': {e}")
-                break
-        return None  # Return None if all retries fail
+        try:
+            self.connection.sendall(f"{command}\n".encode())
+            return self.connection.recv(16384).decode().strip()
+        except socket.timeout:
+            logging.debug(f"Command timed out: {command}")
+            return None  # Return None if the command times out
 
     def parse_json(self, response: str) -> dict:
         """Parse a JSON response from the device.
