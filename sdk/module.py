@@ -34,14 +34,12 @@ class Module:
         Returns:
             List[DIModuleInfo]: A list of parsed module information objects.
         """
-        response = self.parent.cmd("JSON:MODule:INFormation?")
-        if response:
+        if response := self.parent.cmd("JSON:MODule:INFormation?"):
             raw_data = json.loads(response)
             modules = raw_data.get('$values', [])
             for mod in modules:
-                del mod['$type']
-                assert list(mod) == ['Index', 'Category', 'SN', 'HwVersion', 'SwVersion', 'TotalChannelCount', 'Label', 'ClassName'], "Unexpected keys in module info"
-            return [DI.DIModuleInfo.from_json(mod) for mod in modules]
+                assert list(mod) == ['$type', 'Index', 'Category', 'SN', 'HwVersion', 'SwVersion', 'TotalChannelCount', 'Label', 'ClassName'], "Unexpected keys in module info"
+            return coerce(modules)
         raise ValueError("No module information received")
 
     def set_label(self, index: int, label: str):  # Not yet implemented
@@ -79,15 +77,14 @@ class Module:
         """
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
-        response = self.parent.cmd(f"MODule:CONFig? {module_index}")
-        if response:
+        if response := self.parent.cmd(f"MODule:CONFig? {module_index}"):
             array = response.split(';')
             if not array[-1]:
                 array.pop()
             for string in array:
-                rebuilt_str = DI.DIFunctionChannelConfig.from_str(string).to_str()
+                rebuilt_str = str(DI.DIFunctionChannelConfig.from_str(string))
                 assert string == rebuilt_str, f"Unexpected response: {string}\nExpected: {rebuilt_str}"
-            return [DI.DIFunctionChannelConfig.from_str(string) for string in array if string]
+            return DI.DIFunctionChannelConfig.from_str(response)
 
     # 1.2.5
     def getConfiguration_json(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:  # Tested!

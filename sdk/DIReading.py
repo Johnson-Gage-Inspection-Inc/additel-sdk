@@ -3,7 +3,7 @@ from typing import List
 from datetime import datetime, timedelta
 from typing import get_origin, get_args
 
-class DIReading:
+class DIReading(dict):
     """
     Represents a single channel's measurement data.
 
@@ -106,9 +106,6 @@ class DIReading:
                 if not isinstance(value, expectedType):
                     raise TypeError(f"Expected {expectedType}, got {type(value)} for key {key}")
 
-    def to_json(self):
-        return self.__dict__
-
     def to_str(self):
         def rnd(li: list, n: int = None) -> List[float]:
             if not n:
@@ -129,13 +126,6 @@ class DIReading:
 
     def __repr__(self):
         return self.to_str()
-
-    @classmethod
-    def from_json(self, dict):
-        return DIReading(**dict)
-
-    def keys(self):
-        return self.__dict__.keys()
 
     @classmethod
     def from_str(self, input: str):

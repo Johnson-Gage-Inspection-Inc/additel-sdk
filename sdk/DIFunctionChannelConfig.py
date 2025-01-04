@@ -1,4 +1,4 @@
-class DIFunctionChannelConfig:
+class DIFunctionChannelConfig(dict):
     """Data structure for channel configuration.
 
     Raises:
@@ -93,48 +93,21 @@ class DIFunctionChannelConfig:
         raise ValueError(f"ElectricalFunctionType must be one of {list(function_handlers.keys())}, got {func_type}.")
 
     def __init__(self, **kwargs):
-        expected_types = self.get_keys_and_types(**kwargs)
-
-        for key, expected_type in expected_types.items():
+        for key, expected_type in self.get_keys_and_types(**kwargs).items():
             value = kwargs.get(key, None)
+            self.validate(key, expected_type, value)
+            self[key] = value
 
-            # Validate the type:
-            if value is not None and not isinstance(value, expected_type):
-                raise TypeError(f"Key '{key}' expects {expected_type}, got {type(value)}.")
-
-            # Set the attribute:
-            setattr(self, key, value)
-
-    @classmethod
-    def len(self):
-        return len([
-            attr
-            for attr in dir(self)
-            if not callable(getattr(self, attr)) and not attr.startswith("__")
-        ])
-
-    @classmethod
-    def from_json(self, data: dict) -> "DIFunctionChannelConfig":
-        """Create a DIFunctionChannelConfig object from a JSON object.
-
-
-        Args:
-            data (dict): A dictionary containing the channel configuration.
-
-
-        Returns:
-            DIFunctionChannelConfig: An instance of DIFunctionChannelConfig populated with the JSON data.
-        """
-        keys_and_types = self.get_keys_and_types(ElectricalFunctionType=data["ElectricalFunctionType"])
-        keys = list(keys_and_types.keys())
-        assert all(key in data for key in keys), f"Missing keys: {keys}"
-        assert all(key in keys for key in data), f"Extra keys: {data.keys()}"
-        kwargs = {key: (keys_and_types[key](data[key])) for key in keys}
-        return self(**kwargs)
+    def validate(self, key, expected_type, value):
+        if value is not None and not isinstance(value, expected_type):
+            raise TypeError(f"Key '{key}' expects {expected_type}, got {type(value)}.")
 
     @classmethod
     def from_str(self, data: str):
         """Parse the channel configuration from a string."""
+        if ';' in data:
+            assert not data.split(';')[-1], "Trailing semicolon expected"
+            return [self.from_str(d) for d in data.split(';')[:-1]]
         if not data:
             return None
         values = data.split(',')
@@ -147,26 +120,7 @@ class DIFunctionChannelConfig:
         assert len(kwargs) == len(keys), f"Missing keys: {keys}"
         return self(**kwargs)
 
-    def to_json(self):
-        """Convert the DIFunctionChannelConfig object to a JSON-compatible dictionary."""
-        result = {}
-        for key in self.get_keys_and_types(ElectricalFunctionType=self.ElectricalFunctionType).keys():
-            result[key] = getattr(self, key, None)
-        return result
-
-    def to_str(self):
-        """Convert the DIFunctionChannelConfig object to a string representation."""
-        keys = self.get_keys_and_types(ElectricalFunctionType=self.ElectricalFunctionType).keys()
-        return ','.join('' if getattr(self, key) is None else str(getattr(self, key)) for key in keys)
-
     def __str__(self):
-        """Convert the DIFunctionChannelConfig object to a string."""
-        return self.to_str()
-
-    def __repr__(self):
-        """Represent the DIFunctionChannelConfig object as a string."""
-        return self.to_json().__repr__()
-
-    def __dict__(self):
-        """Convert the DIFunctionChannelConfig object to a dictionary."""
-        return self.to_json()
+        """Convert the DIFunctionChannelConfig object to a string representation."""
+        keys = self.keys()
+        return ','.join(str(self[key]) if self[key] is not None else '' for key in keys)

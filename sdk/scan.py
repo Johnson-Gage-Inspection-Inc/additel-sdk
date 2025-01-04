@@ -4,6 +4,7 @@ from typing import List
 from .customTypes import DI
 import json
 from .coerce import coerce
+import logging
 
 class Scan:
     def __init__(self, parent):
@@ -23,7 +24,7 @@ class Scan:
         Returns:
             None
         """
-        raise NotImplementedError("This command is not yet implemented.")
+        logging.warning("This command has not been tested.")
         json_params = json.dumps(scan_info.__dict__)
         command = f'JSON:SCAN:STARt {json_params}'
         self.parent.cmd(command)
@@ -69,7 +70,7 @@ class Scan:
         """
         response = self.parent.cmd("SCAN:STARt?")
         if response:
-            assert response == DI.DIScanInfo.from_str(response).to_str(), "Unexpected response"
+            assert response == str(DI.DIScanInfo.from_str(response)), "Unexpected response"
             return DI.DIScanInfo.from_str(response)
 
     def stop(self):

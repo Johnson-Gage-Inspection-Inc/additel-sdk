@@ -3,7 +3,7 @@ from typing import List, Union
 import re
 import logging
 
-def coerce(adt: Union[dict, str], map: dict = None):
+def coerce(adt: Union[dict, str, list], map: dict = None):
     """
     Dynamically coerces a dictionary-based object to its appropriate type
     using a provided type mapping.
@@ -19,17 +19,25 @@ def coerce(adt: Union[dict, str], map: dict = None):
     Raises:
         TypeError: If `$type` is missing or not recognized in the provided map.
     """
+
+    def coerce_list(adt: list, map: dict):
+        return [coerce(v, map) if isinstance(v, dict) else v for v in adt]
+
+    if isinstance(adt, list):
+        return coerce_list(adt, map)
+
     adt = json(adt)  # Ensure it's a dictionary
 
     if not map:
         map = load_mapping()
 
     if typeStr := adt.pop('$type', None):
+        ClassName = adt.pop('ClassName', None)  # noqa: F841
         listIndicator = r'System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)'
         if match := re.match(listIndicator, typeStr):
             typ = List[map[match.group(1)]]
             adt = adt['$values']
-            return [coerce(v, map) if isinstance(v, dict) else v for v in adt]
+            return coerce_list(adt, map)
         else:
             typeStr, _ = typeStr.split(',')
             typ = map[typeStr]
