@@ -146,7 +146,7 @@ class Scan:
         response = self.parent.cmd(f"SCAN:DATA:Last? {format}")
         return DI.DIReading.from_str(response)
 
-    def get_scan_data_json(self, count: int = 1) -> List[DI.DIReading]:  # Tested!
+    def get_data_json(self, count: int = 1) -> List[DI.DIReading]:  # Tested!
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of data points.
@@ -165,3 +165,20 @@ class Scan:
         if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
             return coerce(response)
         return []
+
+    def get_intelligent_wiring_data_json(self, count: int = 1) -> List[DI.DIReading]:  # Tested! But the response is an empty list :P
+        """Acquire scanning data of intelligent wiring (in JSON format).
+
+        Args:
+            count (int): The number of scanning data points to retrieve.
+
+        Returns:
+            dict: A dictionary representation of the scanning data. Each entry includes:
+                - Channel name
+                - Electrical measurement data
+                - Filtered data
+                - Intelligent wiring information
+        """
+        assert count > 0, "Count must be greater than 0."
+        if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
+            return coerce(response)

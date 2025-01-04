@@ -64,7 +64,7 @@ def testScan(additel):
     pass
 
 def test_get_scan_data_json(a: Additel, count: int = 1):
-    data = a.Scan.get_scan_data_json(count)
+    data = a.Scan.get_data_json(count)
     assert all(isinstance(d, a.DI.DIReading) for d in data), "Data must be a DIScanData object"
     return data
 
@@ -90,6 +90,10 @@ def testGetChannelConfig_json(a: Additel):
     assert all(isinstance(x, a.DI.DIFunctionChannelConfig) for x in config), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
+def intelligentWireTest(additel):
+    intel_wire = additel.Scan.get_intelligent_wiring_data_json()
+    assert intel_wire == [], "We're expecting an empty list here, for now."
+
 if __name__ == '__main__':
     # Create an instance of the Additel class
     with Additel('192.168.1.223') as additel:
@@ -100,6 +104,7 @@ if __name__ == '__main__':
         testScanLast()
         channelConfig = testGetChannelConfig(additel)
         channelConfigJson = testGetChannelConfig_json(additel)
-        # additel.Channel.configure(channelConfigJson[0])
+        # additel.Channel.configure(channelConfigJson[0])  # FIXME: Functions that don't return anything are timing out.  Something to look into, later, I guess.
+        intelligentWireTest(additel)
 
         print("All tests passed!")
