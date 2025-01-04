@@ -78,6 +78,19 @@ def load_mapping():
     from .customTypes import DI
     map = {
         'System.Double': float,
+        # - 0: Voltage
+        # - 1: Current
+        # - 2: Resistance
+        'TAU.Module.Channels.DI.DIFunctionRTDChannelConfig': DI.DIFunctionChannelConfig,
+        # - 4: Thermistor
+        # - 100: Thermocouple (TC)
+        # - 101: Switch
+        'TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig': DI.DIFunctionChannelConfig,  # NOTE: This is a guess
+        # - 103: Voltage Transmitter
+        # - 104: Current Transmitter
+        # - 105: Standard TC
+        # - 106: Custom RTD
+        # - 110: Standard Resistance
         'TAU.Module.Channels.DI.DIFunctionChannelConfig': DI.DIFunctionChannelConfig,
         'TAU.Module.Channels.DI.DIScanInfo': DI.DIScanInfo,
         'TAU.Module.Channels.DI.DIModuleInfo': DI.DIModuleInfo,
