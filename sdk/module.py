@@ -6,13 +6,14 @@
 from typing import List
 from .customTypes import DI
 import json
+from .coerce import coerce
 
 class Module:
     def __init__(self, parent):
         self.parent = parent
 
     # 1.2.1
-    def info_str(self) -> List[DI.DIModuleInfo]:
+    def info_str(self) -> List[DI.DIModuleInfo]:  # Tested!
         """Acquire module information.
 
         This command retrieves information about the front panel and junction box modules.
@@ -21,24 +22,11 @@ class Module:
             List[DIModuleInfo]: A list of parsed module information objects.
         """
         if response := self.parent.cmd("MODule:INFormation?"):
-            modules = response.split(';')
-            return [
-                DI.DIModuleInfo(
-                    Index=mod.split(',')[0],
-                    Category=mod.split(',')[1],
-                    SN=mod.split(',')[2],
-                    HwVersion=mod.split(',')[3],
-                    SwVersion=mod.split(',')[4],
-                    TotalChannelCount=mod.split(',')[5],
-                    Label=mod.split(',')[6],
-                    ClassName=mod.split(',')[7]
-                )
-                for mod in modules
-            ]
+            return DI.DIModuleInfo.from_str(response)  # NOTE: Can't coerce here, because the response doesn't indicate the type
         return []
 
     # 1.2.2
-    def info(self) -> List[DI.DIModuleInfo]:
+    def info(self) -> List[DI.DIModuleInfo]:  # Tested!
         """Acquire module information.
 
         This command retrieves information about the front panel and junction box modules.
@@ -56,7 +44,7 @@ class Module:
             return [DI.DIModuleInfo.from_json(mod) for mod in modules]
         raise ValueError("No module information received")
 
-    def set_label(self, index: int, label: str):
+    def set_label(self, index: int, label: str):  # Not yet implemented
         """Set the label of a specific junction box module.
 
         This command assigns a custom label to a specified module.
@@ -71,13 +59,14 @@ class Module:
         Returns:
             None
         """
+        raise NotImplementedError("This method is not yet implemented.")
         if index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         command = f'MODule:LABel {index},"{label}"'
         self.parent.cmd(command)
 
     # 1.2.4
-    def getConfiguration(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:
+    def getConfiguration(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:  # Tested!
         """Acquire channel configuration of a specified junction box.
 
         This command retrieves the channel configuration for a specified junction box module.
@@ -101,7 +90,7 @@ class Module:
             return [DI.DIFunctionChannelConfig.from_str(string) for string in array if string]
 
     # 1.2.5
-    def getConfiguration_json(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:
+    def getConfiguration_json(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:  # Tested!
         """Acquire channel configuration of a specified junction box, in JSON format.
 
         This command retrieves the channel configuration for a specified junction box module.
@@ -112,17 +101,20 @@ class Module:
         Returns:
             List[type.DIFunctionChannelConfig]: A list of channel configurations for the specified module.
         """
-        # FIXME: For module_index = 0, it's fine, but for module_index = 1, the response is too long and is getting truncated, so the parsing is failing
-        assert module_index in range(5), "Module index must be between 0 and 4 inclusive."
+        if module_index not in range(5):
+            raise ValueError("Module index must be between 0 and 4 inclusive.")
+        if module_index != 0:
+            raise Exception("This method is not effective for module_index != 0. Please use the getConfiguration method instead.")
+
         if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
             try:
-                return [type.DIFunctionChannelConfig.from_json(config) for config in json.loads(response)['$values']]
+                return coerce(response)
             except json.JSONDecodeError as e:
                 print(f"Error decoding JSON response: {e}")
                 print(f"Response length: {len(response)}")
-        return []
+        raise ValueError("No channel configuration received")
 
-    def configure(self, module_index: int, params: List[DI.DIFunctionChannelConfig]):
+    def configure(self, module_index: int, params: List[DI.DIFunctionChannelConfig]):  # Not yet implemented
         """Set the channel configuration of a specified junction box in JSON format.
 
         This command configures the channel settings for a specified module using JSON.
@@ -160,6 +152,7 @@ class Module:
         Returns:
             dict: The JSON response from the device confirming the configuration.
         """
+        raise NotImplementedError("This method is not yet implemented.")
         # Validate parameters
         if not isinstance(module_index, int):
             raise TypeError(f"Invalid parameter type: {type(module_index)}. Expected int.")
@@ -171,5 +164,4 @@ class Module:
 
         # Send the command
         json_params = json.dumps([param.__dict__ for param in params])
-        command = f'JSON:MODule:CONFig {module_index},{json_params}'
-        self.parent.cmd(command)
+        self.parent.cmd(f'JSON:MODule:CONFig {module_index},{json_params}')
