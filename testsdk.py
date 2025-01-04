@@ -100,5 +100,6 @@ if __name__ == '__main__':
         testScanLast()
         channelConfig = testGetChannelConfig(additel)
         channelConfigJson = testGetChannelConfig_json(additel)
+        # additel.Channel.configure(channelConfigJson[0])
 
         print("All tests passed!")
