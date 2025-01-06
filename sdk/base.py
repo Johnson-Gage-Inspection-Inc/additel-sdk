@@ -9,7 +9,6 @@ from .connection import Connection
 # from .display import Display, Diagnostic
 # from .pattern import Pattern
 # from .unit import Unitfrom .channel import DIFunctionChannelConfig as DFCC
-from .customTypes import DI
 
 import logging
 
@@ -31,7 +30,6 @@ class Additel:
         # self.Diagnostic = Diagnostic(self)
         # self.Pattern = Pattern(self)
         # self.Unit = Unit(self)
-        self.DI = DI(self)
 
     def __enter__(self):
         self.connection.connect()

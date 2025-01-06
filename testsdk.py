@@ -1,4 +1,7 @@
 from sdk.base import Additel
+from sdk.channel import DIFunctionChannelConfig
+from sdk.scan import DIScanInfo, DIReading
+from sdk.module import DIModuleInfo
 
 def testIdentify(a: Additel):
     identity = a.identify()
@@ -8,10 +11,10 @@ def testIdentify(a: Additel):
 def testModuleInfo(a: Additel):
     info = a.Module.info()
     assert isinstance(info, list), "Module info must be a list"
-    assert all(isinstance(i, a.DI.DIModuleInfo) for i in info), "Module info must be a DIModuleInfo object"
+    assert all(isinstance(i, DIModuleInfo) for i in info), "Module info must be a DIModuleInfo object"
 
     info_str = a.Module.info_str()
-    assert all(isinstance(x, a.DI.DIModuleInfo) for x in info_str), "Module info must be a DIModuleInfo object"
+    assert all(isinstance(x, DIModuleInfo) for x in info_str), "Module info must be a DIModuleInfo object"
     compare_keys(info, info_str)
     return info
 
@@ -19,14 +22,14 @@ def testQueryChannelConfig(a: Additel, module_index=0):
     config = a.Module.getConfiguration(module_index=module_index)
     assert isinstance(config, list), "Channel config must be a list"
     for c in config:
-        assert isinstance(c, a.DI.DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
+        assert isinstance(c, DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
 def testQueryChannelConfig_json(a: Additel, module_index=0):
     config = a.Module.getConfiguration_json(module_index=module_index)
     assert isinstance(config, list), "Channel config must be a list"
     for c in config:
-        assert isinstance(c, a.DI.DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
+        assert isinstance(c, DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
 def testModuleConfig(additel):  # Tested!
@@ -48,12 +51,12 @@ def compare_keys(a, b):
 
 def testScanGetConfigJson(a: Additel):
     scan_config = a.Scan.get_configuration_json()
-    assert isinstance(scan_config, a.DI.DIScanInfo), "Scan config must be a DIScanInfo object"
+    assert isinstance(scan_config, DIScanInfo), "Scan config must be a DIScanInfo object"
     return scan_config
 
 def testScanGetConfig(a: Additel):
     scan_config = a.Scan.get_configuration()
-    assert isinstance(scan_config, a.DI.DIScanInfo), "Scan config must be a DIScanInfo object"
+    assert isinstance(scan_config, DIScanInfo), "Scan config must be a DIScanInfo object"
     return scan_config
 
 def testScan(additel):
@@ -65,12 +68,12 @@ def testScan(additel):
 
 def test_get_scan_data_json(a: Additel, count: int = 1):
     data = a.Scan.get_data_json(count)
-    assert all(isinstance(d, a.DI.DIReading) for d in data), "Data must be a DIScanData object"
+    assert all(isinstance(d, DIReading) for d in data), "Data must be a DIScanData object"
     return data
 
 def test_get_latest_data(a: Additel):
     data = a.Scan.get_latest_data()
-    assert isinstance(data, a.DI.DIReading), "Data must be a DIScanData object"
+    assert isinstance(data, DIReading), "Data must be a DIScanData object"
     return data
 
 def testScanLast(n_data=1):
@@ -82,12 +85,12 @@ def testScanLast(n_data=1):
 
 def testGetChannelConfig(a: Additel):
     config = a.Channel.get_configuration('REF1')
-    assert isinstance(config, a.DI.DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
+    assert isinstance(config, DIFunctionChannelConfig), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
 def testGetChannelConfig_json(a: Additel):
     config = a.Channel.get_configuration_json(['REF1', 'REF2'])
-    assert all(isinstance(x, a.DI.DIFunctionChannelConfig) for x in config), "Channel config must be a DIFunctionChannelConfig object"
+    assert all(isinstance(x, DIFunctionChannelConfig) for x in config), "Channel config must be a DIFunctionChannelConfig object"
     return config
 
 def intelligentWireTest(additel):

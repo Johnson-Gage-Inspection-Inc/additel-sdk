@@ -83,29 +83,31 @@ def json(obj) -> dict:
     raise NotImplementedError(f"Unsupported type for dictionary coercion: {type(obj)}")
 
 def load_mapping():
-    from .customTypes import DI
+    from .scan import DIScanInfo, DIReading
+    from .module import DIModuleInfo
+    from .channel import DIFunctionChannelConfig
     map = {
         'System.Double': float,
         # - 0: Voltage
         # - 1: Current
         # - 2: Resistance
-        'TAU.Module.Channels.DI.DIFunctionRTDChannelConfig': DI.DIFunctionChannelConfig,
+        'TAU.Module.Channels.DI.DIFunctionRTDChannelConfig': DIFunctionChannelConfig,
         # - 4: Thermistor
         # - 100: Thermocouple (TC)
         # - 101: Switch
-        'TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig': DI.DIFunctionChannelConfig,  # NOTE: This is a guess
+        'TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig': DIFunctionChannelConfig,  # NOTE: This is a guess
         # - 103: Voltage Transmitter
         # - 104: Current Transmitter
         # - 105: Standard TC
         # - 106: Custom RTD
         # - 110: Standard Resistance
-        'TAU.Module.Channels.DI.DIFunctionChannelConfig': DI.DIFunctionChannelConfig,
-        'TAU.Module.Channels.DI.DIScanInfo': DI.DIScanInfo,
-        'TAU.Module.Channels.DI.DIModuleInfo': DI.DIModuleInfo,
-        'TAU.Module.Channels.DI.DIReading': DI.DIReading,
-        'TAU.Module.Channels.DI.DITemperatureReading': DI.DIReading,
-        'TAU.Module.Channels.DI.DIElectricalReading': DI.DIReading,
-        'TAU.Module.Channels.DI.DITCReading': DI.DIReading,
+        'TAU.Module.Channels.DI.DIFunctionChannelConfig': DIFunctionChannelConfig,
+        'TAU.Module.Channels.DI.DIScanInfo': DIScanInfo,
+        'TAU.Module.Channels.DI.DIModuleInfo': DIModuleInfo,
+        'TAU.Module.Channels.DI.DIReading': DIReading,
+        'TAU.Module.Channels.DI.DITemperatureReading': DIReading,
+        'TAU.Module.Channels.DI.DIElectricalReading': DIReading,
+        'TAU.Module.Channels.DI.DITCReading': DIReading,
         'TAU.Module.Channels.DI.TimeTick': datetime,
     }
 
