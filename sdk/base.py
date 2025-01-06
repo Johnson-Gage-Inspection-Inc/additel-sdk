@@ -1,5 +1,17 @@
+# base.py - Base class for Additel SDK.
+from .module import Module
+from .scan import Scan
+from .channel import Channel
+from .connection import Connection
+# from .calibration import Calibration
+# from .system import System
+# from .program import Program
+# from .display import Display, Diagnostic
+# from .pattern import Pattern
+# from .unit import Unitfrom .channel import DIFunctionChannelConfig as DFCC
+from .customTypes import DI
+
 import logging
-from connection import Connection
 
 class Additel:
     """Base class for interacting with an Additel device using different connection types."""
@@ -7,6 +19,19 @@ class Additel:
     def __init__(self, connection_type='wlan', **kwargs):
         self.connection_type = connection_type
         self.connection = Connection(self, connection_type, **kwargs)
+
+        # Initialize the submodules
+        self.Module = Module(self)
+        self.Scan = Scan(self)
+        self.Channel = Channel(self)
+        # self.Calibration = Calibration(self)
+        # self.System = System(self)
+        # self.Program = Program(self)
+        # self.Display = Display(self)
+        # self.Diagnostic = Diagnostic(self)
+        # self.Pattern = Pattern(self)
+        # self.Unit = Unit(self)
+        self.DI = DI(self)
 
     def __enter__(self):
         self.connection.connect()

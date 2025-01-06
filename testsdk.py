@@ -96,7 +96,7 @@ def intelligentWireTest(additel):
 
 if __name__ == '__main__':
     # Create an instance of the Additel class
-    with Additel('192.168.1.223') as additel:
+    with Additel('wlan', ip='192.168.1.223') as additel:
         identity = testIdentify(additel)
         moduleInfo = testModuleInfo(additel)
         testModuleConfig(additel)
