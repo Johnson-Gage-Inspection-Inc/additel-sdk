@@ -1,13 +1,12 @@
 from .channel import DIFunctionChannelConfig
-from .DIScanInfo import DIScanInfo as DSI
+from .scan import DIScanInfo, DIReading
 from .module import DIModuleInfo
-from .DIReading import DIReading as DR
 
 class DI:
     DIFunctionChannelConfig = DIFunctionChannelConfig
-    DIScanInfo = DSI
+    DIScanInfo = DIScanInfo
     DIModuleInfo = DIModuleInfo
-    DIReading = DR
+    DIReading = DIReading
 
     def __init__(self, parent):
         self.parent = parent
