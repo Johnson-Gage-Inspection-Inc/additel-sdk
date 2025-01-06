@@ -110,7 +110,7 @@ class DIReading(dict):
                 if not isinstance(value, expectedType):
                     raise TypeError(f"Expected {expectedType}, got {type(value)} for key {key}")
 
-    def to_str(self):
+    def __str__(self):
         def rnd(li: list, n: int = None) -> List[float]:
             if not n:
                 n = self.TempDecimals
@@ -125,11 +125,8 @@ class DIReading(dict):
             output += f'{self.ChannelName},{self.Unit},1,{DateTimeTicks[i]},{Values[i]},{ValuesFiltered[i]},{self.TempUnit},1,{TempValues[i]};'
         return f'"{output}"'
 
-    def __str__(self):
-        return self.to_str()
-
     def __repr__(self):
-        return self.to_str()
+        return str(self)
 
     @classmethod
     def from_str(self, input: str):
@@ -165,7 +162,7 @@ class DIReading(dict):
             'TempValues': TempValues
         }
         newObject = DIReading(**dictionary)
-        assert input == newObject.to_str(), f"Expected {string}, got {newObject.to_str()}"
+        assert input == str(newObject), f"Expected {string}, got {str(newObject)}"
         return newObject
 
     @staticmethod
@@ -176,8 +173,6 @@ class DIReading(dict):
     def datetimeToTicks(dt):
         return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
 
-
-# DIScanInfo.py
 class DIScanInfo(dict):
     """Data structure for scanning information.
 
@@ -189,34 +184,28 @@ class DIScanInfo(dict):
     def __init__(self,
                 NPLC: int,
                 ChannelName: str):
-        self.NPLC = NPLC  # Number of Power Line Cycles (NPLC)
-        self.ChannelName = ChannelName  # Sampling frequency cycle
+        self['NPLC'] = NPLC  # Number of Power Line Cycles (NPLC)
+        self['ChannelName'] = ChannelName  # Sampling frequency cycle
 
     @classmethod
     def from_str(cls, data: str):
         """Parse the scanning information from a string.
 
         Args:
-            data (str): A comma-separated string containing the scan information.
+            data (str): A comma-separated list of length 2, containing the scan information.
 
         Returns:
             DIScanInfo: An instance of DIScanInfo populated with the string data.
         """
-        values = data.split(',')
-        NPLC = int(values[0])
-        ChannelName = str(values[1])
-        return cls(NPLC=NPLC, ChannelName=ChannelName)
-
-    def __dict__(self):
-        """Convert the DIScanInfo object to a JSON-compatible dictionary."""
-        return {
-            "NPLC": self.NPLC,
-            "ChannelName": self.ChannelName
-        }
+        NPLC, ChannelName = data.split(',')
+        return cls(
+            NPLC=int(NPLC),
+            ChannelName=str(ChannelName)
+        )
 
     def __str__(self):
         """Convert the DIScanInfo object to a string representation."""
-        return f"{self.NPLC},{self.ChannelName}"
+        return f"{self['NPLC']},{self['ChannelName']}"
 
 class Scan:
     def __init__(self, parent):
