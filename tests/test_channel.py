@@ -1,7 +1,7 @@
 """Tests for the Additel SDK Channel functionality."""
 
 import pytest
-from sdk.channel import DIFunctionChannelConfig
+from src.channel import DIFunctionChannelConfig
 
 
 def test_get_channel_config(additel):

@@ -1,8 +1,8 @@
 """Tests for the Additel SDK Module functionality."""
 
 import pytest
-from sdk.module import DIModuleInfo
-from sdk.channel import DIFunctionChannelConfig
+from src.module import DIModuleInfo
+from src.channel import DIFunctionChannelConfig
 from conftest import compare_keys
 
 
