@@ -31,12 +31,12 @@ class DIReading:
         # If there are extra keys that haven't been handled by the subclass,
         # you can either ignore them or raise an error.
         if kwargs:
-            raise ValueError(f"Unexpected keys: {list(kwargs.keys())}")
+            logging.warning(f"Unhandled keys: {kwargs.keys()}")
 
         # Make sure no values are null
         for key, value in self.__dict__.items():
             if not value:
-                raise ValueError(f"Value for {key} is null")
+                logging.warning(f"Value for {key} is null")
 
     @staticmethod
     def ticksToDatetime(ticks):
