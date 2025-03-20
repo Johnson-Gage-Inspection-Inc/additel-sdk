@@ -165,14 +165,6 @@ class Module:
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         if response := self.parent.cmd(f"MODule:CONFig? {module_index}"):
-            array = response.split(";")
-            if not array[-1]:
-                array.pop()
-            for string in array:
-                rebuilt_str = str(DIFunctionChannelConfig.from_str(string))
-                assert (
-                    string == rebuilt_str
-                ), f"Unexpected response: {string}\nExpected: {rebuilt_str}"
             return DIFunctionChannelConfig.from_str(response)
 
     # 1.2.5
