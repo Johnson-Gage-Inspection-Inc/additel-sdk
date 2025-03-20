@@ -18,6 +18,8 @@ class DIReading(dict):
         self.ValuesFiltered: List[float] = kwargs.pop("ValuesFiltered", [])
         self.DateTimeTicks: List[datetime] = kwargs.pop("DateTimeTicks", [])
         self.ValueDecimals: int = kwargs.pop("ValueDecimals", 0)
+        if kwargs:
+            logging.warning(f"Unhandled keys: {kwargs.keys()}")
         try:
             if kwargs.pop("ClassName", None):
                 self.validate_structure(kwargs)
