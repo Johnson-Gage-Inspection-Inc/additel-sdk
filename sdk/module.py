@@ -9,6 +9,7 @@ import logging
 from .channel import DIFunctionChannelConfig
 from .coerce import coerce
 
+
 class DIModuleInfo(dict):
     """Data structure for module information.
 
@@ -36,21 +37,26 @@ class DIModuleInfo(dict):
         Label (Optional[str]): Optional label for the module.
         ClassName (Optional[str]): Class name of the module (if provided).
     """
-    def __init__(self,
-                 Index: int,
-                 Category: int,
-                 SN: str,
-                 HwVersion: str,
-                 SwVersion: str,
-                 TotalChannelCount: int,
-                 Label: Optional[str] = None):
-        self['Index'] = int(Index)  # Identifier of the module
-        self['Category'] = int(Category)  # Box type (0: front panel, 1: temperature box, 2: process box)
-        self['SN'] = str(SN)  # Serial number of the module
-        self['HwVersion'] = str(HwVersion)  # Hardware version
-        self['SwVersion'] = str(SwVersion)  # Software version
-        self['TotalChannelCount'] = int(TotalChannelCount)  # Total number of channels
-        self['Label'] = str(Label) if Label else None  # Optional label
+
+    def __init__(
+        self,
+        Index: int,
+        Category: int,
+        SN: str,
+        HwVersion: str,
+        SwVersion: str,
+        TotalChannelCount: int,
+        Label: Optional[str] = None,
+    ):
+        self["Index"] = int(Index)  # Identifier of the module
+        self["Category"] = int(
+            Category
+        )  # Box type (0: front panel, 1: temperature box, 2: process box)
+        self["SN"] = str(SN)  # Serial number of the module
+        self["HwVersion"] = str(HwVersion)  # Hardware version
+        self["SwVersion"] = str(SwVersion)  # Software version
+        self["TotalChannelCount"] = int(TotalChannelCount)  # Total number of channels
+        self["Label"] = str(Label) if Label else None  # Optional label
 
     @classmethod
     def from_str(self, string):
@@ -58,21 +64,22 @@ class DIModuleInfo(dict):
         logging.warning("The mappings for DIModuleInfo.from_str are not confirmed.")
         return [
             self(
-                Index=mod.split(',')[0],
-                Category=mod.split(',')[2],
-                SN=mod.split(',')[1],
-                HwVersion=mod.split(',')[3],
-                SwVersion=mod.split(',')[4],
-                TotalChannelCount=mod.split(',')[5],
-                Label=mod.split(',')[6]
+                Index=mod.split(",")[0],
+                Category=mod.split(",")[2],
+                SN=mod.split(",")[1],
+                HwVersion=mod.split(",")[3],
+                SwVersion=mod.split(",")[4],
+                TotalChannelCount=mod.split(",")[5],
+                Label=mod.split(",")[6],
             )
-            for mod in string.split(';')
+            for mod in string.split(";")
             if mod
         ]
 
     @classmethod
     def __str__(self):
         return f"{self['Index']},{self['Category']},{self['SN']},{self['HwVersion']},{self['SwVersion']},{self['TotalChannelCount']},{self['Label']};"
+
 
 class Module:
     def __init__(self, parent):
@@ -88,7 +95,9 @@ class Module:
             List[DIModuleInfo]: A list of parsed module information objects.
         """
         if response := self.parent.cmd("MODule:INFormation?"):
-            return DIModuleInfo.from_str(response)  # NOTE: Can't coerce here, because the response doesn't indicate the type
+            return DIModuleInfo.from_str(
+                response
+            )  # NOTE: Can't coerce here, because the response doesn't indicate the type
         return []
 
     # 1.2.2
@@ -102,9 +111,19 @@ class Module:
         """
         if response := self.parent.cmd("JSON:MODule:INFormation?"):
             raw_data = json.loads(response)
-            modules = raw_data.get('$values', [])
+            modules = raw_data.get("$values", [])
             for mod in modules:
-                assert list(mod) == ['$type', 'Index', 'Category', 'SN', 'HwVersion', 'SwVersion', 'TotalChannelCount', 'Label', 'ClassName'], "Unexpected keys in module info"
+                assert list(mod) == [
+                    "$type",
+                    "Index",
+                    "Category",
+                    "SN",
+                    "HwVersion",
+                    "SwVersion",
+                    "TotalChannelCount",
+                    "Label",
+                    "ClassName",
+                ], "Unexpected keys in module info"
             return coerce(modules)
         raise ValueError("No module information received")
 
@@ -130,7 +149,9 @@ class Module:
         self.parent.cmd(command)
 
     # 1.2.4
-    def getConfiguration(self, module_index: int) -> List[DIFunctionChannelConfig]:  # Tested!
+    def getConfiguration(
+        self, module_index: int
+    ) -> List[DIFunctionChannelConfig]:  # Tested!
         """Acquire channel configuration of a specified junction box.
 
         This command retrieves the channel configuration for a specified junction box module.
@@ -144,16 +165,20 @@ class Module:
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         if response := self.parent.cmd(f"MODule:CONFig? {module_index}"):
-            array = response.split(';')
+            array = response.split(";")
             if not array[-1]:
                 array.pop()
             for string in array:
                 rebuilt_str = str(DIFunctionChannelConfig.from_str(string))
-                assert string == rebuilt_str, f"Unexpected response: {string}\nExpected: {rebuilt_str}"
+                assert (
+                    string == rebuilt_str
+                ), f"Unexpected response: {string}\nExpected: {rebuilt_str}"
             return DIFunctionChannelConfig.from_str(response)
 
     # 1.2.5
-    def getConfiguration_json(self, module_index: int) -> List[DIFunctionChannelConfig]:  # Tested!
+    def getConfiguration_json(
+        self, module_index: int
+    ) -> List[DIFunctionChannelConfig]:  # Tested!
         """Acquire channel configuration of a specified junction box, in JSON format.
 
         This command retrieves the channel configuration for a specified junction box module.
@@ -167,7 +192,9 @@ class Module:
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         if module_index != 0:
-            raise Exception("This method is not effective for module_index != 0. Please use the getConfiguration method instead.")
+            raise Exception(
+                "This method is not effective for module_index != 0. Please use the getConfiguration method instead."
+            )
 
         if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
             try:
@@ -177,7 +204,9 @@ class Module:
                 print(f"Response length: {len(response)}")
         raise ValueError("No channel configuration received")
 
-    def configure(self, module_index: int, params: List[DIFunctionChannelConfig]):  # Not yet implemented
+    def configure(
+        self, module_index: int, params: List[DIFunctionChannelConfig]
+    ):  # Not yet implemented
         """Set the channel configuration of a specified junction box in JSON format.
 
         This command configures the channel settings for a specified module using JSON.
@@ -218,13 +247,17 @@ class Module:
         raise NotImplementedError("This method is not yet implemented.")
         # Validate parameters
         if not isinstance(module_index, int):
-            raise TypeError(f"Invalid parameter type: {type(module_index)}. Expected int.")
+            raise TypeError(
+                f"Invalid parameter type: {type(module_index)}. Expected int."
+            )
         if not isinstance(params, List):
             raise TypeError(f"Invalid parameter type: {type(params)}. Expected List.")
         for param in params:
             if not isinstance(param, DIFunctionChannelConfig):
-                raise TypeError(f"Invalid parameter type: List[{type(param)}]. List[Expected DIFunctionChannelConfig].")
+                raise TypeError(
+                    f"Invalid parameter type: List[{type(param)}]. List[Expected DIFunctionChannelConfig]."
+                )
 
         # Send the command
         json_params = json.dumps([param.__dict__ for param in params])
-        self.parent.cmd(f'JSON:MODule:CONFig {module_index},{json_params}')
+        self.parent.cmd(f"JSON:MODule:CONFig {module_index},{json_params}")

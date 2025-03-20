@@ -73,7 +73,9 @@ class Ethernet:
         Returns:
             None
         """
-        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"):
+        if response := self.parent.cmd(
+            f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"
+        ):
             return response.strip()
         raise ValueError("No IP address information returned.")
 
@@ -109,7 +111,9 @@ class Ethernet:
         Returns:
             None
         """
-        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:MASK {subnet_mask}"):
+        if response := self.parent.cmd(
+            f"SYSTem:COMMunicate:SOCKet:ETHernet:MASK {subnet_mask}"
+        ):
             return response.strip()
         raise ValueError("No subnet mask information returned.")
 
@@ -145,7 +149,9 @@ class Ethernet:
         Returns:
             None
         """
-        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:GATEway {gateway}"):
+        if response := self.parent.cmd(
+            f"SYSTem:COMMunicate:SOCKet:ETHernet:GATEway {gateway}"
+        ):
             return response.strip()
         raise ValueError("No gateway information returned.")
 
@@ -268,5 +274,11 @@ class Ethernet:
         Returns:
             None
         """
-        assert(keyName in ["HKEY_LOCAL_MACHINE", "HKEY_CLASSES_ROOT", "HKEY_CURRENT_USER", "HKEY_USERS", "ALL"])
+        assert keyName in [
+            "HKEY_LOCAL_MACHINE",
+            "HKEY_CLASSES_ROOT",
+            "HKEY_CURRENT_USER",
+            "HKEY_USERS",
+            "ALL",
+        ]
         self.parent.cmd(f"SYSTem:REGistry:SAVE {keyName}")

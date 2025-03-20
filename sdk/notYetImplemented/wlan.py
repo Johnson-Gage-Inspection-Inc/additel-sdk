@@ -97,7 +97,9 @@ class WLAN:
         Returns:
             None
         """
-        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"):
+        if response := self.parent.cmd(
+            f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"
+        ):
             return response.strip()
         raise ValueError("No subnet mask information returned.")
 
@@ -133,7 +135,9 @@ class WLAN:
         Returns:
             None
         """
-        if response := self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}"):
+        if response := self.parent.cmd(
+            f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}"
+        ):
             return response.strip()
         raise ValueError("No gateway information returned.")
 

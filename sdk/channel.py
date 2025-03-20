@@ -2,6 +2,7 @@
 from .coerce import coerce
 from typing import List
 
+
 class DIFunctionChannelConfig(dict):
     """Data structure for channel configuration.
 
@@ -47,7 +48,30 @@ class DIFunctionChannelConfig(dict):
         DIFunctionChannelConfig: An instance of DIFunctionChannelConfig.
     """
 
-    valid_names = ['REF1', 'REF2', 'CH1-01A', 'CH1-01B', 'CH1-02A', 'CH1-02B', 'CH1-03A', 'CH1-03B', 'CH1-04A', 'CH1-04B', 'CH1-05A', 'CH1-05B', 'CH1-06A', 'CH1-06B', 'CH1-07A', 'CH1-07B', 'CH1-08A', 'CH1-08B', 'CH1-09A', 'CH1-09B', 'CH1-10A', 'CH1-10B']
+    valid_names = [
+        "REF1",
+        "REF2",
+        "CH1-01A",
+        "CH1-01B",
+        "CH1-02A",
+        "CH1-02B",
+        "CH1-03A",
+        "CH1-03B",
+        "CH1-04A",
+        "CH1-04B",
+        "CH1-05A",
+        "CH1-05B",
+        "CH1-06A",
+        "CH1-06B",
+        "CH1-07A",
+        "CH1-07B",
+        "CH1-08A",
+        "CH1-08B",
+        "CH1-09A",
+        "CH1-09B",
+        "CH1-10A",
+        "CH1-10B",
+    ]
 
     def validate_name(self, channel_name):
         assert channel_name in self.valid_names, f"Invalid channel name: {channel_name}"
@@ -108,8 +132,18 @@ class DIFunctionChannelConfig(dict):
                 "IsSquareRooting2Current": int,  # whether to open 1.4 times current
                 "CompensateInterval": int,  # compensation interval
             },
-            103: {"Wire": int, "SensorName": str, "SensorSN": str, "Id": str},  # Voltage Transmitter
-            104: {"Wire": int, "SensorName": str, "SensorSN": str, "Id": str},  # Current Transmitter
+            103: {
+                "Wire": int,
+                "SensorName": str,
+                "SensorSN": str,
+                "Id": str,
+            },  # Voltage Transmitter
+            104: {
+                "Wire": int,
+                "SensorName": str,
+                "SensorSN": str,
+                "Id": str,
+            },  # Current Transmitter
             105: {  # Standard TC
                 "IsOpenDetect": int,  # Whether the break detection
                 "SensorName": str,  # sensor name
@@ -134,14 +168,16 @@ class DIFunctionChannelConfig(dict):
 
         if func_type in function_handlers:
             return {**types, **function_handlers[func_type]}
-        raise ValueError(f"ElectricalFunctionType must be one of {list(function_handlers.keys())}, got {func_type}.")
+        raise ValueError(
+            f"ElectricalFunctionType must be one of {list(function_handlers.keys())}, got {func_type}."
+        )
 
     def __init__(self, **kwargs):
         for key, expected_type in self.get_keys_and_types(**kwargs).items():
             value = kwargs.get(key, None)
             self.validate(key, expected_type, value)
-            self[key] = expected_type(value) if value is not None else ''
-            self.validate_name(self.get('Name'))
+            self[key] = expected_type(value) if value is not None else ""
+            self.validate_name(self.get("Name"))
 
     def validate(self, key, expected_type, value):
         if value is not None and not isinstance(value, expected_type):
@@ -150,32 +186,38 @@ class DIFunctionChannelConfig(dict):
     @classmethod
     def from_str(self, data: str):
         """Parse the channel configuration from a string."""
-        if ';' in data:
-            assert not data.split(';')[-1], "Trailing semicolon expected"
-            return [self.from_str(d) for d in data.split(';')[:-1]]
+        if ";" in data:
+            assert not data.split(";")[-1], "Trailing semicolon expected"
+            return [self.from_str(d) for d in data.split(";")[:-1]]
         if not data:
             return None
-        values = data.split(',')
+        values = data.split(",")
         func_type = int(values[3])
         keys_and_types = self.get_keys_and_types(ElectricalFunctionType=func_type)
         keys = list(keys_and_types.keys())
         kwargs = {
-            key: (keys_and_types[key](value) if value else None) for key, value in zip(keys, values)
+            key: (keys_and_types[key](value) if value else None)
+            for key, value in zip(keys, values)
         }
         assert len(kwargs) == len(keys), f"Missing keys: {keys}"
-        assert str(self(**kwargs)) == data, f"Unexpected response: {data}\nExpected: {str(self(**kwargs))}"
+        assert (
+            str(self(**kwargs)) == data
+        ), f"Unexpected response: {data}\nExpected: {str(self(**kwargs))}"
         return self(**kwargs)
 
     def __str__(self):
         """Convert the DIFunctionChannelConfig object to a string representation."""
         keys = self.keys()
-        return ','.join(str(self[key]) if self[key] is not None else '' for key in keys)
+        return ",".join(str(self[key]) if self[key] is not None else "" for key in keys)
+
 
 class Channel:
     def __init__(self, parent):
         self.parent = parent
 
-    def get_configuration_json(self, channel_names: List[str]) -> List[DIFunctionChannelConfig]:  # Tested!
+    def get_configuration_json(
+        self, channel_names: List[str]
+    ) -> List[DIFunctionChannelConfig]:  # Tested!
         """Acquire the configuration of a specific channel.
 
         This command retrieves the configuration for a specified channel.
@@ -204,11 +246,13 @@ class Channel:
                     cold junction type, cold junction fixed value, custom cold junction channel name
                     * Current/Voltage Transmitters (m=4): Wires, sensor name, sensor serial number, sensor ID
         """
-        names_str = ','.join(channel_names)
+        names_str = ",".join(channel_names)
         if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
-    def get_configuration(self, channel_name: str) -> List[DIFunctionChannelConfig]:  # Tested!
+    def get_configuration(
+        self, channel_name: str
+    ) -> List[DIFunctionChannelConfig]:  # Tested!
         if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 

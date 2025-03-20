@@ -1,16 +1,19 @@
 # connection/__init__.py
 from .wlan_connection import WLANConnection
+
 # from .usb_connection import USBConnection
 # from .serial_connection import SerialConnection
 # from .bluetooth_connection import BluetoothConnection
 # from .ethernet_connection import EthernetConnection
 
+
 class Connection:
     """Class to handle different ways of connecting to the device."""
+
     def __init__(self, parent, connection_type, **kwargs):
         self.parent = parent
         self.connType = connection_type
-        if connection_type == 'wlan':
+        if connection_type == "wlan":
             self.connection = WLANConnection(self, **kwargs)
 
         # elif connection_type == 'usb':

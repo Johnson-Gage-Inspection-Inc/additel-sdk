@@ -1,5 +1,6 @@
 # bluetooth.py
 
+
 class Bluetooth:
     def __init__(self, parent):
         self.parent = parent

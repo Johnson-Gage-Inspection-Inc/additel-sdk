@@ -1,13 +1,14 @@
 import socket
 
+
 class EthernetConnection:
     """Class to handle Ethernet connection to the device."""
 
     def __init__(self, parent, **kwargs):
         self.parent = parent
-        self.ip_address = kwargs.get('ip')
-        self.port = kwargs.get('port', 5025)  # Default port for SCPI devices
-        self.timeout = kwargs.get('timeout', 10)  # Default timeout in seconds
+        self.ip_address = kwargs.get("ip")
+        self.port = kwargs.get("port", 5025)  # Default port for SCPI devices
+        self.timeout = kwargs.get("timeout", 10)  # Default timeout in seconds
         self.socket = None
 
         if not self.ip_address:
@@ -16,9 +17,13 @@ class EthernetConnection:
     def connect(self):
         """Establish a socket connection to the device."""
         try:
-            self.socket = socket.create_connection((self.ip_address, self.port), timeout=self.timeout)
+            self.socket = socket.create_connection(
+                (self.ip_address, self.port), timeout=self.timeout
+            )
         except socket.error as e:
-            raise ConnectionError(f"Failed to connect to {self.ip_address}:{self.port} - {e}")
+            raise ConnectionError(
+                f"Failed to connect to {self.ip_address}:{self.port} - {e}"
+            )
 
     def disconnect(self):
         """Close the socket connection."""

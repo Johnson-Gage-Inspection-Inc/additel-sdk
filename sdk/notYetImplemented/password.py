@@ -1,11 +1,14 @@
 # password.py
 
-class Password():
+
+class Password:
     def __init__(self, parent):
         self.parent = parent
 
     # 1.4.40
-    def setPassword(self, old_password: str, new_password: str, new_password_confirm: str):
+    def setPassword(
+        self, old_password: str, new_password: str, new_password_confirm: str
+    ):
         """
         Edit the user password
 
@@ -20,7 +23,9 @@ class Password():
         Returns:
             None
         """
-        self.parent.cmd(f"SYSTem:PASSword {old_password},{new_password},{new_password_confirm}")
+        self.parent.cmd(
+            f"SYSTem:PASSword {old_password},{new_password},{new_password_confirm}"
+        )
 
     # 1.4.41
     def getProtection(self) -> bool:

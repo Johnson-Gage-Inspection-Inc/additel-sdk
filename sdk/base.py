@@ -3,6 +3,7 @@ from .module import Module
 from .scan import Scan
 from .channel import Channel
 from .connection import Connection
+
 # from .calibration import Calibration
 # from .system import System
 # from .program import Program
@@ -12,10 +13,11 @@ from .connection import Connection
 
 import logging
 
+
 class Additel:
     """Base class for interacting with an Additel device using different connection types."""
 
-    def __init__(self, connection_type='wlan', **kwargs):
+    def __init__(self, connection_type="wlan", **kwargs):
         self.connection_type = connection_type
         self.connection = Connection(self, connection_type, **kwargs)
 
@@ -41,10 +43,12 @@ class Additel:
     def send_command(self, command):
         """Send a command to the connected device and return the response."""
         try:
-            if hasattr(self.connection.connection, 'send_command'):
+            if hasattr(self.connection.connection, "send_command"):
                 self.connection.connection.send_command(command)
             else:
-                raise NotImplementedError("The current connection type does not support sending commands.")
+                raise NotImplementedError(
+                    "The current connection type does not support sending commands."
+                )
         except Exception as e:
             logging.error(f"Error sending command '{command}': {e}")
             raise
@@ -52,10 +56,12 @@ class Additel:
     def read_response(self):
         """Read the response from the connected device."""
         try:
-            if hasattr(self.connection.connection, 'read_response'):
+            if hasattr(self.connection.connection, "read_response"):
                 return self.connection.connection.read_response()
             else:
-                raise NotImplementedError("The current connection type does not support reading responses.")
+                raise NotImplementedError(
+                    "The current connection type does not support reading responses."
+                )
         except Exception as e:
             logging.error(f"Error reading response: {e}")
             raise

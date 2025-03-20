@@ -1,5 +1,6 @@
 # unit.py - This file contains the class for the Unit commands.
 
+
 # Section 1.8 - Unit commands
 class Unit:
     def __init__(self, parent):
@@ -20,7 +21,7 @@ class Unit:
         Returns:
             None
         """
-        self.parent.cmd(f'UNIT:TEMPerature {unit_ID}|{unit_name}')
+        self.parent.cmd(f"UNIT:TEMPerature {unit_ID}|{unit_name}")
 
     # 1.8.3
     def getUnitTemp(self) -> str:

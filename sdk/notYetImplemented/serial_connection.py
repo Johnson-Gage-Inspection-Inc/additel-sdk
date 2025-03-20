@@ -1,16 +1,17 @@
 import serial  # pip install pyserial
 
+
 class SerialConnection:
     """Class to handle Serial connection to the device."""
 
     def __init__(self, parent, **kwargs):
         self.parent = parent
-        self.port = kwargs.get('port')
-        self.baudrate = kwargs.get('baudrate', 9600)
-        self.bytesize = kwargs.get('bytesize', serial.EIGHTBITS)
-        self.parity = kwargs.get('parity', serial.PARITY_NONE)
-        self.stopbits = kwargs.get('stopbits', serial.STOPBITS_ONE)
-        self.timeout = kwargs.get('timeout', 1)
+        self.port = kwargs.get("port")
+        self.baudrate = kwargs.get("baudrate", 9600)
+        self.bytesize = kwargs.get("bytesize", serial.EIGHTBITS)
+        self.parity = kwargs.get("parity", serial.PARITY_NONE)
+        self.stopbits = kwargs.get("stopbits", serial.STOPBITS_ONE)
+        self.timeout = kwargs.get("timeout", 1)
         self.serial_port = None
 
         if not self.port:
@@ -25,7 +26,7 @@ class SerialConnection:
                 bytesize=self.bytesize,
                 parity=self.parity,
                 stopbits=self.stopbits,
-                timeout=self.timeout
+                timeout=self.timeout,
             )
         except serial.SerialException as e:
             raise ConnectionError(f"Failed to open serial port {self.port} - {e}")

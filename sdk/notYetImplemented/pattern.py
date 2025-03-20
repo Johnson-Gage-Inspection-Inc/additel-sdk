@@ -2,6 +2,7 @@
 
 # Section 1.7 - Function module commands
 
+
 class Pattern:
     def __init__(self, parent):
         self.parent = parent
@@ -20,7 +21,7 @@ class Pattern:
             Returns:
                 None
             """
-            self.parent.cmd(f'PATTern:MAIN:PATTerns {function},{otherParams}')
+            self.parent.cmd(f"PATTern:MAIN:PATTerns {function},{otherParams}")
 
         # 1.7.2
         def setMatch(self, paramIndex, matchStr: str = ""):
@@ -41,6 +42,6 @@ class Pattern:
                 None
             """
             if matchStr:
-                self.parent.cmd(f'PATTern:MAIN:MATCH {paramIndex},{matchStr}')
+                self.parent.cmd(f"PATTern:MAIN:MATCH {paramIndex},{matchStr}")
             else:
-                self.parent.cmd(f'PATTern:MAIN:MATCH {paramIndex}')
+                self.parent.cmd(f"PATTern:MAIN:MATCH {paramIndex}")

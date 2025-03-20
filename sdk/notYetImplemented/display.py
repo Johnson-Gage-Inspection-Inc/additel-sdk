@@ -2,6 +2,7 @@
 
 # Section 1.6 - Display commands
 
+
 class Display:
     def __init__(self, parent):
         self.parent = parent
@@ -20,7 +21,7 @@ class Display:
         Returns:
             None
         """
-        self.parent.cmd(f'DISPaly:BRIGHTness {type},{level}')
+        self.parent.cmd(f"DISPaly:BRIGHTness {type},{level}")
 
     # 1.6.2
     def getBrightness(self, type) -> int:
@@ -35,10 +36,9 @@ class Display:
         Returns:
             int: The value of brightness
         """
-        if response := self.parent.cmd(f'DISPaly:BRIGHTness? {type}'):
+        if response := self.parent.cmd(f"DISPaly:BRIGHTness? {type}"):
             return int(response.strip())
         raise ValueError("No brightness information returned.")
-
 
     # 1.6.3
     def getLanguage(self) -> str:
@@ -124,7 +124,8 @@ class Display:
         Returns:
             None
         """
-        self.parent.cmd(f'DISPaly:THEMe {theme}')
+        self.parent.cmd(f"DISPaly:THEMe {theme}")
+
 
 class Diagnostic:
     def __init__(self, parent):
@@ -144,4 +145,4 @@ class Diagnostic:
         Returns:
             None
         """
-        self.parent.cmd(f'DISPaly:LANGuage {lcid},{int(reboot)}')
+        self.parent.cmd(f"DISPaly:LANGuage {lcid},{int(reboot)}")

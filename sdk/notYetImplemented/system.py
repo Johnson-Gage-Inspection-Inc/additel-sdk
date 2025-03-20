@@ -1,10 +1,11 @@
 # system.py = This file contains the class for the System commands.
-from datetime import date, time, datetime
+from datetime import date
 from typing import Optional
 from .communicate import Communicate
 from .password import Password
 
 # Section 1.4 - System Commands
+
 
 class System:
     def __init__(self, parent):
@@ -32,10 +33,13 @@ class System:
         Example:
             {"SCIP": "v1.0", "Application": "v1.2"}
         """
-        command = f'SYSTem:VERSion? {module}' if module else 'SYSTem:VERSion?'
+        command = f"SYSTem:VERSion? {module}" if module else "SYSTem:VERSion?"
         response = self.parent.cmd(command)
         if response:
-            return {key_value.split(":")[0]: key_value.split(":")[1] for key_value in response.split(",")}
+            return {
+                key_value.split(":")[0]: key_value.split(":")[1]
+                for key_value in response.split(",")
+            }
         return {}
 
     # 1.4.2
@@ -57,10 +61,7 @@ class System:
         response = self.parent.cmd("SYSTem:ERRor:NEXT?")
         if response:
             parts = response.split(",")
-            return {
-                "error_code": int(parts[0]),
-                "error_message": parts[1].strip()
-            }
+            return {"error_code": int(parts[0]), "error_message": parts[1].strip()}
         raise ValueError("No error information returned.")
 
     # 1.4.3

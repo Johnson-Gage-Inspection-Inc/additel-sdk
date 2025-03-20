@@ -7,6 +7,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import get_origin, get_args
 
+
 class DIReading(dict):
     """
     Represents a single channel's measurement data.
@@ -53,7 +54,7 @@ class DIReading(dict):
 
     def __init__(self, **kwargs):
         try:
-            if className := kwargs.pop('ClassName', None):
+            if className := kwargs.pop("ClassName", None):
                 self.validate_structure(kwargs, className)
             self.__dict__.update(kwargs)
         except Exception as e:
@@ -61,32 +62,48 @@ class DIReading(dict):
 
     def validate_structure(self, kwargs, className):
         function_handlers = {
-            'TAU.Module.Channels.DI.DITemperatureReading': {
-                "TempValues": List[float],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
+            "TAU.Module.Channels.DI.DITemperatureReading": {
+                "TempValues": List[
+                    float
+                ],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
                 "TempUnit": int,
                 "TempDecimals": int,
                 "ChannelName": str,
-                "Values": List[float],   # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
-                "ValuesFiltered": List[float],   # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
-                "DateTimeTicks": List[datetime],   # 'System.Collections.Generic.List`1[[TAU.Module.Channels.DI.TimeTick, TAU.Module.Channels]], mscorlib'
+                "Values": List[
+                    float
+                ],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
+                "ValuesFiltered": List[
+                    float
+                ],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
+                "DateTimeTicks": List[
+                    datetime
+                ],  # 'System.Collections.Generic.List`1[[TAU.Module.Channels.DI.TimeTick, TAU.Module.Channels]], mscorlib'
                 "Unit": int,
-                "ValueDecimals": int
+                "ValueDecimals": int,
                 # "ClassName": str
             },
-            'TAU.Module.Channels.DI.DIElectricalReading': {},  # FIXME: Not yet implemented
-            'TAU.Module.Channels.DI.DITCReading': {}  # FIXME: Not yet implemented
+            "TAU.Module.Channels.DI.DIElectricalReading": {},  # FIXME: Not yet implemented
+            "TAU.Module.Channels.DI.DITCReading": {},  # FIXME: Not yet implemented
         }
-        prefix = 'TAU.Module.Channels.DI.'
+        prefix = "TAU.Module.Channels.DI."
         if not className.startswith(prefix):
             className = prefix + className
-        if not className == 'TAU.Module.Channels.DI.DITemperatureReading':  # NOTE: This is the only one I've encountered so far.
+        if (
+            not className == "TAU.Module.Channels.DI.DITemperatureReading"
+        ):  # NOTE: This is the only one I've encountered so far.
             if className in function_handlers.keys():
-                raise NotImplementedError(f"Subclass {className} not yet implemented for DIReading")
+                raise NotImplementedError(
+                    f"Subclass {className} not yet implemented for DIReading"
+                )
             else:
-                raise ValueError(f"Unknown class: {className}. Expected one of {list(function_handlers.keys())}")
+                raise ValueError(
+                    f"Unknown class: {className}. Expected one of {list(function_handlers.keys())}"
+                )
 
         if not (expectedKeys := function_handlers.get(className, None)):
-            raise ValueError(f"Unknown class: {className}. Expected one of {list(self.function_handlers.keys())}")
+            raise ValueError(
+                f"Unknown class: {className}. Expected one of {list(self.function_handlers.keys())}"
+            )
 
         for key, expectedType in expectedKeys.items():
             value = kwargs.get(key, None)
@@ -98,31 +115,45 @@ class DIReading(dict):
 
             if origin is not None:  # Handle generics like List, Dict, etc.
                 if not isinstance(value, origin):
-                    raise TypeError(f"Expected {expectedType}, got {type(value)} for key {key}")
+                    raise TypeError(
+                        f"Expected {expectedType}, got {type(value)} for key {key}"
+                    )
                 if args:  # Check the arguments of the generic type
                     if origin in {list, tuple}:
                         if not all(isinstance(item, args[0]) for item in value):
-                            raise TypeError(f"Expected elements of type {args[0]} in {key}")
+                            raise TypeError(
+                                f"Expected elements of type {args[0]} in {key}"
+                            )
                     elif origin is dict:
-                        if not all(isinstance(k, args[0]) and isinstance(v, args[1]) for k, v in value.items()):
-                            raise TypeError(f"Expected dict with key type {args[0]} and value type {args[1]} in {key}")
+                        if not all(
+                            isinstance(k, args[0]) and isinstance(v, args[1])
+                            for k, v in value.items()
+                        ):
+                            raise TypeError(
+                                f"Expected dict with key type {args[0]} and value type {args[1]} in {key}"
+                            )
             else:  # Handle non-generic types, like int, str, float, etc.
                 if not isinstance(value, expectedType):
-                    raise TypeError(f"Expected {expectedType}, got {type(value)} for key {key}")
+                    raise TypeError(
+                        f"Expected {expectedType}, got {type(value)} for key {key}"
+                    )
 
     def __str__(self):
         def rnd(li: list, n: int = None) -> List[float]:
             if not n:
                 n = self.TempDecimals
             return [f"{round(float(x), n):.{n}f}" for x in li]
-        DateTimeTicks = [int(self.datetimeToTicks(x) / 1000) * 1000 for x in self.DateTimeTicks]
+
+        DateTimeTicks = [
+            int(self.datetimeToTicks(x) / 1000) * 1000 for x in self.DateTimeTicks
+        ]
         Values = rnd(self.Values)
         ValuesFiltered = rnd(self.ValuesFiltered)
         TempValues = rnd(self.TempValues, 4)
-        output = ''
+        output = ""
         n = len(self.Values)
         for i in range(n):
-            output += f'{self.ChannelName},{self.Unit},1,{DateTimeTicks[i]},{Values[i]},{ValuesFiltered[i]},{self.TempUnit},1,{TempValues[i]};'
+            output += f"{self.ChannelName},{self.Unit},1,{DateTimeTicks[i]},{Values[i]},{ValuesFiltered[i]},{self.TempUnit},1,{TempValues[i]};"
         return f'"{output}"'
 
     def __repr__(self):
@@ -131,35 +162,59 @@ class DIReading(dict):
     @classmethod
     def from_str(self, input: str):
         dictionaries = []
-        for string in input[1:-1].split(';')[0:-1]:
+        for string in input[1:-1].split(";")[0:-1]:
             # if string starts and ends with double quotes, remove them
-            array = string.split(',')
-            keys = ['ChannelName', 'Unit', '?', 'DateTimeTicks', 'Values', 'ValuesFiltered', 'TempUnit', '?', 'TempValues']
+            array = string.split(",")
+            keys = [
+                "ChannelName",
+                "Unit",
+                "?",
+                "DateTimeTicks",
+                "Values",
+                "ValuesFiltered",
+                "TempUnit",
+                "?",
+                "TempValues",
+            ]
             dictionary = dict(zip(keys, array))
-            dictionary['TempDecimals'] = len(str(array[4]).split('.')[1])
+            dictionary["TempDecimals"] = len(str(array[4]).split(".")[1])
             dictionaries.append(dictionary)
-        assert all(dictionaries[i]['ChannelName'] == dictionaries[i + 1]['ChannelName'] for i in range(len(dictionaries) - 1)), "Channel names do not match"
-        ChannelName = dictionaries[0]['ChannelName']
-        assert all(dictionaries[i]['Unit'] == dictionaries[i + 1]['Unit'] for i in range(len(dictionaries) - 1)), f"Units do not match for channel {ChannelName}: {[dictionaries[i]['Unit'] for i in range(len(dictionaries))]}"
-        Unit = dictionaries[0]['Unit']
-        assert all(dictionaries[i]['TempUnit'] == dictionaries[i + 1]['TempUnit'] for i in range(len(dictionaries) - 1)), f"Temperature units do not match for channel {ChannelName}"
-        TempUnit = dictionaries[0]['TempUnit']
-        assert all(dictionaries[i]['TempDecimals'] == dictionaries[i + 1]['TempDecimals'] for i in range(len(dictionaries) - 1)), f"Temperature decimals do not match for channel {ChannelName}"
-        TempDecimals = dictionaries[0]['TempDecimals']
-        DateTimeTicks = [self.ticksToDatetime(d['DateTimeTicks']) for d in dictionaries]
-        Values = [float(d['Values']) for d in dictionaries]
-        ValuesFiltered = [float(d['ValuesFiltered']) for d in dictionaries]
-        TempValues = [float(d['TempValues']) for d in dictionaries]
-        assert len(Values) == len(ValuesFiltered) == len(TempValues) == len(DateTimeTicks), f"Lengths of data do not match for channel {ChannelName}"
+        assert all(
+            dictionaries[i]["ChannelName"] == dictionaries[i + 1]["ChannelName"]
+            for i in range(len(dictionaries) - 1)
+        ), "Channel names do not match"
+        ChannelName = dictionaries[0]["ChannelName"]
+        assert all(
+            dictionaries[i]["Unit"] == dictionaries[i + 1]["Unit"]
+            for i in range(len(dictionaries) - 1)
+        ), f"Units do not match for channel {ChannelName}: {[dictionaries[i]['Unit'] for i in range(len(dictionaries))]}"
+        Unit = dictionaries[0]["Unit"]
+        assert all(
+            dictionaries[i]["TempUnit"] == dictionaries[i + 1]["TempUnit"]
+            for i in range(len(dictionaries) - 1)
+        ), f"Temperature units do not match for channel {ChannelName}"
+        TempUnit = dictionaries[0]["TempUnit"]
+        assert all(
+            dictionaries[i]["TempDecimals"] == dictionaries[i + 1]["TempDecimals"]
+            for i in range(len(dictionaries) - 1)
+        ), f"Temperature decimals do not match for channel {ChannelName}"
+        TempDecimals = dictionaries[0]["TempDecimals"]
+        DateTimeTicks = [self.ticksToDatetime(d["DateTimeTicks"]) for d in dictionaries]
+        Values = [float(d["Values"]) for d in dictionaries]
+        ValuesFiltered = [float(d["ValuesFiltered"]) for d in dictionaries]
+        TempValues = [float(d["TempValues"]) for d in dictionaries]
+        assert (
+            len(Values) == len(ValuesFiltered) == len(TempValues) == len(DateTimeTicks)
+        ), f"Lengths of data do not match for channel {ChannelName}"
         dictionary = {
-            'ChannelName': ChannelName,
-            'Unit': Unit,
-            'DateTimeTicks': DateTimeTicks,
-            'Values': Values,
-            'ValuesFiltered': ValuesFiltered,
-            'TempUnit': TempUnit,
-            'TempDecimals': TempDecimals,
-            'TempValues': TempValues
+            "ChannelName": ChannelName,
+            "Unit": Unit,
+            "DateTimeTicks": DateTimeTicks,
+            "Values": Values,
+            "ValuesFiltered": ValuesFiltered,
+            "TempUnit": TempUnit,
+            "TempDecimals": TempDecimals,
+            "TempValues": TempValues,
         }
         newObject = DIReading(**dictionary)
         assert input == str(newObject), f"Expected {string}, got {str(newObject)}"
@@ -173,6 +228,7 @@ class DIReading(dict):
     def datetimeToTicks(dt):
         return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
 
+
 class DIScanInfo(dict):
     """Data structure for scanning information.
 
@@ -181,11 +237,10 @@ class DIScanInfo(dict):
         ChannelName (int): Sampling frequency cycle.
         ClassName
     """
-    def __init__(self,
-                NPLC: int,
-                ChannelName: str):
-        self['NPLC'] = NPLC  # Number of Power Line Cycles (NPLC)
-        self['ChannelName'] = ChannelName  # Sampling frequency cycle
+
+    def __init__(self, NPLC: int, ChannelName: str):
+        self["NPLC"] = NPLC  # Number of Power Line Cycles (NPLC)
+        self["ChannelName"] = ChannelName  # Sampling frequency cycle
 
     @classmethod
     def from_str(cls, data: str):
@@ -197,15 +252,13 @@ class DIScanInfo(dict):
         Returns:
             DIScanInfo: An instance of DIScanInfo populated with the string data.
         """
-        NPLC, ChannelName = data.split(',')
-        return cls(
-            NPLC=int(NPLC),
-            ChannelName=str(ChannelName)
-        )
+        NPLC, ChannelName = data.split(",")
+        return cls(NPLC=int(NPLC), ChannelName=str(ChannelName))
 
     def __str__(self):
         """Convert the DIScanInfo object to a string representation."""
         return f"{self['NPLC']},{self['ChannelName']}"
+
 
 class Scan:
     def __init__(self, parent):
@@ -227,7 +280,7 @@ class Scan:
         """
         logging.warning("This command has not been tested.")
         json_params = json.dumps(scan_info.__dict__)
-        command = f'JSON:SCAN:STARt {json_params}'
+        command = f"JSON:SCAN:STARt {json_params}"
         self.parent.cmd(command)
 
     def get_configuration_json(self) -> DIScanInfo:  # Tested!
@@ -248,10 +301,10 @@ class Scan:
         response = self.parent.cmd("JSON:SCAN:STARt?")
         if response:
             raw_data = json.loads(response)
-            dTypes = raw_data.pop('$type').split(',')
-            assert 'TAU.Module.Channels.DI.DIScanInfo' in dTypes, "Unexpected type"
-            dType = raw_data.pop('ClassName')
-            assert dType == 'DIScanInfo', f"Unexpected class name: {dType}"
+            dTypes = raw_data.pop("$type").split(",")
+            assert "TAU.Module.Channels.DI.DIScanInfo" in dTypes, "Unexpected type"
+            dType = raw_data.pop("ClassName")
+            assert dType == "DIScanInfo", f"Unexpected class name: {dType}"
             return DIScanInfo(**raw_data)
 
     def get_configuration(self) -> DIScanInfo:  # Tested!
@@ -367,7 +420,9 @@ class Scan:
             return coerce(response)
         return []
 
-    def get_intelligent_wiring_data_json(self, count: int = 1) -> List[DIReading]:  # Tested! But the response is an empty list :P
+    def get_intelligent_wiring_data_json(
+        self, count: int = 1
+    ) -> List[DIReading]:  # Tested! But the response is an empty list :P
         """Acquire scanning data of intelligent wiring (in JSON format).
 
         Args:

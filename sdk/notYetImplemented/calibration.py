@@ -2,6 +2,7 @@
 
 from typing import List
 
+
 class Calibration:
 
     def __init__(self, parent):
@@ -43,7 +44,7 @@ class Calibration:
             """
             if mode != 0:
                 raise ValueError("Only mode 0 (active calibration) is supported")
-            command = f'CALibration:ElECtricity:SCAN {mode},{function},{range_}'
+            command = f"CALibration:ElECtricity:SCAN {mode},{function},{range_}"
             self.parent.parent.cmd(command)
 
         def get_scan_data(self) -> dict:
@@ -75,14 +76,25 @@ class Calibration:
                     "function": parts[2],
                     "range": parts[3],
                     "status": parts[4],
-                    "data": float(parts[5]) if parts[4] == "1" else None
+                    "data": float(parts[5]) if parts[4] == "1" else None,
                 }
             return {}
 
-        def write_calibration_data(self, manufacturer_or_user: str, password: str, channel: int,
-                                    function: int, range_: int, unit_id: int, count: int,
-                                    points: List[float], values: List[float],
-                                    year: int, month: int, day: int):
+        def write_calibration_data(
+            self,
+            manufacturer_or_user: str,
+            password: str,
+            channel: int,
+            function: int,
+            range_: int,
+            unit_id: int,
+            count: int,
+            points: List[float],
+            values: List[float],
+            year: int,
+            month: int,
+            day: int,
+        ):
             """
             Write calibration data to the device.
 
@@ -133,13 +145,21 @@ class Calibration:
             points_str = ",".join(map(str, points))
             values_str = ",".join(map(str, values))
 
-            command = (f'CALibration:ElECtricity:DATA {manufacturer_or_user},{password},'
-                        f'{channel},{function},{range_},{unit_id},{count},'
-                        f'"{points_str}","{values_str}",{year},{month},{day}')
+            command = (
+                f"CALibration:ElECtricity:DATA {manufacturer_or_user},{password},"
+                f"{channel},{function},{range_},{unit_id},{count},"
+                f'"{points_str}","{values_str}",{year},{month},{day}'
+            )
             self.parent.parent.cmd(command)
 
-        def get_calibration_data(self, manufacturer_or_user: str, password: str, channel: int,
-                                    function: int, range_: int) -> dict:
+        def get_calibration_data(
+            self,
+            manufacturer_or_user: str,
+            password: str,
+            channel: int,
+            function: int,
+            range_: int,
+        ) -> dict:
             """
             Retrieve calibration data from the device.
 
@@ -180,7 +200,7 @@ class Calibration:
                     - "month": Calibration month.
                     - "day": Calibration day.
             """
-            command = f'CALibration:ElECtricity:DATA? {manufacturer_or_user},{password},{channel},{function},{range_}'
+            command = f"CALibration:ElECtricity:DATA? {manufacturer_or_user},{password},{channel},{function},{range_}"
             response = self.parent.parent.cmd(command)
 
             if response:
@@ -192,7 +212,7 @@ class Calibration:
                     "values": [float(x) for x in parts[3].split(" ")],
                     "year": int(parts[4]),
                     "month": int(parts[5]),
-                    "day": int(parts[6])
+                    "day": int(parts[6]),
                 }
             return {}
 
@@ -210,10 +230,12 @@ class Calibration:
                 None
             """
 
-            command = f'CALibration:ELECtricity:CJCenable {int(enable)}'
+            command = f"CALibration:ELECtricity:CJCenable {int(enable)}"
             self.parent.parent.cmd(command)
 
-        def get_cjc_data(self, manufacturer_or_user: str, password: str, location: int, channel: int) -> dict:
+        def get_cjc_data(
+            self, manufacturer_or_user: str, password: str, location: int, channel: int
+        ) -> dict:
             """
             Retrieve cold junction calibration data.
 
@@ -241,7 +263,7 @@ class Calibration:
                     - "month": Calibration month.
                     - "day": Calibration day.
             """
-            command = f'CALibration:ELECtricity:DATA:CJC? {manufacturer_or_user},{password},{location},{channel}'
+            command = f"CALibration:ELECtricity:DATA:CJC? {manufacturer_or_user},{password},{location},{channel}"
             response = self.parent.parent.cmd(command)
 
             if response:
@@ -254,12 +276,21 @@ class Calibration:
                     "offset": float(parts[4]),
                     "year": int(parts[5]),
                     "month": int(parts[6]),
-                    "day": int(parts[7])
+                    "day": int(parts[7]),
                 }
             return {}
 
-        def write_cjc_data(self, manufacturer_or_user: str, password: str, location: int, channel: int,
-                            offset: float, year: int, month: int, day: int):
+        def write_cjc_data(
+            self,
+            manufacturer_or_user: str,
+            password: str,
+            location: int,
+            channel: int,
+            offset: float,
+            year: int,
+            month: int,
+            day: int,
+        ):
             """
             Write cold junction calibration data.
 
@@ -282,6 +313,8 @@ class Calibration:
                 None
             """
 
-            command = (f'CALibration:ELECtricity:DATA:CJC {manufacturer_or_user},{password},'
-                        f'{location},{channel},{offset},{year},{month},{day}')
+            command = (
+                f"CALibration:ELECtricity:DATA:CJC {manufacturer_or_user},{password},"
+                f"{location},{channel},{offset},{year},{month},{day}"
+            )
             self.parent.parent.cmd(command)

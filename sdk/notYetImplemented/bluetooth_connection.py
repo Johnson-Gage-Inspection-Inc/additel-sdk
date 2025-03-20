@@ -2,14 +2,15 @@ import asyncio
 from bleak import BleakClient, BleakScanner  # pip install bleak
 from queue import Queue, Empty
 
+
 class BluetoothConnection:
     """Class to handle Bluetooth connection to the device."""
 
     def __init__(self, parent, **kwargs):
         self.parent = parent
-        self.device_name = kwargs.get('device_name')
-        self.notification_uuid = kwargs.get('notification_uuid')
-        self.write_uuid = kwargs.get('write_uuid')
+        self.device_name = kwargs.get("device_name")
+        self.notification_uuid = kwargs.get("notification_uuid")
+        self.write_uuid = kwargs.get("write_uuid")
         self.client = None
         self.response_queue = Queue()
 
@@ -29,7 +30,9 @@ class BluetoothConnection:
                     await self.client.connect()
                     return
                 except Exception as e:
-                    raise ConnectionError(f"Failed to connect to Bluetooth device '{self.device_name}' - {e}")
+                    raise ConnectionError(
+                        f"Failed to connect to Bluetooth device '{self.device_name}' - {e}"
+                    )
         raise ConnectionError(f"Bluetooth device '{self.device_name}' not found.")
 
     def disconnect(self):
@@ -42,7 +45,9 @@ class BluetoothConnection:
                 await self.client.disconnect()
                 self.client = None
             except Exception as e:
-                raise ConnectionError(f"Failed to disconnect from Bluetooth device - {e}")
+                raise ConnectionError(
+                    f"Failed to disconnect from Bluetooth device - {e}"
+                )
 
     def send_command(self, command):
         """Send a command to the Bluetooth device."""
@@ -53,7 +58,7 @@ class BluetoothConnection:
             raise ConnectionError("Bluetooth connection is not established.")
 
         try:
-            command_in_bytes = bytes(command, 'utf-8')
+            command_in_bytes = bytes(command, "utf-8")
             await self.client.write_gatt_char(self.write_uuid, command_in_bytes)
         except Exception as e:
             raise IOError(f"Failed to send command '{command}' - {e}")
@@ -68,7 +73,7 @@ class BluetoothConnection:
 
     async def _notification_handler(self, sender, data):
         """Handle incoming notifications from the device."""
-        response = data.decode('utf-8')
+        response = data.decode("utf-8")
         self.response_queue.put(response)
 
     def enable_notifications(self):
@@ -80,7 +85,9 @@ class BluetoothConnection:
             raise ConnectionError("Bluetooth connection is not established.")
 
         try:
-            await self.client.start_notify(self.notification_uuid, self._notification_handler)
+            await self.client.start_notify(
+                self.notification_uuid, self._notification_handler
+            )
         except Exception as e:
             raise IOError(f"Failed to enable notifications - {e}")
 
