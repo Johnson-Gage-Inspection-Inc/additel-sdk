@@ -400,7 +400,7 @@ class Scan:
         response = self.parent.cmd(f"SCAN:DATA:Last? {format}")
         return DIReading.from_str(response)
 
-    def get_data_json(self, count: int = 1) -> List[DIReading]:  # Tested!
+    def get_data_json(self, count: int = 1) -> DIReading:  # Tested!
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of data points.
@@ -417,7 +417,7 @@ class Scan:
         """
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
-            return coerce(response)
+            return coerce(response)[0]
         return []
 
     def get_intelligent_wiring_data_json(
