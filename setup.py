@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="additel_sdk",
-    version="0.1.0",
+    use_scm_version=True,  # Automatically sets version from Git tags.
     author="Jeff Hall",
     author_email="rhythmatician5@gmail.com",
     description="A Python SDK to communicate with Additel devices",
