@@ -94,7 +94,7 @@ class DIFunctionChannelConfig:
             raise ValueError(
                 "Cannot determine ElectricalFunctionType from data: " + data
             )
-        subclass = function_type_to_class.get(func_type)
+        subclass = getSubclass(func_type)
         if subclass is None:
             raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
         return subclass._from_str(data)
@@ -397,21 +397,22 @@ class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
 
 
 # Mapping from ElectricalFunctionType to corresponding subclass.
-function_type_to_class = {
-    0: DIFunctionVoltageChannelConfig,
-    1: DIFunctionCurrentChannelConfig,
-    2: DIFunctionResistanceChannelConfig,
-    3: DIFunctionRTDChannelConfig,
-    4: DIFunctionThermistorChannelConfig,
-    100: DIFunctionTCChannelConfig,
-    101: DIFunctionSwitchChannelConfig,
-    102: DIFunctionSPRTChannelConfig,
-    103: DIFunctionVoltageTransmitterChannelConfig,
-    104: DIFunctionCurrentTransmitterChannelConfig,
-    105: DIFunctionStandardTCChannelConfig,
-    106: DIFunctionCustomRTDChannelConfig,
-    110: DIFunctionStandardResistanceChannelConfig,
-}
+def getSubclass(key):
+    return {
+        0: DIFunctionVoltageChannelConfig,
+        1: DIFunctionCurrentChannelConfig,
+        2: DIFunctionResistanceChannelConfig,
+        3: DIFunctionRTDChannelConfig,
+        4: DIFunctionThermistorChannelConfig,
+        100: DIFunctionTCChannelConfig,
+        101: DIFunctionSwitchChannelConfig,
+        102: DIFunctionSPRTChannelConfig,
+        103: DIFunctionVoltageTransmitterChannelConfig,
+        104: DIFunctionCurrentTransmitterChannelConfig,
+        105: DIFunctionStandardTCChannelConfig,
+        106: DIFunctionCustomRTDChannelConfig,
+        110: DIFunctionStandardResistanceChannelConfig,
+    }.get(key)
 
 # --- Channel Command Interface ---
 
