@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="additel_sdk",
+    name="pyAdditel",
     use_scm_version=True,  # Automatically sets version from Git tags.
     author="Jeff Hall",
     author_email="rhythmatician5@gmail.com",
