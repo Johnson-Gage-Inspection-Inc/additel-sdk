@@ -247,9 +247,9 @@ class DITemperatureReading(DIReading):
     """
 
     def __init__(self, **kwargs):
-        self.TempValues: List[float] = kwargs.pop("TempValues", [])
-        self.TempUnit: int = kwargs.pop("TempUnit", 0)
-        self.TempDecimals: int = kwargs.pop("TempDecimals", 0)
+        self.TempValues: List[float] = kwargs.pop("TempValues")
+        self.TempUnit: int = kwargs.pop("TempUnit")
+        self.TempDecimals: int = kwargs.pop("TempDecimals")
         # Ensure the ClassName is correctly set for validation
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITemperatureReading")
         super().__init__(**kwargs)
