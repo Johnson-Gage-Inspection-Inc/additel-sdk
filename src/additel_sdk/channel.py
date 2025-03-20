@@ -24,46 +24,38 @@ class DIFunctionChannelConfig:
         "Range",
         "Delay",
         "IsAutoRange",
-        "FilteringCount",
+        "FilteringCount"
     ]
 
-    def __init__(self, **kwargs):
+    def __init__(cls, **kwargs):
         try:
-            self.Name = str(kwargs.pop("Name"))
-            self.Enabled = int(kwargs.pop("Enabled"))
-            self.Label = str(kwargs.pop("Label"))
-            self.ElectricalFunctionType = int(kwargs.pop("ElectricalFunctionType"))
-            self.Range = int(kwargs.pop("Range"))
-            self.Delay = int(kwargs.pop("Delay"))
-            self.IsAutoRange = int(kwargs.pop("IsAutoRange"))
-            self.FilteringCount = int(kwargs.pop("FilteringCount"))
+            cls.Name = str(kwargs.pop("Name"))
+            cls.Enabled = int(kwargs.pop("Enabled"))
+            cls.Label = str(kwargs.pop("Label", ""))
+            cls.ElectricalFunctionType = int(kwargs.pop("ElectricalFunctionType"))
+            cls.Range = int(kwargs.pop("Range"))
+            cls.Delay = int(kwargs.pop("Delay"))
+            cls.IsAutoRange = int(kwargs.pop("IsAutoRange"))
+            cls.FilteringCount = int(kwargs.pop("FilteringCount"))
         except KeyError as e:
             raise ValueError("Missing common key: " + str(e))
 
-        self.__dict__.update(kwargs)  # Handle additional keys dynamically
+        cls.__dict__.update(kwargs)  # Handle additional keys dynamically
 
-    def __repr__(self):
-        return self.__str__()
+    def __repr__(cls):
+        return cls.__str__()
 
-    def __str__(self):
+    def __str__(cls):
         # Use the common keys plus the extra keys (in a fixed order)
-        keys_order = self.common_keys + self.extra_key_order()
-        return ",".join(str(self.__dict__.get(k, "")) for k in keys_order)
+        keys_order = cls.get_keys_order()
+        return ",".join(str(cls.__dict__.get(k, "")) for k in keys_order)
 
-    def extra_key_order(self):
-        """
-        Subclasses should override this method to return a list of extra key names in order.
-        """
-        if hasattr(self, "extra_keys"):
-            return self.extra_keys
-        return []
-
-    def _addSubclassAttributes(self, kwargs):
-        for key in self.extra_keys:
+    def _addSubclassAttributes(cls, kwargs):
+        for key in cls.extra_keys:
             if key in kwargs:
-                setattr(self, key, kwargs.pop(key))
-            else:
-                raise ValueError(f"Missing key '{key}' for {self.__class__.__name__}")
+                setattr(cls, key, kwargs.pop(key))
+            # else:
+            #     raise ValueError(f"Missing key '{key}' for {cls.__class__.__name__}")
 
     @classmethod
     def expected_types(cls):
@@ -106,27 +98,44 @@ class DIFunctionChannelConfig:
     def _from_str(cls, data: str):
         # Parse based on the expected order of keys.
         values = data.split(",")
-        keys_order = cls.common_keys + cls.extra_key_order()
-        if len(values) != len(keys_order):
-            raise ValueError(
-                f"Expected {len(keys_order)} values, got {len(values)} in {data}"
-            )
+        keys_order = cls.get_keys_order()
+        # if len(values) != len(keys_order):
+        #     raise ValueError(
+        #         f"Expected {len(keys_order)} values, got {len(values)} in {data}"
+        #     )
         types = cls.expected_types()
         kwargs = {}
         for k, v, t in zip(keys_order, values, types):
             kwargs[k] = t(v) if v != "" else None
         return cls(**kwargs)
 
+    @classmethod
+    def get_keys_order(cls):
+        keys_order = [
+            "Name",
+            "Enabled",
+            "Label",
+            "ElectricalFunctionType",
+            "Range",
+            "Delay",
+            "IsAutoRange",
+            "FilteringCount"
+        ]
+        if hasattr(cls, "extra_keys"):
+            keys_order += cls.extra_keys
+        return keys_order
+
 
 # --- Subclass Definitions ---
 
 
 class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
-    """ Voltage Function Channel Configuration """
+    """Voltage Function Channel Configuration"""
+
     extra_keys = ["highImpedance"]
 
-    def __init__(self, **kwargs):
-        self._addSubclassAttributes(kwargs)
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
         super().__init__(**kwargs)
 
@@ -135,37 +144,20 @@ class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
     # func_type 1: Current – no extra parameters
     extra_keys = []
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return []
-
-    def _init_extra(self, kwargs):
-        pass
+        super().__init__(**kwargs)
 
 
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     # func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)
     extra_keys = ["Wire", "IsOpenDetect"]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, int]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionResistanceChannelConfig"
-                )
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
@@ -179,40 +171,20 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
         "CompensateInterval",
     ]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(f"Missing key '{key}' for DIFunctionRTDChannelConfig")
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
     # func_type 4: Thermistor – extra parameters: Wire, SensorName, SensorSN, Id
     extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionThermistorChannelConfig"
-                )
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
@@ -227,35 +199,20 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
         "CjcChannelName",
     ]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int, str]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(f"Missing key '{key}' for DIFunctionTCChannelConfig")
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
     # func_type 101: Switch – not specified in the documentation.
     extra_keys = []
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return []
-
-    def _init_extra(self, kwargs):
-        pass
+        super().__init__(**kwargs)
 
 
 class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
@@ -269,61 +226,48 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
         "CompensateInterval",
     ]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int]
+        super().__init__(**kwargs)
 
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(f"Missing key '{key}' for DIFunctionSPRTChannelConfig")
-            self[key] = t(kwargs.pop(key))
+    def __str__(cls):
+        # Use the common keys plus the extra keys (in a fixed order)
+        return ",".join(str(cls.__dict__.get(k, "")) for k in [
+            "Name",
+            "Enabled",
+            "Label",
+            "ElectricalFunctionType",
+            "Range",
+            "Delay",
+            "IsAutoRange",
+            "FilteringCount",
+            "SensorName",
+            "SensorSN",
+            "Id",
+            "IsSquareRooting2Current",
+            "CompensateInterval",
+        ])
 
 
 class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
     # func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id
     extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionVoltageTransmitterChannelConfig"
-                )
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
     # func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id
     extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionCurrentTransmitterChannelConfig"
-                )
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
@@ -338,21 +282,10 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
         "CjcChannelName",
     ]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int, str]
-
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionStandardTCChannelConfig"
-                )
-            self[key] = t(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
@@ -366,37 +299,37 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
         "CompensateInterval",
     ]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int]
+        super().__init__(**kwargs)
 
-    def _init_extra(self, kwargs):
-        for key, t in zip(self.extra_keys, self.extra_types()):
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionCustomRTDChannelConfig"
-                )
-            self[key] = t(kwargs.pop(key))
-
+    def __str__(cls):
+        # Use the common keys plus the extra keys (in a fixed order)
+        return ",".join(str(cls.__dict__.get(k, "")) for k in [
+            "Name",
+            "Enabled",
+            "Label",
+            "ElectricalFunctionType",
+            "Range",
+            "Delay",
+            "IsAutoRange",
+            "FilteringCount",
+            "SensorName",
+            "SensorSN",
+            "Id",
+            "IsSquareRooting2Current",
+            "CompensateInterval",
+        ])
 
 class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
     # func_type 110: Standard Resistance – not specified in the documentation.
     extra_keys = []
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(cls, **kwargs):
+        cls._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return []
-
-    def _init_extra(self, kwargs):
-        pass
+        super().__init__(**kwargs)
 
 
 # Mapping from ElectricalFunctionType to corresponding subclass.
@@ -417,6 +350,7 @@ def getSubclass(key):
         110: DIFunctionStandardResistanceChannelConfig,
     }.get(key)
 
+
 # --- Channel Command Interface ---
 
 
@@ -428,28 +362,28 @@ class Channel:
         "CH1-09A", "CH1-09B", "CH1-10A", "CH1-10B"
     ]
 
-    def __init__(self, parent):
-        self.parent = parent
+    def __init__(cls, parent):
+        cls.parent = parent
 
-    def _validate_name(self, name):
-        if name not in self.valid_names:
+    def _validate_name(cls, name):
+        if name not in cls.valid_names:
             raise ValueError(f"Invalid channel name: {name}")
 
     def get_configuration_json(
-        self, channel_names: List[str]
+        cls, channel_names: List[str]
     ) -> List[DIFunctionChannelConfig]:
         for name in channel_names:
-            self._validate_name(name)
+            cls._validate_name(name)
         names_str = ",".join(channel_names)
-        if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
+        if response := cls.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
-    def get_configuration(self, channel_name: str) -> List[DIFunctionChannelConfig]:
-        self._validate_name(channel_name)
-        if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
+    def get_configuration(cls, channel_name: str) -> List[DIFunctionChannelConfig]:
+        cls._validate_name(channel_name)
+        if response := cls.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 
-    def configure(self, config: DIFunctionChannelConfig):  # Not yet implemented.
+    def configure(cls, config: DIFunctionChannelConfig):  # Not yet implemented.
         """Set channel configuration.
 
         Args:
@@ -460,9 +394,9 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:CONFig {config};"
-        self.parent.send_command(command)
+        cls.parent.send_command(command)
 
-    def set_zero(self, enable: bool):  # Not yet implemented.
+    def set_zero(cls, enable: bool):  # Not yet implemented.
         """Enable or disable zero clearing for a single channel.
 
         This command sets or cancels zero clearing for a specific channel.
@@ -475,4 +409,4 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:ZERo {int(enable)}"
-        self.parent.send_command(command)
+        cls.parent.send_command(command)
