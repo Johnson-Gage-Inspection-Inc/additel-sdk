@@ -2,6 +2,7 @@
 
 import pytest
 from src.additel_sdk.channel import DIFunctionChannelConfig
+from src.additel_sdk.coerce import coerce
 
 
 def test_get_channel_config(additel):
@@ -41,3 +42,20 @@ def test_channel_configure(additel, channel_config):
 def test_channel_types(additel, channel_name, expected_type):
     config = additel.Channel.get_configuration(channel_name)
     assert config.ElectricalFunctionType == expected_type
+
+
+@pytest.mark.parametrize(
+    "file,expected",
+    [
+        ("RTDChannelConfigList.json",
+         ['REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0',
+          'REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0']),  # RTD
+    ],
+)
+def test_coerce_ChannelConfig(additel, file, expected):
+    test_data_dir = "tests/testdata/"
+    with open(test_data_dir + file, "r") as f:
+        config = f.read()
+    coerced_config = coerce(config)
+    for conf, exp in zip(coerced_config, expected):
+        assert str(conf) == exp
