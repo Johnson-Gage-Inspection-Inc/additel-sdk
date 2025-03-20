@@ -5,7 +5,6 @@ import json
 from .coerce import coerce
 import logging
 from datetime import datetime, timedelta
-from typing import get_origin, get_args
 
 
 class DIReading(dict):
@@ -54,89 +53,17 @@ class DIReading(dict):
 
     def __init__(self, **kwargs):
         try:
-            if className := kwargs.pop("ClassName", None):
-                self.validate_structure(kwargs, className)
+            if kwargs.pop("ClassName", None):
+                self.validate_structure(kwargs)
             self.__dict__.update(kwargs)
         except Exception as e:
             print(f"Error: {e}")
 
-    def validate_structure(self, kwargs, className):
-        function_handlers = {
-            "TAU.Module.Channels.DI.DITemperatureReading": {
-                "TempValues": List[
-                    float
-                ],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
-                "TempUnit": int,
-                "TempDecimals": int,
-                "ChannelName": str,
-                "Values": List[
-                    float
-                ],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
-                "ValuesFiltered": List[
-                    float
-                ],  # 'System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib'
-                "DateTimeTicks": List[
-                    datetime
-                ],  # 'System.Collections.Generic.List`1[[TAU.Module.Channels.DI.TimeTick, TAU.Module.Channels]], mscorlib'
-                "Unit": int,
-                "ValueDecimals": int,
-                # "ClassName": str
-            },
-            "TAU.Module.Channels.DI.DIElectricalReading": {},  # FIXME: Not yet implemented
-            "TAU.Module.Channels.DI.DITCReading": {},  # FIXME: Not yet implemented
-        }
-        prefix = "TAU.Module.Channels.DI."
-        if not className.startswith(prefix):
-            className = prefix + className
-        if (
-            not className == "TAU.Module.Channels.DI.DITemperatureReading"
-        ):  # NOTE: This is the only one I've encountered so far.
-            if className in function_handlers.keys():
-                raise NotImplementedError(
-                    f"Subclass {className} not yet implemented for DIReading"
-                )
-            else:
-                raise ValueError(
-                    f"Unknown class: {className}. Expected one of {list(function_handlers.keys())}"
-                )
-
-        if not (expectedKeys := function_handlers.get(className, None)):
-            raise ValueError(
-                f"Unknown class: {className}. Expected one of {list(self.function_handlers.keys())}"
-            )
-
-        for key, expectedType in expectedKeys.items():
-            value = kwargs.get(key, None)
-            if value is None:
-                raise ValueError(f"Missing key: {key}")
-
-            origin = get_origin(expectedType)
-            args = get_args(expectedType)
-
-            if origin is not None:  # Handle generics like List, Dict, etc.
-                if not isinstance(value, origin):
-                    raise TypeError(
-                        f"Expected {expectedType}, got {type(value)} for key {key}"
-                    )
-                if args:  # Check the arguments of the generic type
-                    if origin in {list, tuple}:
-                        if not all(isinstance(item, args[0]) for item in value):
-                            raise TypeError(
-                                f"Expected elements of type {args[0]} in {key}"
-                            )
-                    elif origin is dict:
-                        if not all(
-                            isinstance(k, args[0]) and isinstance(v, args[1])
-                            for k, v in value.items()
-                        ):
-                            raise TypeError(
-                                f"Expected dict with key type {args[0]} and value type {args[1]} in {key}"
-                            )
-            else:  # Handle non-generic types, like int, str, float, etc.
-                if not isinstance(value, expectedType):
-                    raise TypeError(
-                        f"Expected {expectedType}, got {type(value)} for key {key}"
-                    )
+    def validate_structure(self, kwargs):
+        # If there are extra keys that haven't been handled by the subclass,
+        # you can either ignore them or raise an error.
+        if kwargs:
+            raise ValueError(f"Unexpected keys: {list(kwargs.keys())}")
 
     def __str__(self):
         def rnd(li: list, n: int = None) -> List[float]:
@@ -173,7 +100,7 @@ class DIReading(dict):
                 "Values",
                 "ValuesFiltered",
                 "TempUnit",
-                "?",
+                "?",  # TempDecimals?
                 "TempValues",
             ]
             dictionary = dict(zip(keys, array))
