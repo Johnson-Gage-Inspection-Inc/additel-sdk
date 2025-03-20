@@ -42,6 +42,9 @@ class DIFunctionChannelConfig:
 
         self.__dict__.update(kwargs)  # Handle additional keys dynamically
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
         # Use the common keys plus the extra keys (in a fixed order)
         keys_order = self.common_keys + self.extra_key_order()
