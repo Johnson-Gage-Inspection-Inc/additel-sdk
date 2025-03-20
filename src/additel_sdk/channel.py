@@ -2,257 +2,370 @@
 from .coerce import coerce
 from typing import List
 
-
 class DIFunctionChannelConfig(dict):
-    """Data structure for channel configuration.
-
-    channel_name (str): The name of the channel to configure.
-    enabled (int): Enable or disable the channel (1 for enabled, 0 for disabled).
-    label (str): A custom label for the channel.
-    func_type (int): Function type, with the following values:
-        - 0: Voltage
-        - 1: Current
-        - 2: Resistance
-        - 3: RTD
-        - 4: Thermistor
-        - 100: Thermocouple (TC)
-        - 101: Switch
-        - 102: SPRT
-        - 103: Voltage Transmitter
-        - 104: Current Transmitter
-        - 105: Standard TC
-        - 106: Custom RTD
-        - 110: Standard Resistance
-    range_index (int): The range index for the channel.
-    delay (int): Channel delay.
-    auto_range (int): Automatic range setting (1 for enabled, 0 for disabled).
-    filters (int): Number of filters.
-    other_params (str): Additional parameters based on the function type:
-        - Voltage: High impedance or not.
-        - Current: None.
-        - Resistance: Wires, whether to open positive and negative current.
-        - RTD/SPRT/Custom RTD: Sensor name, wires, sensor serial number, sensor ID,
-        whether to open 1.4 times current, compensation interval.
-        - Thermistor: Sensor name, wires, sensor serial number, sensor ID.
-        - TC/Standard TC: Break detection, sensor name, sensor serial number,
-        sensor ID, cold junction type (0 internal, 1 external, 2 custom),
-        cold end fixed value, external cold junction channel name.
-        - Switch: Switch type.
-        - Current/Voltage Transmitter: Wires, sensor name, sensor serial number, sensor ID.
-
-    Raises:
-        ValueError: If the ElectricalFunctionType is not one of the expected values.
-        TypeError: If the value of a key does not match the expected type.
-
-    Returns:
-        DIFunctionChannelConfig: An instance of DIFunctionChannelConfig.
     """
-
-    valid_names = [
-        "REF1",
-        "REF2",
-        "CH1-01A",
-        "CH1-01B",
-        "CH1-02A",
-        "CH1-02B",
-        "CH1-03A",
-        "CH1-03B",
-        "CH1-04A",
-        "CH1-04B",
-        "CH1-05A",
-        "CH1-05B",
-        "CH1-06A",
-        "CH1-06B",
-        "CH1-07A",
-        "CH1-07B",
-        "CH1-08A",
-        "CH1-08B",
-        "CH1-09A",
-        "CH1-09B",
-        "CH1-10A",
-        "CH1-10B",
-    ]
-
-    def validate_name(self, channel_name):
-        assert channel_name in self.valid_names, f"Invalid channel name: {channel_name}"
-
-    @classmethod
-    def get_keys_and_types(self, **kwargs):
-        types = {
-            "Name": str,  # Channel name
-            "Enabled": int,  # Enable or not
-            "Label": str,  # Label
-            "ElectricalFunctionType": int,  # Function type
-            "Range": int,  # Range index
-            "Delay": int,  # Channel delay
-            "IsAutoRange": int,  # Automatic range or not
-            "FilteringCount": int,  # Filter
-        }
-
-        func_type = kwargs.get("ElectricalFunctionType")
-
-        function_handlers = {
-            0: {"highImpedance": int},  # high impedence or not  # Voltage
-            1: {},  # Current
-            2: {  # Resistance
-                "Wire": int,  # wires
-                "IsOpenDetect": int,  # whether to open positive or negative current
-            },
-            3: {  # RTD
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
-                "CompensateInterval": int,  # compensation interval
-            },
-            4: {  # Thermistor
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-            },
-            100: {  # Thermocouple (TC)
-                "IsOpenDetect": int,  # Whether the break detection
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "CjcType": int,  # cold junction type
-                "CJCFixedValue": int,  # Was float, but we're trying int.,  # cold junction fixed value
-                "CjcChannelName": str,  # custom cold junction channel name
-            },
-            101: {  # Switch
-                # NOTE: Not specified in the documentation
-            },
-            102: {  # SPRT
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
-                "CompensateInterval": int,  # compensation interval
-            },
-            103: {
-                "Wire": int,
-                "SensorName": str,
-                "SensorSN": str,
-                "Id": str,
-            },  # Voltage Transmitter
-            104: {
-                "Wire": int,
-                "SensorName": str,
-                "SensorSN": str,
-                "Id": str,
-            },  # Current Transmitter
-            105: {  # Standard TC
-                "IsOpenDetect": int,  # Whether the break detection
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "CjcType": int,  # cold junction type
-                "CJCFixedValue": int,  # Was float, but we're trying int.,  # cold junction fixed value
-                "CjcChannelName": str,  # custom cold junction channel name
-            },
-            106: {  # Custom RTD
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
-                "CompensateInterval": int,  # compensation interval
-            },
-            110: {  # Standard Resistance
-                # NOTE: Not specified in the documentation
-            },
-        }
-
-        if func_type in function_handlers:
-            return {**types, **function_handlers[func_type]}
-        raise ValueError(
-            f"ElectricalFunctionType must be one of {list(function_handlers.keys())}, got {func_type}."
-        )
+    Base class for channel configuration. Contains common keys:
+      - Name: channel name
+      - Enabled: whether the channel is enabled
+      - Label: channel label
+      - ElectricalFunctionType: function type number
+      - Range: range index
+      - Delay: channel delay
+      - IsAutoRange: automatic range setting (1/0)
+      - FilteringCount: number of filters
+    """
+    # Define the order and expected keys for all channels.
+    common_keys = ["Name", "Enabled", "Label", "ElectricalFunctionType", "Range", "Delay", "IsAutoRange", "FilteringCount"]
 
     def __init__(self, **kwargs):
-        for key, expected_type in self.get_keys_and_types(**kwargs).items():
-            value = kwargs.get(key, None)
-            self.validate(key, expected_type, value)
-            self[key] = expected_type(value) if value is not None else ""
-            self.validate_name(self.get("Name"))
+        try:
+            self["Name"] = str(kwargs.pop("Name"))
+            self["Enabled"] = int(kwargs.pop("Enabled"))
+            self["Label"] = str(kwargs.pop("Label"))
+            self["ElectricalFunctionType"] = int(kwargs.pop("ElectricalFunctionType"))
+            self["Range"] = int(kwargs.pop("Range"))
+            self["Delay"] = int(kwargs.pop("Delay"))
+            self["IsAutoRange"] = int(kwargs.pop("IsAutoRange"))
+            self["FilteringCount"] = int(kwargs.pop("FilteringCount"))
+        except KeyError as e:
+            raise ValueError("Missing common key: " + str(e))
+        self.validate_name(self["Name"])
+        # Let the subclass initialize extra keys.
+        self._init_extra(kwargs)
+        if kwargs:
+            raise ValueError("Unexpected keys: " + str(kwargs))
+    
+    def _init_extra(self, kwargs):
+        """
+        Subclasses should override this method to extract their extra keys.
+        """
+        pass
 
-    def validate(self, key, expected_type, value):
-        if value is not None and not isinstance(value, expected_type):
-            raise TypeError(f"Key '{key}' expects {expected_type}, got {type(value)}.")
-
-    @classmethod
-    def from_str(self, data: str):
-        """Parse the channel configuration from a string."""
-        if ";" in data:
-            assert not data.split(";")[-1], "Trailing semicolon expected"
-            return [self.from_str(d) for d in data.split(";")[:-1]]
-        if not data:
-            return None
-        values = data.split(",")
-        func_type = int(values[3])
-        keys_and_types = self.get_keys_and_types(ElectricalFunctionType=func_type)
-        keys = list(keys_and_types.keys())
-        kwargs = {
-            key: (keys_and_types[key](value) if value else None)
-            for key, value in zip(keys, values)
-        }
-        assert len(kwargs) == len(keys), f"Missing keys: {keys}"
-        assert (
-            str(self(**kwargs)) == data
-        ), f"Unexpected response: {data}\nExpected: {str(self(**kwargs))}"
-        return self(**kwargs)
+    def validate_name(self, name):
+        valid_names = [
+            "REF1", "REF2", "CH1-01A", "CH1-01B", "CH1-02A", "CH1-02B",
+            "CH1-03A", "CH1-03B", "CH1-04A", "CH1-04B", "CH1-05A", "CH1-05B",
+            "CH1-06A", "CH1-06B", "CH1-07A", "CH1-07B", "CH1-08A", "CH1-08B",
+            "CH1-09A", "CH1-09B", "CH1-10A", "CH1-10B",
+        ]
+        if name not in valid_names:
+            raise ValueError(f"Invalid channel name: {name}")
 
     def __str__(self):
-        """Convert the DIFunctionChannelConfig object to a string representation."""
-        keys = self.keys()
-        return ",".join(str(self[key]) if self[key] is not None else "" for key in keys)
+        # Use the common keys plus the extra keys (in a fixed order)
+        keys_order = self.common_keys + self.extra_key_order()
+        return ",".join(str(self.get(k, "")) for k in keys_order)
 
+    def extra_key_order(self):
+        """
+        Subclasses should override this method to return a list of extra key names in order.
+        """
+        return []
+
+    @classmethod
+    def expected_types(cls):
+        # Common types: Name (str), Enabled (int), Label (str), ElectricalFunctionType (int),
+        # Range (int), Delay (int), IsAutoRange (int), FilteringCount (int)
+        common_types = [str, int, str, int, int, int, int, int]
+        return common_types + cls.extra_types()
+
+    @classmethod
+    def extra_types(cls):
+        """
+        Subclasses should override this method to return a list of types for extra keys.
+        """
+        return []
+
+    @classmethod
+    def from_str(cls, data: str):
+        """
+        Factory method to parse a channel configuration from a comma-separated string.
+        If multiple entries are present (separated by semicolons), returns a list.
+        """
+        if ";" in data:
+            parts = data.split(";")
+            parts = [p for p in parts if p]  # drop empty parts
+            return [cls.from_str(p) for p in parts]
+        # Split the data and determine function type from the fourth value.
+        values = data.split(",")
+        try:
+            func_type = int(values[3])
+        except Exception:
+            raise ValueError("Cannot determine ElectricalFunctionType from data: " + data)
+        subclass = function_type_to_class.get(func_type)
+        if subclass is None:
+            raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
+        return subclass._from_str(data)
+
+    @classmethod
+    def _from_str(cls, data: str):
+        # Parse based on the expected order of keys.
+        values = data.split(",")
+        keys_order = cls.common_keys + cls.extra_key_order()
+        if len(values) != len(keys_order):
+            raise ValueError(f"Expected {len(keys_order)} values, got {len(values)} in {data}")
+        types = cls.expected_types()
+        kwargs = {}
+        for k, v, t in zip(keys_order, values, types):
+            kwargs[k] = t(v) if v != "" else None
+        return cls(**kwargs)
+
+# --- Subclass Definitions ---
+
+class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
+    # func_type 0: Voltage – extra parameter: highImpedance (int)
+    extra_keys = ["highImpedance"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int]
+
+    def _init_extra(self, kwargs):
+        for key in self.extra_keys:
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionVoltageChannelConfig")
+            self[key] = int(kwargs.pop(key))
+
+class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
+    # func_type 1: Current – no extra parameters
+    extra_keys = []
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return []
+
+    def _init_extra(self, kwargs):
+        pass
+
+class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
+    # func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)
+    extra_keys = ["Wire", "IsOpenDetect"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, int]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionResistanceChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
+    # func_type 3: RTD – extra parameters: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval
+    extra_keys = ["Wire", "SensorName", "SensorSN", "Id", "IsSquareRooting2Current", "CompensateInterval"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionRTDChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
+    # func_type 4: Thermistor – extra parameters: Wire, SensorName, SensorSN, Id
+    extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionThermistorChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
+    # func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName
+    extra_keys = ["IsOpenDetect", "SensorName", "SensorSN", "Id", "CjcType", "CJCFixedValue", "CjcChannelName"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int, str]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionTCChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
+    # func_type 101: Switch – not specified in the documentation.
+    extra_keys = []
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return []
+
+    def _init_extra(self, kwargs):
+        pass
+
+class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
+    # func_type 102: SPRT – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval
+    extra_keys = ["Wire", "SensorName", "SensorSN", "Id", "IsSquareRooting2Current", "CompensateInterval"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionSPRTChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
+    # func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id
+    extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionVoltageTransmitterChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
+    # func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id
+    extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionCurrentTransmitterChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
+    # func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName
+    extra_keys = ["IsOpenDetect", "SensorName", "SensorSN", "Id", "CjcType", "CJCFixedValue", "CjcChannelName"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int, str]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionStandardTCChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
+    # func_type 106: Custom RTD – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval
+    extra_keys = ["Wire", "SensorName", "SensorSN", "Id", "IsSquareRooting2Current", "CompensateInterval"]
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int]
+
+    def _init_extra(self, kwargs):
+        for key, t in zip(self.extra_keys, self.extra_types()):
+            if key not in kwargs:
+                raise ValueError(f"Missing key '{key}' for DIFunctionCustomRTDChannelConfig")
+            self[key] = t(kwargs.pop(key))
+
+class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
+    # func_type 110: Standard Resistance – not specified in the documentation.
+    extra_keys = []
+
+    @classmethod
+    def extra_key_order(cls):
+        return cls.extra_keys
+
+    @classmethod
+    def extra_types(cls):
+        return []
+
+    def _init_extra(self, kwargs):
+        pass
+
+# Mapping from ElectricalFunctionType to corresponding subclass.
+function_type_to_class = {
+    0: DIFunctionVoltageChannelConfig,
+    1: DIFunctionCurrentChannelConfig,
+    2: DIFunctionResistanceChannelConfig,
+    3: DIFunctionRTDChannelConfig,
+    4: DIFunctionThermistorChannelConfig,
+    100: DIFunctionTCChannelConfig,
+    101: DIFunctionSwitchChannelConfig,
+    102: DIFunctionSPRTChannelConfig,
+    103: DIFunctionVoltageTransmitterChannelConfig,
+    104: DIFunctionCurrentTransmitterChannelConfig,
+    105: DIFunctionStandardTCChannelConfig,
+    106: DIFunctionCustomRTDChannelConfig,
+    110: DIFunctionStandardResistanceChannelConfig,
+}
+
+# --- Channel Command Interface ---
 
 class Channel:
     def __init__(self, parent):
         self.parent = parent
 
-    def get_configuration_json(
-        self, channel_names: List[str]
-    ) -> List[DIFunctionChannelConfig]:  # Tested!
-        """Acquire the configuration of a specific channel.
-
-        This command retrieves the configuration for a specified channel.
-
-        Args:
-            channel_names (str): The channels to query.
-
-        Returns:
-            List[DIFunctionChannelConfig]:
-                - Channel name
-                - Enable or not (0 or 1)
-                - Label
-                - Function type
-                - Range index
-                - Channel delay
-                - Automatic range (0 or 1)
-                - Number of filters
-                - m additional parameters, based on the type of electrical measurement:
-                    * Voltage (m=1): High impedance or not
-                    * Current (m=0): None
-                    * Resistance (m=2): Wires, open positive/negative current
-                    * RTD/SPRT/Custom RTD (m=6): Wires, sensor name, sensor serial number, sensor ID,
-                    whether to open 1.4x current, compensation interval
-                    * Thermistors (m=4): Wires, sensor name, sensor serial number, sensor ID
-                    * TC/Standard TC (m=7): Break detection, sensor name, sensor serial number, sensor ID,
-                    cold junction type, cold junction fixed value, custom cold junction channel name
-                    * Current/Voltage Transmitters (m=4): Wires, sensor name, sensor serial number, sensor ID
-        """
+    def get_configuration_json(self, channel_names: List[str]) -> List[DIFunctionChannelConfig]:
         names_str = ",".join(channel_names)
         if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
-    def get_configuration(
-        self, channel_name: str
-    ) -> List[DIFunctionChannelConfig]:  # Tested!
+    def get_configuration(self, channel_name: str) -> List[DIFunctionChannelConfig]:
         if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 
