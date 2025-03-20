@@ -404,5 +404,5 @@ class DITCReading(DIReading):
         self.TempUnit: int = kwargs.pop("TempUnit")
         self.TempDecimals: int = kwargs.pop("TempDecimals")
         # Set the proper ClassName for later coercion.
-        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITCReading")
+        kwargs.setdefault("ClassName", "DITCReading")
         super().__init__(**kwargs)
