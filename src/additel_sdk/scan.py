@@ -5,6 +5,7 @@ import json
 from .coerce import coerce
 import logging
 from datetime import datetime, timedelta
+from math import inf
 
 
 class DIReading(dict):
@@ -280,7 +281,13 @@ class DITemperatureReading(DIReading):
         dictionary["ValuesFiltered"] = [
             float(d["ValuesFiltered"]) for d in dictionaries
         ]
-        dictionary["TempValues"] = [float(d["TempValues"]) for d in dictionaries]
+
+        def extendedFloat(x) -> float:
+            if x == '------':
+                return -inf
+            return float(x)
+
+        dictionary["TempValues"] = [extendedFloat(d["TempValues"]) for d in dictionaries]
 
         assert all(
             dictionaries[i]["ChannelName"] == dictionaries[i + 1]["ChannelName"]
