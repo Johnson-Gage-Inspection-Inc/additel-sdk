@@ -271,45 +271,41 @@ class DITemperatureReading(DIReading):
             dictionary = dict(zip(keys, array))
             dictionary["TempDecimals"] = len(str(array[4]).split(".")[1])
             dictionaries.append(dictionary)
+
+        ChannelName = dictionary["ChannelName"]
+        dictionary["DateTimeTicks"] = [
+            self.ticksToDatetime(d["DateTimeTicks"]) for d in dictionaries
+        ]
+        dictionary["Values"] = [float(d["Values"]) for d in dictionaries]
+        dictionary["ValuesFiltered"] = [
+            float(d["ValuesFiltered"]) for d in dictionaries
+        ]
+        dictionary["TempValues"] = [float(d["TempValues"]) for d in dictionaries]
+
         assert all(
             dictionaries[i]["ChannelName"] == dictionaries[i + 1]["ChannelName"]
             for i in range(len(dictionaries) - 1)
         ), "Channel names do not match"
-        ChannelName = dictionaries[0]["ChannelName"]
         assert all(
             dictionaries[i]["Unit"] == dictionaries[i + 1]["Unit"]
             for i in range(len(dictionaries) - 1)
         ), f"Units do not match for channel {ChannelName}: {[dictionaries[i]['Unit'] for i in range(len(dictionaries))]}"
-        Unit = dictionaries[0]["Unit"]
         assert all(
             dictionaries[i]["TempUnit"] == dictionaries[i + 1]["TempUnit"]
             for i in range(len(dictionaries) - 1)
         ), f"Temperature units do not match for channel {ChannelName}"
-        TempUnit = dictionaries[0]["TempUnit"]
         assert all(
             dictionaries[i]["TempDecimals"] == dictionaries[i + 1]["TempDecimals"]
             for i in range(len(dictionaries) - 1)
         ), f"Temperature decimals do not match for channel {ChannelName}"
-        TempDecimals = dictionaries[0]["TempDecimals"]
-        DateTimeTicks = [self.ticksToDatetime(d["DateTimeTicks"]) for d in dictionaries]
-        Values = [float(d["Values"]) for d in dictionaries]
-        ValuesFiltered = [float(d["ValuesFiltered"]) for d in dictionaries]
-        TempValues = [float(d["TempValues"]) for d in dictionaries]
         assert (
-            len(Values) == len(ValuesFiltered) == len(TempValues) == len(DateTimeTicks)
+            len(dictionary["Values"])
+            == len(dictionary["ValuesFiltered"])
+            == len(dictionary["TempValues"])
+            == len(dictionary["DateTimeTicks"])
         ), f"Lengths of data do not match for channel {ChannelName}"
-        dictionary = {
-            "ChannelName": ChannelName,
-            "Unit": Unit,
-            "DateTimeTicks": DateTimeTicks,
-            "Values": Values,
-            "ValuesFiltered": ValuesFiltered,
-            "TempUnit": TempUnit,
-            "TempDecimals": TempDecimals,
-            "TempValues": TempValues,
-        }
-        newObject = DIReading(**dictionary)
-        return newObject
+
+        return self(**dictionary)
 
     def __str__(self):
         def rnd(li: list, n: int = None) -> List[float]:
