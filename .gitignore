@@ -1,3 +1,4 @@
 sdk/__pycache__/*
 *.pyc
 *.egg-info/
+.coverage
