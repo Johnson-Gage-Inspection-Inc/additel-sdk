@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from math import inf
 
 
-class DIReading(dict):
+class DIReading:
     """Represents a single channel's measurement data."""
 
     def __init__(self, **kwargs):
