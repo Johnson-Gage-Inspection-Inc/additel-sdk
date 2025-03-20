@@ -3,7 +3,7 @@ from .coerce import coerce
 from typing import List
 
 
-class DIFunctionChannelConfig(dict):
+class DIFunctionChannelConfig:
     """
     Base class for channel configuration. Contains common keys:
       - Name: channel name
@@ -16,7 +16,6 @@ class DIFunctionChannelConfig(dict):
       - FilteringCount: number of filters
     """
 
-    # Define the order and expected keys for all channels.
     common_keys = [
         "Name",
         "Enabled",
@@ -30,55 +29,18 @@ class DIFunctionChannelConfig(dict):
 
     def __init__(self, **kwargs):
         try:
-            self["Name"] = str(kwargs.pop("Name"))
-            self["Enabled"] = int(kwargs.pop("Enabled"))
-            self["Label"] = str(kwargs.pop("Label"))
-            self["ElectricalFunctionType"] = int(kwargs.pop("ElectricalFunctionType"))
-            self["Range"] = int(kwargs.pop("Range"))
-            self["Delay"] = int(kwargs.pop("Delay"))
-            self["IsAutoRange"] = int(kwargs.pop("IsAutoRange"))
-            self["FilteringCount"] = int(kwargs.pop("FilteringCount"))
+            self.Name = str(kwargs.pop("Name"))
+            self.Enabled = int(kwargs.pop("Enabled"))
+            self.Label = str(kwargs.pop("Label"))
+            self.ElectricalFunctionType = int(kwargs.pop("ElectricalFunctionType"))
+            self.Range = int(kwargs.pop("Range"))
+            self.Delay = int(kwargs.pop("Delay"))
+            self.IsAutoRange = int(kwargs.pop("IsAutoRange"))
+            self.FilteringCount = int(kwargs.pop("FilteringCount"))
         except KeyError as e:
             raise ValueError("Missing common key: " + str(e))
-        self.validate_name(self["Name"])
-        # Let the subclass initialize extra keys.
-        self._init_extra(kwargs)
-        if kwargs:
-            raise ValueError("Unexpected keys: " + str(kwargs))
 
-    def _init_extra(self, kwargs):
-        """
-        Subclasses should override this method to extract their extra keys.
-        """
-        pass
-
-    def validate_name(self, name):
-        valid_names = [
-            "REF1",
-            "REF2",
-            "CH1-01A",
-            "CH1-01B",
-            "CH1-02A",
-            "CH1-02B",
-            "CH1-03A",
-            "CH1-03B",
-            "CH1-04A",
-            "CH1-04B",
-            "CH1-05A",
-            "CH1-05B",
-            "CH1-06A",
-            "CH1-06B",
-            "CH1-07A",
-            "CH1-07B",
-            "CH1-08A",
-            "CH1-08B",
-            "CH1-09A",
-            "CH1-09B",
-            "CH1-10A",
-            "CH1-10B",
-        ]
-        if name not in valid_names:
-            raise ValueError(f"Invalid channel name: {name}")
+        self.__dict__.update(kwargs)  # Handle additional keys dynamically
 
     def __str__(self):
         # Use the common keys plus the extra keys (in a fixed order)
@@ -89,7 +51,16 @@ class DIFunctionChannelConfig(dict):
         """
         Subclasses should override this method to return a list of extra key names in order.
         """
+        if hasattr(self, "extra_keys"):
+            return self.extra_keys
         return []
+
+    def _addSubclassAttributes(self, kwargs):
+        for key in self.extra_keys:
+            if key in kwargs:
+                setattr(self, key, kwargs.pop(key))
+            else:
+                raise ValueError(f"Missing key '{key}' for {self.__class__.__name__}")
 
     @classmethod
     def expected_types(cls):
@@ -148,24 +119,13 @@ class DIFunctionChannelConfig(dict):
 
 
 class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
-    # func_type 0: Voltage – extra parameter: highImpedance (int)
+    """ Voltage Function Channel Configuration """
     extra_keys = ["highImpedance"]
 
-    @classmethod
-    def extra_key_order(cls):
-        return cls.extra_keys
+    def __init__(self, **kwargs):
+        self._addSubclassAttributes(kwargs)
 
-    @classmethod
-    def extra_types(cls):
-        return [int]
-
-    def _init_extra(self, kwargs):
-        for key in self.extra_keys:
-            if key not in kwargs:
-                raise ValueError(
-                    f"Missing key '{key}' for DIFunctionVoltageChannelConfig"
-                )
-            self[key] = int(kwargs.pop(key))
+        super().__init__(**kwargs)
 
 
 class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
@@ -457,17 +417,31 @@ function_type_to_class = {
 
 
 class Channel:
+    valid_names = [
+        "REF1", "REF2", "CH1-01A", "CH1-01B", "CH1-02A", "CH1-02B",
+        "CH1-03A", "CH1-03B", "CH1-04A", "CH1-04B", "CH1-05A", "CH1-05B",
+        "CH1-06A", "CH1-06B", "CH1-07A", "CH1-07B", "CH1-08A", "CH1-08B",
+        "CH1-09A", "CH1-09B", "CH1-10A", "CH1-10B"
+    ]
+
     def __init__(self, parent):
         self.parent = parent
+
+    def _validate_name(self, name):
+        if name not in self.valid_names:
+            raise ValueError(f"Invalid channel name: {name}")
 
     def get_configuration_json(
         self, channel_names: List[str]
     ) -> List[DIFunctionChannelConfig]:
+        for name in channel_names:
+            self._validate_name(name)
         names_str = ",".join(channel_names)
         if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
     def get_configuration(self, channel_name: str) -> List[DIFunctionChannelConfig]:
+        self._validate_name(channel_name)
         if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 

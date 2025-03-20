@@ -10,7 +10,7 @@ def test_get_channel_config(additel):
     assert isinstance(
         config, DIFunctionChannelConfig
     ), "Channel config must be a DIFunctionChannelConfig object"
-    assert config["Name"] == "REF1", "Channel name should be REF1"
+    assert config.Name == "REF1", "Channel name should be REF1"
 
 
 def test_get_channel_config_json(additel):
@@ -21,8 +21,8 @@ def test_get_channel_config_json(additel):
     assert all(
         isinstance(x, DIFunctionChannelConfig) for x in config
     ), "Each config must be a DIFunctionChannelConfig object"
-    assert config[0]["Name"] == "REF1", "First config should be for REF1"
-    assert config[1]["Name"] == "REF2", "Second config should be for REF2"
+    assert config[0].Name == "REF1", "First config should be for REF1"
+    assert config[1].Name == "REF2", "Second config should be for REF2"
 
 
 @pytest.mark.skip(reason="Not yet implemented")
@@ -40,4 +40,4 @@ def test_channel_configure(additel, channel_config):
 )
 def test_channel_types(additel, channel_name, expected_type):
     config = additel.Channel.get_configuration(channel_name)
-    assert config["ElectricalFunctionType"] == expected_type
+    assert config.ElectricalFunctionType == expected_type
