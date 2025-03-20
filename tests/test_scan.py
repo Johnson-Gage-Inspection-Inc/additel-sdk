@@ -23,7 +23,7 @@ def test_get_scan_data_json(additel, count):
     """Test retrieval of scan data in JSON format."""
     data = additel.Scan.get_data_json(count)
     assert len(data.Values) == count, f"Should return {count} data points"
-    assert isinstance(data, DITemperatureReading), "Data must be a DIReading object"
+    assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
 def test_get_latest_data(additel):
