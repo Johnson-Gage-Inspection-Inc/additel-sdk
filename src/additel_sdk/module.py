@@ -197,11 +197,7 @@ class Module:
             )
 
         if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
-            try:
-                return coerce(response)
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON response: {e}")
-                print(f"Response length: {len(response)}")
+            return coerce(response)
         raise ValueError("No channel configuration received")
 
     def configure(
