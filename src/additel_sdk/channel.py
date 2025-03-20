@@ -45,7 +45,7 @@ class DIFunctionChannelConfig:
     def __str__(self):
         # Use the common keys plus the extra keys (in a fixed order)
         keys_order = self.common_keys + self.extra_key_order()
-        return ",".join(str(self.get(k, "")) for k in keys_order)
+        return ",".join(str(self.__dict__.get(k, "")) for k in keys_order)
 
     def extra_key_order(self):
         """
