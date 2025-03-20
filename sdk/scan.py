@@ -52,6 +52,12 @@ class DIReading(dict):
     """
 
     def __init__(self, **kwargs):
+        self.ChannelName = kwargs.pop("ChannelName", "")
+        self.Unit: int = kwargs.pop("Unit", 0)
+        self.Values: List[float] = kwargs.pop("Values", [])
+        self.ValuesFiltered: List[float] = kwargs.pop("ValuesFiltered", [])
+        self.DateTimeTicks: List[datetime] = kwargs.pop("DateTimeTicks", [])
+        self.ValueDecimals: int = kwargs.pop("ValueDecimals", 0)
         try:
             if kwargs.pop("ClassName", None):
                 self.validate_structure(kwargs)
@@ -372,12 +378,6 @@ class DITemperatureReading(DIReading):
         self.TempValues: List[float] = kwargs.pop("TempValues", [])
         self.TempUnit: int = kwargs.pop("TempUnit", 0)
         self.TempDecimals: int = kwargs.pop("TempDecimals", 0)
-        self.ChannelName = kwargs.pop("ChannelName", "")
-        self.Values: List[float] = kwargs.pop("Values", [])
-        self.ValuesFiltered: List[float] = kwargs.pop("ValuesFiltered", [])
-        self.DateTimeTicks: List[datetime] = kwargs.pop("DateTimeTicks", [])
-        self.Unit: int = kwargs.pop("Unit", 0)
-        self.ValueDecimals: int = kwargs.pop("ValueDecimals", 0)
         # Ensure the ClassName is correctly set for validation
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITemperatureReading")
         super().__init__(**kwargs)
@@ -385,11 +385,26 @@ class DITemperatureReading(DIReading):
 
 class DIElectricalReading(DIReading):
     def __init__(self, **kwargs):
+        logging.warning("DIElectricalReading.__init__() has not been tested.")
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DIElectricalReading")
         super().__init__(**kwargs)
 
 
 class DITCReading(DIReading):
     def __init__(self, **kwargs):
+        logging.warning("DITCReading.__init__() has not been tested.")
+        # For the electrical measurement part, we can add a count if desired.
+        self.NumElectrical: int = kwargs.pop("NumElectrical", len(kwargs.get("Values", [])))
+        # Additional TC-specific fields:
+        self.IndicationUnit: int = kwargs.pop("IndicationUnit", 0)
+        self.NumIndication: int = kwargs.pop("NumIndication", 0)
+        self.IndicationData: list[float] = kwargs.pop("IndicationData", [])
+        self.CJElectricalUnit: int = kwargs.pop("CJElectricalUnit", 0)
+        self.NumCJElectrical: int = kwargs.pop("NumCJElectrical", 0)
+        self.CJElectricalTest: float = kwargs.pop("CJElectricalTest", 0.0)
+        self.CJTemperatureUnit: int = kwargs.pop("CJTemperatureUnit", 0)
+        self.NumCJTemperature: int = kwargs.pop("NumCJTemperature", 0)
+        self.CJTemperatureData: list[float] = kwargs.pop("CJTemperatureData", [])
+        # Set the proper ClassName for later coercion.
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITCReading")
         super().__init__(**kwargs)
