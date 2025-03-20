@@ -236,25 +236,6 @@ class DITemperatureReading(DIReading):
             * Indication unit ID
             * Number of indication data
             * Indication data
-
-    Temperature data:
-        0 = 'TempValues'
-        1 = 'TempUnit'
-        2 = 'TempDecimals'
-        3 = 'ChannelName'
-        4 = 'Values'
-        5 = 'ValuesFiltered'
-        6 = 'DateTimeTicks'
-        7 = 'Unit'
-        8 = 'ValueDecimals'
-        9 = 'ClassName'
-            Channel name
-            Electrical unit Id
-            Number of electrical measurement data 1 electrical measurement data
-            electrical measurement data after filter
-            Indication unit Id
-            Number of indication data 1
-            the indication data
     """
     def __init__(self, **kwargs):
         self.TempValues: List[float] = kwargs.pop("TempValues", [])
