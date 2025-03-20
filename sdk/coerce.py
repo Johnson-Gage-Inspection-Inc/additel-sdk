@@ -87,7 +87,7 @@ def json(obj) -> dict:
 
 
 def load_mapping():
-    from .scan import DIScanInfo, DIReading
+    from .scan import DIScanInfo, DIReading, DITemperatureReading, DIElectricalReading, DITCReading
     from .module import DIModuleInfo
     from .channel import DIFunctionChannelConfig
 
@@ -110,9 +110,9 @@ def load_mapping():
         "TAU.Module.Channels.DI.DIScanInfo": DIScanInfo,
         "TAU.Module.Channels.DI.DIModuleInfo": DIModuleInfo,
         "TAU.Module.Channels.DI.DIReading": DIReading,
-        "TAU.Module.Channels.DI.DITemperatureReading": DIReading,
-        "TAU.Module.Channels.DI.DIElectricalReading": DIReading,
-        "TAU.Module.Channels.DI.DITCReading": DIReading,
+        "TAU.Module.Channels.DI.DITemperatureReading": DITemperatureReading,
+        "TAU.Module.Channels.DI.DIElectricalReading": DIElectricalReading,
+        "TAU.Module.Channels.DI.DITCReading": DITCReading,
         "TAU.Module.Channels.DI.TimeTick": datetime,
     }
 

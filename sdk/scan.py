@@ -438,3 +438,31 @@ class Scan:
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
+
+
+class DITemperatureReading(DIReading):
+    def __init__(self, **kwargs):
+        self.TempValues: List[float] = kwargs.pop("TempValues", [])
+        self.TempUnit: int = kwargs.pop("TempUnit", 0)
+        self.TempDecimals: int = kwargs.pop("TempDecimals", 0)
+        self.ChannelName = kwargs.pop("ChannelName", "")
+        self.Values: List[float] = kwargs.pop("Values", [])
+        self.ValuesFiltered: List[float] = kwargs.pop("ValuesFiltered", [])
+        self.DateTimeTicks: List[datetime] = kwargs.pop("DateTimeTicks", [])
+        self.Unit: int = kwargs.pop("Unit", 0)
+        self.ValueDecimals: int = kwargs.pop("ValueDecimals", 0)
+        # Ensure the ClassName is correctly set for validation
+        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITemperatureReading")
+        super().__init__(**kwargs)
+
+
+class DIElectricalReading(DIReading):
+    def __init__(self, **kwargs):
+        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DIElectricalReading")
+        super().__init__(**kwargs)
+
+
+class DITCReading(DIReading):
+    def __init__(self, **kwargs):
+        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITCReading")
+        super().__init__(**kwargs)
