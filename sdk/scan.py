@@ -24,11 +24,16 @@ class DIReading(dict):
         except Exception as e:
             print(f"Error: {e}")
 
-    def validate_structure(self, kwargs):
+    def validate_structure(self, kwargs={}):
         # If there are extra keys that haven't been handled by the subclass,
         # you can either ignore them or raise an error.
         if kwargs:
             raise ValueError(f"Unexpected keys: {list(kwargs.keys())}")
+
+        # Make sure no values are null
+        for key, value in self.__dict__.items():
+            if not value:
+                raise ValueError(f"Value for {key} is null")
 
     @staticmethod
     def ticksToDatetime(ticks):
