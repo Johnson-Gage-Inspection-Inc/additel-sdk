@@ -1,4 +1,5 @@
 """Tests for the Additel SDK functionality."""
+
 import pytest
 from sdk.base import Additel
 from sdk.channel import DIFunctionChannelConfig
@@ -154,7 +155,7 @@ def test_scan_last(additel):
     # We're not asserting equality here due to rounding differences
     # But we can check that data exists and has the right type
     assert data is not None
-    assert len(data_json) > 0
+    assert len(data_json.Values) > 0
 
 
 def test_get_channel_config(additel):
@@ -179,7 +180,9 @@ def test_intelligent_wire(additel):
     assert intel_wire == [], "We're expecting an empty list here, for now."
 
 
-@pytest.mark.skip(reason="Not yet implemented - functions without return values time out")
+@pytest.mark.skip(
+    reason="Not yet implemented - functions without return values time out"
+)
 def test_channel_configure(additel, channel_config):
     """Test channel configuration (currently disabled)."""
     additel.Channel.configure(channel_config)
