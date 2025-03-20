@@ -6,12 +6,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="additel_sdk",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Jeff Hall",
+    author_email="rhythmatician5@gmail.com",
     description="A Python SDK to communicate with Additel devices",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourname/additel_sdk",  # Update to your project URL
+    url="https://github.com/Johnson-Gage-Inspection-Inc/additel-sdk",
     packages=setuptools.find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[
