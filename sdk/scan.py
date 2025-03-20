@@ -242,6 +242,7 @@ class DITemperatureReading(DIReading):
             * Number of indication data
             * Indication data
     """
+
     def __init__(self, **kwargs):
         self.TempValues: List[float] = kwargs.pop("TempValues", [])
         self.TempUnit: int = kwargs.pop("TempUnit", 0)
@@ -343,6 +344,7 @@ class DIElectricalReading(DIReading):
             * Electrical measurement data
             * Filtered electrical measurement data
     """
+
     def __init__(self, **kwargs):
         logging.warning("DIElectricalReading.__init__() has not been tested.")
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DIElectricalReading")
@@ -380,10 +382,13 @@ class DITCReading(DIReading):
             Cold junction temperature data number 1
             cold junction temperature data
     """
+
     def __init__(self, **kwargs):
         logging.warning("DITCReading.__init__() has not been tested.")
         # For the electrical measurement part, we can add a count if desired.
-        self.NumElectrical: int = kwargs.pop("NumElectrical", len(kwargs.get("Values", [])))
+        self.NumElectrical: int = kwargs.pop(
+            "NumElectrical", len(kwargs.get("Values", []))
+        )
         # Additional TC-specific fields:
         self.IndicationUnit: int = kwargs.pop("IndicationUnit", 0)
         self.NumIndication: int = kwargs.pop("NumIndication", 0)

@@ -71,6 +71,7 @@ def compare_keys(a, b):
 def mock_additel(monkeypatch):
     """A fixture that provides a mocked Additel device."""
     from unittest.mock import MagicMock
+
     mock = MagicMock()
     mock.identify.return_value = "'685022040027',TAU-HOST 1.1.1.0"
     # Add other mock returns as needed

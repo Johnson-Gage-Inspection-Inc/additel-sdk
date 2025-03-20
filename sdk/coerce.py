@@ -87,7 +87,13 @@ def json(obj) -> dict:
 
 
 def load_mapping():
-    from .scan import DIScanInfo, DIReading, DITemperatureReading, DIElectricalReading, DITCReading
+    from .scan import (
+        DIScanInfo,
+        DIReading,
+        DITemperatureReading,
+        DIElectricalReading,
+        DITCReading,
+    )
     from .module import DIModuleInfo
     from .channel import DIFunctionChannelConfig
 
