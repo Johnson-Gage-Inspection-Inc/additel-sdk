@@ -189,7 +189,7 @@ class Scan:
         Returns:
             None
         """
-        raise NotImplementedError("This command is not yet implemented.")
+        logging.warning("This command has not been tested.")
         self.parent.cmd("SCAN:STOP")
 
     def get_latest_data(self, format=2) -> DIReading:  # Tested!
