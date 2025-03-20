@@ -8,48 +8,7 @@ from datetime import datetime, timedelta
 
 
 class DIReading(dict):
-    """
-    Represents a single channel's measurement data.
-
-    Structure depends on data types:
-        Electrical measurement data:
-            Channel name
-            Electrical unit Id
-            Number of electrical
-            measurement data 1
-            One electrical measurement data
-            electrical measurement data after filter
-        Temperature data:
-        0 = 'TempValues'
-        1 = 'TempUnit'
-        2 = 'TempDecimals'
-        3 = 'ChannelName'
-        4 = 'Values'
-        5 = 'ValuesFiltered'
-        6 = 'DateTimeTicks'
-        7 = 'Unit'
-        8 = 'ValueDecimals'
-        9 = 'ClassName'
-            Channel name
-            Electrical unit Id
-            Number of electrical measurement data 1 electrical measurement data
-            electrical measurement data after filter
-            Indication unit Id
-            Number of indication data 1
-            the indication data
-        TC data:
-            Channel name
-            Electrical unit Id
-            Number of electrical measurement data 1 electrical measurement data
-            electrical measurement data after filter Indication unit Id
-            Number of indication data 1 the indication data
-            Cold junction electrical unitId
-            Cold junction electrical measurement data number 1
-            cold junction electrical test data
-            Cold junction temperature unit Id
-            Cold junction temperature data number 1
-            cold junction temperature data
-    """
+    """Represents a single channel's measurement data."""
 
     def __init__(self, **kwargs):
         self.ChannelName = kwargs.pop("ChannelName", "")
@@ -203,34 +162,6 @@ class Scan:
 
         Returns:
             str: A semicolon-separated string where each entry represents data for a channel. Each entry includes:
-                - For Electrical Measurement Data:
-                    * Channel name
-                    * Electrical unit ID
-                    * Number of electrical measurement data
-                    * Electrical measurement data
-                    * Filtered electrical measurement data
-                - For Temperature Data:
-                    * Channel name
-                    * Electrical unit ID
-                    * Number of electrical measurement data
-                    * Electrical measurement data
-                    * Filtered electrical measurement data
-                    * Indication unit ID
-                    * Number of indication data
-                    * Indication data
-                - For TC Data:
-                    * Channel name
-                    * Electrical unit ID
-                    * Number of electrical measurement data
-                    * Electrical measurement data
-                    * Filtered electrical measurement data
-                    * Indication unit ID
-                    * Number of indication data
-                    * Indication data
-                    * Cold junction electrical unit ID
-                    * Cold junction electrical test data
-                    * Cold junction temperature unit ID
-                    * Cold junction temperature data
                 - For Switch Data:
                     * Status data (based on TC or RTD data)
                 - For Voltage/Current Transmitter Data:
@@ -293,6 +224,38 @@ class Scan:
 
 
 class DITemperatureReading(DIReading):
+    """Represents a single channel's temperature measurement data.
+
+    Args:
+        DIReading: The base class for all DI readings. Includes:
+            * Channel name
+            * Electrical unit ID
+            * Number of electrical measurement data
+            * Electrical measurement data
+            * Filtered electrical measurement data
+            * Indication unit ID
+            * Number of indication data
+            * Indication data
+
+    Temperature data:
+        0 = 'TempValues'
+        1 = 'TempUnit'
+        2 = 'TempDecimals'
+        3 = 'ChannelName'
+        4 = 'Values'
+        5 = 'ValuesFiltered'
+        6 = 'DateTimeTicks'
+        7 = 'Unit'
+        8 = 'ValueDecimals'
+        9 = 'ClassName'
+            Channel name
+            Electrical unit Id
+            Number of electrical measurement data 1 electrical measurement data
+            electrical measurement data after filter
+            Indication unit Id
+            Number of indication data 1
+            the indication data
+    """
     def __init__(self, **kwargs):
         self.TempValues: List[float] = kwargs.pop("TempValues", [])
         self.TempUnit: int = kwargs.pop("TempUnit", 0)
@@ -384,6 +347,16 @@ class DITemperatureReading(DIReading):
 
 
 class DIElectricalReading(DIReading):
+    """Represents a single channel's electrical measurement data.
+
+    Args:
+        DIReading: The base class for all DI readings. Includes:                - For Electrical Measurement Data:
+            * Channel name
+            * Electrical unit ID
+            * Number of electrical measurement data
+            * Electrical measurement data
+            * Filtered electrical measurement data
+    """
     def __init__(self, **kwargs):
         logging.warning("DIElectricalReading.__init__() has not been tested.")
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DIElectricalReading")
@@ -391,6 +364,36 @@ class DIElectricalReading(DIReading):
 
 
 class DITCReading(DIReading):
+    """Represents a single channel's thermocouple measurement data.
+
+    Args:
+        DIReading: The base class for all DI readings. Includes:
+            * Channel name
+            * Electrical unit ID
+            * Number of electrical measurement data
+            * Electrical measurement data
+            * Filtered electrical measurement data
+            * Indication unit ID
+            * Number of indication data
+            * Indication data
+            * Cold junction electrical unit ID
+            * Cold junction electrical test data
+            * Cold junction temperature unit ID
+            * Cold junction temperature data
+
+        TC data:
+            Channel name
+            Electrical unit Id
+            Number of electrical measurement data 1 electrical measurement data
+            electrical measurement data after filter Indication unit Id
+            Number of indication data 1 the indication data
+            Cold junction electrical unitId
+            Cold junction electrical measurement data number 1
+            cold junction electrical test data
+            Cold junction temperature unit Id
+            Cold junction temperature data number 1
+            cold junction temperature data
+    """
     def __init__(self, **kwargs):
         logging.warning("DITCReading.__init__() has not been tested.")
         # For the electrical measurement part, we can add a count if desired.
