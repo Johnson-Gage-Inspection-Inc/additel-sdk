@@ -35,7 +35,7 @@ def test_channel_configure(additel, channel_config):
 @pytest.mark.parametrize(
     "channel_name,expected_type",
     [
-        ("REF1", 102),  # Voltage
+        ("REF1", 102),  # SPRT
         ("REF2", 3),  # RTD type
     ],
 )
