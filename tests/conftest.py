@@ -53,7 +53,7 @@ def scan_config_json(additel):
 @pytest.fixture
 def channel_config(additel, channel_name="REF1"):
     """Fixture to provide channel configuration."""
-    return additel.Channel.get_configuration(channel_name)
+    return additel.Channel.configure(channel_name)
 
 
 # Helper functions
