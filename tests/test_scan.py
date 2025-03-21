@@ -1,10 +1,10 @@
-"""Tests for the Additel SDK Scan functionality."""
+"""Tests for the device SDK Scan functionality."""
 
 import pytest
-from src.additel_sdk.scan import DIScanInfo, DIReading
+from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 
 
-def test_scan_config(additel, scan_config, scan_config_json):
+def test_scan_config(device, scan_config, scan_config_json):
     """Test scan configuration consistency."""
     assert isinstance(
         scan_config, DIScanInfo
@@ -19,24 +19,27 @@ def test_scan_config(additel, scan_config, scan_config_json):
 
 
 @pytest.mark.parametrize("count", [1, 2])
-def test_get_scan_data_json(additel, count):
+def test_get_scan_data_json(device, count):
     """Test retrieval of scan data in JSON format."""
-    data = additel.Scan.get_data_json(count)
+    scan = Scan(device)
+    data = scan.get_data_json(count)
     assert len(data.Values) == count, f"Should return {count} data points"
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
-def test_get_latest_data(additel):
+def test_get_latest_data(device):
     """Test retrieval of latest scan data."""
-    data = additel.Scan.get_latest_data()
+    scan = Scan(device)
+    data = scan.get_latest_data()
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
-def test_scan_consistency(additel):
+def test_scan_consistency(device):
     """Test consistency between scan data retrieval methods."""
     # Get data using both methods
-    data_json = additel.Scan.get_data_json(1)
-    data_latest = additel.Scan.get_latest_data()
+    scan = Scan(device)
+    data_json = scan.get_data_json(1)
+    data_latest = scan.get_latest_data()
 
     # We can't compare directly due to timestamp differences, but we can check structure
     assert len(data_latest.Values) > 0, "Latest data should not be empty"
@@ -48,7 +51,8 @@ def test_scan_consistency(additel):
     ), "Channel names should match"
 
 
-def test_intelligent_wire(additel):
+def test_intelligent_wire(device):
     """Test intelligent wiring data retrieval."""
-    intel_wire = additel.Scan.get_intelligent_wiring_data_json()
+    scan = Scan(device)
+    intel_wire = scan.get_intelligent_wiring_data_json()
     assert isinstance(intel_wire, list), "Should return a list"

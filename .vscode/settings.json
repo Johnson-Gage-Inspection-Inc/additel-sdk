@@ -5,6 +5,7 @@
         "--max-line-length=100"
     ],
     "python.testing.pytestArgs": [
+        // "--real",
         "tests"
     ],
     "python.testing.unittestEnabled": false,

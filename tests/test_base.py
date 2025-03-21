@@ -9,9 +9,9 @@ def test_identify(additel):
     assert identity == "'685022040027',TAU-HOST 1.1.1.0", "Identity must be correct"
 
 
-def test_connection(additel):
+def test_connection(device):
     """Test that connection is properly established."""
-    assert additel.connection.connection is not None, "Connection was not established"
+    assert device.connection.connection is True, "Connection was not established"
 
 
 @pytest.mark.parametrize(
@@ -20,9 +20,9 @@ def test_connection(additel):
         ("*IDN?", "TAU-HOST"),
     ],
 )
-def test_cmd(additel, command, expected_contains):
+def test_cmd(device, command, expected_contains):
     """Test command execution functionality."""
-    response = additel.cmd(command)
+    response = device.cmd(command)
     assert (
         expected_contains in response
     ), f"Response should contain '{expected_contains}'"

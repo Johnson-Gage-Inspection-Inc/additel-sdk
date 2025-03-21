@@ -1,20 +1,21 @@
 """Tests for the Additel SDK Module functionality."""
 
 import pytest
-from src.additel_sdk.module import DIModuleInfo
+from src.additel_sdk.module import DIModuleInfo, Module
 from src.additel_sdk.channel import DIFunctionChannelConfig, DIFunctionTCChannelConfig
 from conftest import compare_keys
 
 
-def test_module_info(additel):
+def test_module_info(device):
     """Test retrieval of module information."""
-    info = additel.Module.info()
+    mod = Module(device)
+    info = mod.info()
     assert isinstance(info, list), "Module info must be a list"
     assert all(
         isinstance(i, DIModuleInfo) for i in info
     ), "Module info must be a DIModuleInfo object"
 
-    info_str = additel.Module.info_str()
+    info_str = mod.info_str()
     assert all(
         isinstance(x, DIModuleInfo) for x in info_str
     ), "Module info must be a DIModuleInfo object"
@@ -22,9 +23,10 @@ def test_module_info(additel):
 
 
 @pytest.mark.parametrize("module_index", [0, 1])
-def test_query_channel_config(additel, module_index):
+def test_query_channel_config(device, module_index):
     """Test querying channel configuration."""
-    config = additel.Module.getConfiguration(module_index=module_index)
+    mod = Module(device)
+    config = mod.getConfiguration(module_index=module_index)
     assert isinstance(config, list), "Channel config must be a list"
     for c in config:
         assert isinstance(
@@ -32,9 +34,10 @@ def test_query_channel_config(additel, module_index):
         ), "Channel config must be a DIFunctionChannelConfig object"
 
 
-def test_query_channel_config_json(additel):
+def test_query_channel_config_json(device):
     """Test querying channel configuration in JSON format."""
-    config = additel.Module.getConfiguration_json(module_index=0)
+    mod = Module(device)
+    config = mod.getConfiguration_json(module_index=0)
     assert isinstance(config, list), "Channel config must be a list"
     for c in config:
         assert isinstance(
