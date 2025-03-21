@@ -1,108 +1,60 @@
-# channel.py
+from dataclasses import dataclass
+from typing import List, Optional, Type
 from .coerce import coerce
-from typing import List
 
 
+@dataclass(kw_only=True)
 class DIFunctionChannelConfig:
-    """
-    Base class for channel configuration. Contains common keys:
-      - Name: channel name
-      - Enabled: whether the channel is enabled
-      - Label: channel label
-      - ElectricalFunctionType: function type number
-      - Range: range index
-      - Delay: channel delay
-      - IsAutoRange: automatic range setting (1/0)
-      - FilteringCount: number of filters
-    """
+    Name: str
+    Enabled: bool
+    Label: str
+    ElectricalFunctionType: int
+    Range: int
+    Delay: int
+    IsAutoRange: bool
+    FilteringCount: int
+    IsCurrentCommutation: Optional[bool] = None
+    ChannelInfo1: Optional[str] = None
+    ChannelInfo2: Optional[str] = None
+    ChannelInfo3: Optional[str] = None
 
-    common_keys = [
-        "Name",
-        "Enabled",
-        "Label",
-        "ElectricalFunctionType",
-        "Range",
-        "Delay",
-        "IsAutoRange",
-        "FilteringCount"
-    ]
-
-    def __init__(cls, **kwargs):
-        try:
-            cls.Name = str(kwargs.pop("Name"))
-            cls.Enabled = int(kwargs.pop("Enabled"))
-            cls.Label = str(kwargs.pop("Label", ""))
-            cls.ElectricalFunctionType = int(kwargs.pop("ElectricalFunctionType"))
-            cls.Range = int(kwargs.pop("Range"))
-            cls.Delay = int(kwargs.pop("Delay"))
-            cls.IsAutoRange = int(kwargs.pop("IsAutoRange"))
-            cls.FilteringCount = int(kwargs.pop("FilteringCount"))
-        except KeyError as e:
-            raise ValueError("Missing common key: " + str(e))
-
-        cls.__dict__.update(kwargs)  # Handle additional keys dynamically
-
-    def __repr__(cls):
-        return cls.__str__()
+    struct = {
+        'Name': str,
+        'Enabled': int,  # bool
+        'Label': str,
+        'ElectricalFunctionType': int,
+        'Range': int,
+        'Delay': int,
+        'IsAutoRange': int,  # bool
+        'FilteringCount': int,
+    }
 
     def __str__(cls):
         # Use the common keys plus the extra keys (in a fixed order)
         keys_order = cls.get_keys_order()
-        return ",".join(str(cls.__dict__.get(k, "")) for k in keys_order)
 
-    def _addSubclassAttributes(cls, kwargs):
-        for key in cls.extra_keys:
-            if key in kwargs:
-                setattr(cls, key, kwargs.pop(key))
-            # else:
-            #     raise ValueError(f"Missing key '{key}' for {cls.__class__.__name__}")
+        def serialize(value):
+            if isinstance(value, bool):
+                return "1" if value else "0"
+            return str(value) if value is not None else ""
 
-    @classmethod
-    def expected_types(cls):
-        # Common types: Name (str), Enabled (int), Label (str), ElectricalFunctionType (int),
-        # Range (int), Delay (int), IsAutoRange (int), FilteringCount (int)
-        common_types = [str, int, str, int, int, int, int, int]
-        return common_types + cls.extra_types()
-
-    @classmethod
-    def extra_types(cls):
-        """
-        Subclasses should override this method to return a list of types for extra keys.
-        """
-        return []
+        return ",".join(serialize(getattr(cls, k, "")) for k in keys_order)
 
     @classmethod
     def from_str(cls, data: str):
-        """
-        Factory method to parse a channel configuration from a comma-separated string.
-        If multiple entries are present (separated by semicolons), returns a list.
-        """
         if ";" in data:
-            parts = data.split(";")
-            parts = [p for p in parts if p]  # drop empty parts
+            parts = [p for p in data.split(";") if p]
             return [cls.from_str(p) for p in parts]
-        # Split the data and determine function type from the fourth value.
         values = data.split(",")
-        try:
-            func_type = int(values[3])
-        except Exception:
-            raise ValueError(
-                "Cannot determine ElectricalFunctionType from data: " + data
-            )
-        subclass = getSubclass(func_type)
-        if subclass is None:
-            raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
-        return subclass._from_str(data)
+        func_type = int(values[3])
+        if subclass := getSubclass(func_type):
+            return subclass._from_str(data)
+        raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
 
     @classmethod
     def _from_str(cls, data: str):
-        # Parse based on the expected order of keys.
         values = data.split(",")
         keys_order = cls.get_keys_order()
-        # if len(values) != len(keys_order):
-        #     raise ValueError(
-        #         f"Expected {len(keys_order)} values, got {len(values)} in {data}"
-        #     )
         types = cls.expected_types()
         kwargs = {}
         for k, v, t in zip(keys_order, values, types):
@@ -125,43 +77,64 @@ class DIFunctionChannelConfig:
             keys_order += cls.extra_keys
         return keys_order
 
+    @classmethod
+    def expected_types(cls):
+        common_types = [str, bool, str, int, int, int, bool, int]
+        return common_types + cls.extra_types()
 
-# --- Subclass Definitions ---
+    @classmethod
+    def extra_types(cls):
+        return []
 
 
+@dataclass
 class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
     """Voltage Function Channel Configuration"""
+    highImpedance: Optional[int] = None
+
+    @classmethod
+    def extra_types(cls):
+        return [int]
 
     extra_keys = ["highImpedance"]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
-    # func_type 1: Current – no extra parameters
+    @classmethod
+    def extra_types(cls):
+        return []
+
     extra_keys = []
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
-    # func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)
+    """func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)"""
+    Wire: int
+    IsOpenDetect: int
+
+    @classmethod
+    def extra_types(cls):
+        return [int, int]
+
     extra_keys = ["Wire", "IsOpenDetect"]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
-    # func_type 3: RTD – extra parameters: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval
+    """func_type 3: RTD – extra parameters: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+    IsSquareRooting2Current: int
+    CompensateInterval: int
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int]
+
     extra_keys = [
         "Wire",
         "SensorName",
@@ -171,24 +144,55 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
         "CompensateInterval",
     ]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
+    @classmethod
+    def _from_str(cls, data: str):
+        struct = {
+            **DIFunctionChannelConfig.struct,
+            "Wire": int,
+            "SensorName": str,
+            "SensorSN": str,
+            "Id": str,
+            "IsSquareRooting2Current": int,
+            "CompensateInterval": int
+        }
+        # kwargs = {}
+        # for k, v, t in zip(struct.keys(), data.split(","), struct.values()):
+        #     kwargs[k] =
+        # return cls(**kwargs)
+        return cls(**{k: t(v) if v != "" else None for k, v, t in zip(struct.keys(), data.split(","), struct.values())})
 
-        super().__init__(**kwargs)
 
-
+@dataclass
 class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
-    # func_type 4: Thermistor – extra parameters: Wire, SensorName, SensorSN, Id
+    """func_type 4: Thermistor – extra parameters: Wire, SensorName, SensorSN, Id"""
+
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str]
+
     extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
-    # func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName
+    """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
+    IsOpenDetect: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+    CjcType: Optional[int]
+    CJCFixedValue: Optional[float]
+    CjcChannelName: Optional[str]
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, float, str]
+
     extra_keys = [
         "IsOpenDetect",
         "SensorName",
@@ -199,24 +203,31 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
         "CjcChannelName",
     ]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
-    # func_type 101: Switch – not specified in the documentation.
+    """func_type 101: Switch – not specified in the documentation."""
+    @classmethod
+    def extra_types(cls):
+        return []
+
     extra_keys = []
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
-    # func_type 102: SPRT – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval
+    """func_type 102: SPRT – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    Wire: int
+    SensorName: str
+    SensorSN: str
+    Id: str
+    IsSquareRooting2Current: int
+    CompensateInterval: int
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int]
+
     extra_keys = [
         "Wire",
         "SensorName",
@@ -226,52 +237,52 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
         "CompensateInterval",
     ]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-    def __str__(cls):
-        # Use the common keys plus the extra keys (in a fixed order)
-        return ",".join(str(cls.__dict__.get(k, "")) for k in [
-            "Name",
-            "Enabled",
-            "Label",
-            "ElectricalFunctionType",
-            "Range",
-            "Delay",
-            "IsAutoRange",
-            "FilteringCount",
-            "SensorName",
-            "SensorSN",
-            "Id",
-            "IsSquareRooting2Current",
-            "CompensateInterval",
-        ])
-
-
+@dataclass
 class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
-    # func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id
+    """func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id"""
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str]
+
     extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
-    # func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id
+    """func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id"""
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str]
+
     extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
-    # func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName
+    """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
+    IsOpenDetect: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+    CjcType: Optional[int]
+    CJCFixedValue: Optional[float]
+    CjcChannelName: Optional[str]
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, float, str]
+
     extra_keys = [
         "IsOpenDetect",
         "SensorName",
@@ -282,14 +293,21 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
         "CjcChannelName",
     ]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
+@dataclass
 class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
-    # func_type 106: Custom RTD – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval
+    """func_type 106: Custom RTD – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    Wire: int
+    SensorName: str
+    SensorSN: str
+    Id: str
+    IsSquareRooting2Current: int
+    CompensateInterval: int
+
+    @classmethod
+    def extra_types(cls):
+        return [int, str, str, str, int, int]
+
     extra_keys = [
         "Wire",
         "SensorName",
@@ -299,41 +317,17 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
         "CompensateInterval",
     ]
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-    def __str__(cls):
-        # Use the common keys plus the extra keys (in a fixed order)
-        return ",".join(str(cls.__dict__.get(k, "")) for k in [
-            "Name",
-            "Enabled",
-            "Label",
-            "ElectricalFunctionType",
-            "Range",
-            "Delay",
-            "IsAutoRange",
-            "FilteringCount",
-            "SensorName",
-            "SensorSN",
-            "Id",
-            "IsSquareRooting2Current",
-            "CompensateInterval",
-        ])
-
+@dataclass
 class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
-    # func_type 110: Standard Resistance – not specified in the documentation.
+    @classmethod
+    def extra_types(cls):
+        return []
+
     extra_keys = []
 
-    def __init__(cls, **kwargs):
-        cls._addSubclassAttributes(kwargs)
 
-        super().__init__(**kwargs)
-
-
-# Mapping from ElectricalFunctionType to corresponding subclass.
-def getSubclass(key):
+def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
     return {
         0: DIFunctionVoltageChannelConfig,
         1: DIFunctionCurrentChannelConfig,
@@ -348,7 +342,7 @@ def getSubclass(key):
         105: DIFunctionStandardTCChannelConfig,
         106: DIFunctionCustomRTDChannelConfig,
         110: DIFunctionStandardResistanceChannelConfig,
-    }.get(key)
+    }[key]
 
 
 # --- Channel Command Interface ---
@@ -369,9 +363,7 @@ class Channel:
         if name not in cls.valid_names:
             raise ValueError(f"Invalid channel name: {name}")
 
-    def get_configuration_json(
-        cls, channel_names: List[str]
-    ) -> List[DIFunctionChannelConfig]:
+    def get_configuration_json(cls, channel_names: List[str]) -> List[DIFunctionChannelConfig]:
         for name in channel_names:
             cls._validate_name(name)
         names_str = ",".join(channel_names)
