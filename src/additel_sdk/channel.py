@@ -29,62 +29,46 @@ class DIFunctionChannelConfig:
         'FilteringCount': int,
     }
 
-    def __str__(cls):
-        # Use the common keys plus the extra keys (in a fixed order)
-        keys_order = cls.get_keys_order()
+    def __str__(cls: Type["DIFunctionChannelConfig"]) -> str:
+        """Serialize the channel configuration to a string.
 
+        Args:
+            cls (Type[&quot;DIFunctionChannelConfig&quot;]): The channel configuration object.
+
+        Returns:
+            str: The serialized channel configuration.
+        """
         def serialize(value):
             if isinstance(value, bool):
                 return "1" if value else "0"
             return str(value) if value is not None else ""
 
-        return ",".join(serialize(getattr(cls, k, "")) for k in keys_order)
+        return ",".join(serialize(getattr(cls, k, "")) for k in cls.struct.keys())
 
     @classmethod
-    def from_str(cls, data: str):
+    def from_str(cls, data: str) -> "DIFunctionChannelConfig":
+        """Deserialize the channel configuration from a string.
+
+        Args:
+            data (str): The serialized channel configuration.
+
+        Raises:
+            ValueError: If the ElectricalFunctionType is not supported.
+
+        Returns:
+            DIFunctionChannelConfig: The deserialized channel configuration.
+        """
         if ";" in data:
             parts = [p for p in data.split(";") if p]
             return [cls.from_str(p) for p in parts]
         values = data.split(",")
         func_type = int(values[3])
         if subclass := getSubclass(func_type):
-            return subclass._from_str(data)
+            attr_map = zip(subclass.struct.keys(), data.split(","), subclass.struct.values())
+            return subclass(**{
+                k: t(v) if v != "" else None for k, v, t in attr_map
+                })
         raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
-
-    @classmethod
-    def _from_str(cls, data: str):
-        values = data.split(",")
-        keys_order = cls.get_keys_order()
-        types = cls.expected_types()
-        kwargs = {}
-        for k, v, t in zip(keys_order, values, types):
-            kwargs[k] = t(v) if v != "" else None
-        return cls(**kwargs)
-
-    @classmethod
-    def get_keys_order(cls):
-        keys_order = [
-            "Name",
-            "Enabled",
-            "Label",
-            "ElectricalFunctionType",
-            "Range",
-            "Delay",
-            "IsAutoRange",
-            "FilteringCount"
-        ]
-        if hasattr(cls, "extra_keys"):
-            keys_order += cls.extra_keys
-        return keys_order
-
-    @classmethod
-    def expected_types(cls):
-        common_types = [str, bool, str, int, int, int, bool, int]
-        return common_types + cls.extra_types()
-
-    @classmethod
-    def extra_types(cls):
-        return []
 
 
 @dataclass
@@ -92,33 +76,28 @@ class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
     """Voltage Function Channel Configuration"""
     highImpedance: Optional[int] = None
 
-    @classmethod
-    def extra_types(cls):
-        return [int]
-
-    extra_keys = ["highImpedance"]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "highImpedance": int,
+    }
 
 
 @dataclass
 class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
-    @classmethod
-    def extra_types(cls):
-        return []
-
-    extra_keys = []
+    struct = DIFunctionChannelConfig.struct
 
 
 @dataclass
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     """func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)"""
     Wire: int
-    IsOpenDetect: int
+    IsOpenDetect: bool
 
-    @classmethod
-    def extra_types(cls):
-        return [int, int]
-
-    extra_keys = ["Wire", "IsOpenDetect"]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "IsOpenDetect": int,
+        }
 
 
 @dataclass
@@ -128,38 +107,18 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: Optional[str]
     Id: Optional[str]
-    IsSquareRooting2Current: int
+    IsSquareRooting2Current: bool
     CompensateInterval: int
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int]
-
-    extra_keys = [
-        "Wire",
-        "SensorName",
-        "SensorSN",
-        "Id",
-        "IsSquareRooting2Current",
-        "CompensateInterval",
-    ]
-
-    @classmethod
-    def _from_str(cls, data: str):
-        struct = {
-            **DIFunctionChannelConfig.struct,
-            "Wire": int,
-            "SensorName": str,
-            "SensorSN": str,
-            "Id": str,
-            "IsSquareRooting2Current": int,
-            "CompensateInterval": int
-        }
-        # kwargs = {}
-        # for k, v, t in zip(struct.keys(), data.split(","), struct.values()):
-        #     kwargs[k] =
-        # return cls(**kwargs)
-        return cls(**{k: t(v) if v != "" else None for k, v, t in zip(struct.keys(), data.split(","), struct.values())})
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "IsSquareRooting2Current": int,
+        "CompensateInterval": int
+    }
 
 
 @dataclass
@@ -171,17 +130,19 @@ class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
     SensorSN: Optional[str]
     Id: Optional[str]
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str]
-
-    extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+    }
 
 
 @dataclass
 class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
-    IsOpenDetect: int
+    IsOpenDetect: bool
     SensorName: str
     SensorSN: Optional[str]
     Id: Optional[str]
@@ -189,29 +150,22 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     CJCFixedValue: Optional[float]
     CjcChannelName: Optional[str]
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, float, str]
-
-    extra_keys = [
-        "IsOpenDetect",
-        "SensorName",
-        "SensorSN",
-        "Id",
-        "CjcType",
-        "CJCFixedValue",
-        "CjcChannelName",
-    ]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "IsOpenDetect": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "CjcType": int,
+        "CJCFixedValue": float,
+        "CjcChannelName": str,
+    }
 
 
 @dataclass
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
     """func_type 101: Switch – not specified in the documentation."""
-    @classmethod
-    def extra_types(cls):
-        return []
-
-    extra_keys = []
+    struct = DIFunctionChannelConfig.struct
 
 
 @dataclass
@@ -221,21 +175,18 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-    IsSquareRooting2Current: int
+    IsSquareRooting2Current: bool
     CompensateInterval: int
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int]
-
-    extra_keys = [
-        "Wire",
-        "SensorName",
-        "SensorSN",
-        "Id",
-        "IsSquareRooting2Current",
-        "CompensateInterval",
-    ]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "IsSquareRooting2Current": int,
+        "CompensateInterval": int,
+    }
 
 
 @dataclass
@@ -246,11 +197,13 @@ class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
     SensorSN: Optional[str]
     Id: Optional[str]
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str]
-
-    extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+    }
 
 
 @dataclass
@@ -261,17 +214,19 @@ class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
     SensorSN: Optional[str]
     Id: Optional[str]
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str]
-
-    extra_keys = ["Wire", "SensorName", "SensorSN", "Id"]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+    }
 
 
 @dataclass
 class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
-    IsOpenDetect: int
+    IsOpenDetect: bool
     SensorName: str
     SensorSN: Optional[str]
     Id: Optional[str]
@@ -279,19 +234,16 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     CJCFixedValue: Optional[float]
     CjcChannelName: Optional[str]
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, float, str]
-
-    extra_keys = [
-        "IsOpenDetect",
-        "SensorName",
-        "SensorSN",
-        "Id",
-        "CjcType",
-        "CJCFixedValue",
-        "CjcChannelName",
-    ]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "IsOpenDetect": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "CjcType": int,
+        "CJCFixedValue": float,
+        "CjcChannelName": str,
+    }
 
 
 @dataclass
@@ -301,30 +253,23 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-    IsSquareRooting2Current: int
+    IsSquareRooting2Current: bool
     CompensateInterval: int
 
-    @classmethod
-    def extra_types(cls):
-        return [int, str, str, str, int, int]
-
-    extra_keys = [
-        "Wire",
-        "SensorName",
-        "SensorSN",
-        "Id",
-        "IsSquareRooting2Current",
-        "CompensateInterval",
-    ]
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "IsSquareRooting2Current": int,
+        "CompensateInterval": int,
+    }
 
 
 @dataclass
 class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
-    @classmethod
-    def extra_types(cls):
-        return []
-
-    extra_keys = []
+    struct = DIFunctionChannelConfig.struct
 
 
 def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
