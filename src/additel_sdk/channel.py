@@ -128,7 +128,7 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
-    """func_type 4: Thermistor – extra parameters: Wire, SensorName, SensorSN, Id"""
+    """func_type 4: Thermistor – extra parameters: Sensor Name, wires"""
 
     Wire: int
     SensorName: str
@@ -136,7 +136,13 @@ class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
-    """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
+    """func_type 100: Thermocouple (TC) – extra:
+    sensor name, whether the break couple
+    detection, cold junction type, cold
+    junction fixed value, custom cold
+    junction channel name
+    """
+
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
     CjcType: int
@@ -146,9 +152,9 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
-    """func_type 101: Switch – not specified in the documentation."""
+    """func_type 101: Switch – extra: switch type"""
 
-    pass
+    SwitchType: int  # NOTE: The key might not be exactly right
 
 
 @dataclass
@@ -210,6 +216,7 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
+    """func_type 110: Standard Resistance – extra: None?"""
     pass
 
 
