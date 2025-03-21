@@ -203,30 +203,7 @@ class Module:
                 - 0: Front panel
                 - 1: Embedded junction box
                 - 2, 3, 4: Serial-wound junction boxes
-            params (dict): A dictionary containing channel configurations. Each channel's configuration includes:
-                - Channel name
-                - Enable or not (0 or 1)
-                - Label
-                - Function type:
-                    0 = Voltage, 1 = Current, 2 = Resistance, 3 = RTD, 4 = Thermistor,
-                    100 = TC, 101 = Switch, 102 = SPRT, 103 = Voltage Transmitter,
-                    104 = Current Transmitter, 105 = Standard TC, 106 = Custom RTD,
-                    110 = Standard Resistance
-                - Range index
-                - Channel delay
-                - Automatic range (0 or 1)
-                - Filter settings
-                - Additional parameters based on electrical logging type:
-                    * Voltage: High impedance or not
-                    * Current: None
-                    * Resistance: Wires, positive/negative current
-                    * RTD/SPRT/Custom RTD: Sensor name, wires, compensation interval,
-                        1.4x current setting
-                    * Thermistor: Sensor name, wires, sensor serial number, sensor ID
-                    * TC/Standard TC: Break detection, sensor name, sensor serial number,
-                        cold junction type, fixed value, custom junction channel name
-                    * Current/Voltage Transmitters: Wires, sensor name, sensor serial number,
-                        sensor ID
+            params (List[DIFunctionChannelConfig]): A list of channel configurations for the specified module.
 
         Returns:
             dict: The JSON response from the device confirming the configuration.
