@@ -332,7 +332,7 @@ class Channel:
         command = f"CHANnel:CONFig {config};"
         cls.parent.send_command(command)
 
-    def set_zero(cls, enable: bool):  # Not yet implemented.
+    def set_zero(cls, enable: bool):
         """Enable or disable zero clearing for a single channel.
 
         This command sets or cancels zero clearing for a specific channel.
