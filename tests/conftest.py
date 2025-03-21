@@ -103,6 +103,7 @@ def mock_additel(monkeypatch):
     mock_device = MagicMock(spec=Additel)
 
     # Pre-defined responses for commands
+    # .flake8: disable=E501
     responses = {
         "*IDN?": "'685022040027',TAU-HOST 1.1.1.0",
         'CHANnel:CONFig? "REF1"': "REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0",
@@ -135,6 +136,7 @@ def mock_additel(monkeypatch):
         'SCAN:DATA:Last? 2': '"REF1,1281,1,638781769683200000,109.059745,109.060871,1001,1,22.5500;"',
         'JSON:SCAN:SCONnection:DATA? 1': '{"$type":"System.Collections.Generic.List`1[[TAU.Module.Channels.DI.DIReading, TAU.Module.Channels]], mscorlib","$values":[]}',
     }
+    # .flake8: enable=E501
 
     def fake_cmd(command):
         # Return the fake response if available

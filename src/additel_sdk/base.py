@@ -70,9 +70,9 @@ class Additel:
         self.send_command(command)
         return self.read_response()
 
-    ## Section 1 - Commands Instruction
+    # Section 1 - Commands Instruction
 
-    ### Section 1.1 - IEEE488.2 common commands
+    # Section 1.1 - IEEE488.2 common commands
 
     # 1.1.1 *CLS - Clear Status Command
     def clear_status(self):
