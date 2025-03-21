@@ -6,10 +6,10 @@ import socket
 class WLANConnection:
     def __init__(self, parent, ip: str, **kwargs):
         self.ip = ip
-        self.port: int = kwargs.get("port", 8000)
-        self.timeout: int = kwargs.get("timeout", 1)
-        if unused_kwargs := set(kwargs.keys()) - {"port", "timeout", "ip"}:
-            logging.warning(f"Invalid keyword arguments: {unused_kwargs}")
+        self.port: int = kwargs.pop("port", 8000)
+        self.timeout: int = kwargs.pop("timeout", 1)
+        if unused_kwargs := set(kwargs.keys()):
+            raise ValueError(f"Unused keyword arguments: {unused_kwargs}")
         self.connect()
 
     def connect(self):
