@@ -2,7 +2,7 @@
 
 import pytest
 from src.additel_sdk.module import DIModuleInfo
-from src.additel_sdk.channel import DIFunctionChannelConfig
+from src.additel_sdk.channel import DIFunctionChannelConfig, DIFunctionTCChannelConfig
 from conftest import compare_keys
 
 
@@ -59,3 +59,46 @@ def test_coerce_ChannelConfig(additel, response, expected):
     configs = DIFunctionChannelConfig.from_str(response)
     for conf, exp in zip(configs, expected):
         assert str(conf) == exp
+
+
+@pytest.fixture
+def expected_tc_channel_config():
+    return [
+        {
+            "Name": name,
+            "SensorName": sensor,
+            "IsOpenDetect": iod,
+            "Enabled": 1,
+            "Label": None,
+            "ElectricalFunctionType": 100,
+            "Range": 0,
+            "Delay": 0,
+            "IsAutoRange": 0,
+            "FilteringCount": 10,
+            "IsCurrentCommutation": None,
+            "ChannelInfo1": None,
+            "ChannelInfo2": None,
+            "ChannelInfo3": None,
+            "CjcType": None,
+            "CJCFixedValue": None,
+            "CjcChannelName": '0',
+        } for name, sensor, iod in [
+            ('CH1-01A', 'K', 0), ('CH1-01B', 'J', 1), ('CH1-02A', 'T', 1), ('CH1-02B', 'N', 1),
+            ('CH1-03A', 'N', 1), ('CH1-03B', 'B', 1), ('CH1-04A', 'N', 1), ('CH1-04B', 'J', 1),
+            ('CH1-05A', 'J', 1), ('CH1-05B', 'J', 1), ('CH1-06A', 'K', 1), ('CH1-06B', 'K', 1),
+            ('CH1-07A', 'K', 1), ('CH1-07B', 'K', 1), ('CH1-08A', 'K', 1), ('CH1-08B', 'K', 1),
+            ('CH1-09A', 'K', 1), ('CH1-09B', 'K', 1), ('CH1-10A', 'K', 1), ('CH1-10B', 'K', 1),
+        ]
+    ]
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        'CH1-01A,1,,100,0,0,0,10,0,K,,,0,0,;CH1-01B,1,,100,0,0,0,10,1,J,,,0,0,;CH1-02A,1,,100,0,0,0,10,1,T,,,0,0,;CH1-02B,1,,100,0,0,0,10,1,N,,,0,0,;CH1-03A,1,,100,0,0,0,10,1,N,,,0,0,;CH1-03B,1,,100,0,0,0,10,1,B,,,0,0,;CH1-04A,1,,100,0,0,0,10,1,N,,,0,0,;CH1-04B,1,,100,0,0,0,10,1,J,,,0,0,;CH1-05A,1,,100,0,0,0,10,1,J,,,0,0,;CH1-05B,1,,100,0,0,0,10,1,J,,,0,0,;CH1-06A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-06B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-07A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-07B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-08A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-08B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-09A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-09B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-10A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-10B,1,,100,0,0,0,10,1,K,,,0,0,;',
+    ]
+)
+def test_coerce_ChannelConfig_TC(additel, response, expected_tc_channel_config):
+    actual = DIFunctionChannelConfig.from_str(response)
+    for a, e in zip(actual, expected_tc_channel_config):
+        assert a == DIFunctionTCChannelConfig(**e)
