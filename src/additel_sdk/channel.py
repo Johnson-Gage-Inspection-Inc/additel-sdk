@@ -59,8 +59,7 @@ class DIFunctionChannelConfig:
             DIFunctionChannelConfig: The deserialized channel configuration.
         """
         if ";" in data:
-            parts = [p for p in data.split(";") if p]
-            return [cls.from_str(p) for p in parts]
+            return [cls.from_str(p) for p in data.split(";") if p]
         values = data.split(",")
         func_type = int(values[3])
         if subclass := getSubclass(func_type):
