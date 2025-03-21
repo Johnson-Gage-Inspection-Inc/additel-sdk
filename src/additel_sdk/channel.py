@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional, Type
 from .coerce import coerce
 
@@ -6,14 +6,14 @@ from .coerce import coerce
 @dataclass(kw_only=True)
 class DIFunctionChannelConfig:
     Name: str
-    Enabled: bool
+    Enabled: bool = field(metadata={"cast": int})
     Label: str
     ElectricalFunctionType: int
     Range: int
     Delay: int
-    IsAutoRange: bool
+    IsAutoRange: bool = field(metadata={"cast": int})
     FilteringCount: int
-    IsCurrentCommutation: Optional[bool] = None
+    IsCurrentCommutation: Optional[bool] = field(default=None, metadata={"cast": int})
     ChannelInfo1: Optional[str] = None
     ChannelInfo2: Optional[str] = None
     ChannelInfo3: Optional[str] = None
@@ -90,7 +90,7 @@ class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     """func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)"""
     Wire: int
-    IsOpenDetect: bool
+    IsOpenDetect: bool = field(metadata={"cast": int})
 
     struct = {
         **DIFunctionChannelConfig.struct,
@@ -106,7 +106,7 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-    IsSquareRooting2Current: bool
+    IsSquareRooting2Current: bool = field(metadata={"cast": int})
     CompensateInterval: int
 
     struct = {
@@ -141,7 +141,7 @@ class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
-    IsOpenDetect: bool
+    IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
     SensorSN: str
     Id: str
@@ -174,7 +174,7 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-    IsSquareRooting2Current: bool
+    IsSquareRooting2Current: bool = field(metadata={"cast": int})
     CompensateInterval: int
 
     struct = {
@@ -225,7 +225,7 @@ class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
-    IsOpenDetect: bool
+    IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
     SensorSN: str
     Id: str
@@ -252,7 +252,7 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-    IsSquareRooting2Current: bool
+    IsSquareRooting2Current: bool = field(metadata={"cast": int})
     CompensateInterval: int
 
     struct = {
