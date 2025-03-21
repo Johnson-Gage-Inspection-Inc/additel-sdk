@@ -1,6 +1,23 @@
-from dataclasses import dataclass, field
-from typing import List, Optional, Type
+from dataclasses import dataclass, field, fields, MISSING
+from typing import List, Optional, Type, Union
 from .coerce import coerce
+from typing import get_origin, get_args
+
+
+def resolve_caster(annotation):
+    origin = get_origin(annotation)
+    if origin is Union:
+        args = [arg for arg in get_args(annotation) if arg is not type(None)]
+        return args[0] if args else str
+    return annotation
+
+
+def cast_value(v, caster):
+    if v == "":
+        return None
+    if caster is bool:
+        return bool(int(v))
+    return caster(v)
 
 
 @dataclass(kw_only=True)
@@ -18,17 +35,6 @@ class DIFunctionChannelConfig:
     ChannelInfo2: Optional[str] = None
     ChannelInfo3: Optional[str] = None
 
-    struct = {
-        'Name': str,
-        'Enabled': int,  # bool
-        'Label': str,
-        'ElectricalFunctionType': int,
-        'Range': int,
-        'Delay': int,
-        'IsAutoRange': int,  # bool
-        'FilteringCount': int,
-    }
-
     def __str__(cls: Type["DIFunctionChannelConfig"]) -> str:
         """Serialize the channel configuration to a string.
 
@@ -38,12 +44,15 @@ class DIFunctionChannelConfig:
         Returns:
             str: The serialized channel configuration.
         """
+
         def serialize(value):
+            if value is None:
+                return ""
             if isinstance(value, bool):
                 return "1" if value else "0"
-            return str(value) if value is not None else ""
-
-        return ",".join(serialize(getattr(cls, k, "")) for k in cls.struct.keys())
+            return str(value)
+        required_fields = [f for f in fields(cls) if f.default is MISSING and f.default_factory is MISSING]
+        return ",".join(serialize(getattr(cls, f.name)) for f in required_fields)
 
     @classmethod
     def from_str(cls, data: str) -> "DIFunctionChannelConfig":
@@ -63,10 +72,14 @@ class DIFunctionChannelConfig:
         values = data.split(",")
         func_type = int(values[3])
         if subclass := getSubclass(func_type):
-            attr_map = zip(subclass.struct.keys(), data.split(","), subclass.struct.values())
-            return subclass(**{
-                k: t(v) if v != "" else None for k, v, t in attr_map
-                })
+            required_fields = [f for f in fields(subclass) if f.default is MISSING and f.default_factory is MISSING]
+
+            parsed = {
+                f.name: cast_value(v, resolve_caster(f.metadata.get("cast", f.type)))
+                for f, v in zip(required_fields, values)
+            }
+
+            return subclass(**parsed)
         raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
 
 
@@ -75,15 +88,10 @@ class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
     """Voltage Function Channel Configuration"""
     highImpedance: int = None
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "highImpedance": int,
-    }
-
 
 @dataclass
 class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
-    struct = DIFunctionChannelConfig.struct
+    pass
 
 
 @dataclass
@@ -91,12 +99,6 @@ class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     """func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)"""
     Wire: int
     IsOpenDetect: bool = field(metadata={"cast": int})
-
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "IsOpenDetect": int,  # bool
-        }
 
 
 @dataclass
@@ -109,16 +111,6 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
     IsSquareRooting2Current: bool = field(metadata={"cast": int})
     CompensateInterval: int
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-        "IsSquareRooting2Current": int,
-        "CompensateInterval": int
-    }
-
 
 @dataclass
 class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
@@ -128,14 +120,6 @@ class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-    }
 
 
 @dataclass
@@ -149,22 +133,11 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     CJCFixedValue: float
     CjcChannelName: str
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "IsOpenDetect": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-        "CjcType": int,
-        "CJCFixedValue": float,
-        "CjcChannelName": str,
-    }
-
 
 @dataclass
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
     """func_type 101: Switch – not specified in the documentation."""
-    struct = DIFunctionChannelConfig.struct
+    pass
 
 
 @dataclass
@@ -177,16 +150,6 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
     IsSquareRooting2Current: bool = field(metadata={"cast": int})
     CompensateInterval: int
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-        "IsSquareRooting2Current": int,
-        "CompensateInterval": int,
-    }
-
 
 @dataclass
 class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
@@ -196,14 +159,6 @@ class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
     SensorSN: str
     Id: str
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-    }
-
 
 @dataclass
 class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
@@ -212,14 +167,6 @@ class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
     SensorName: str
     SensorSN: str
     Id: str
-
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-    }
 
 
 @dataclass
@@ -233,17 +180,6 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     CJCFixedValue: float
     CjcChannelName: str
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "IsOpenDetect": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-        "CjcType": int,
-        "CJCFixedValue": float,
-        "CjcChannelName": str,
-    }
-
 
 @dataclass
 class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
@@ -255,20 +191,10 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
     IsSquareRooting2Current: bool = field(metadata={"cast": int})
     CompensateInterval: int
 
-    struct = {
-        **DIFunctionChannelConfig.struct,
-        "Wire": int,
-        "SensorName": str,
-        "SensorSN": str,
-        "Id": str,
-        "IsSquareRooting2Current": int,
-        "CompensateInterval": int,
-    }
-
 
 @dataclass
 class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
-    struct = DIFunctionChannelConfig.struct
+    pass
 
 
 def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
