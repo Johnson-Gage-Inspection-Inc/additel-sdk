@@ -168,9 +168,7 @@ class Module:
             return DIFunctionChannelConfig.from_str(response)
 
     # 1.2.5
-    def getConfiguration_json(
-        self, module_index: int
-    ) -> List[DIFunctionChannelConfig]:  # Tested!
+    def getConfiguration_json(self, module_index: int) -> List[DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box, in JSON format.
 
         This command retrieves the channel configuration for a specified junction box module.
