@@ -42,7 +42,7 @@ def test_query_channel_config_json(additel):
         ), "Channel config must be a DIFunctionChannelConfig object"
 
 
-def test_module_config(additel, module_config, module_config_json):
+def test_module_config(module_config, module_config_json):
     """Test module configuration functionality."""
     compare_keys(module_config, module_config_json)
 
@@ -59,7 +59,7 @@ def test_module_config(additel, module_config, module_config_json):
         ),  # RTD
     ],
 )
-def test_coerce_ChannelConfig(additel, response, expected):
+def test_coerce_ChannelConfig(response, expected):
     configs = DIFunctionChannelConfig.from_str(response)
     for conf, exp in zip(configs, expected):
         assert str(conf) == exp
@@ -102,7 +102,7 @@ def expected_tc_channel_config():
         "CH1-01A,1,,100,0,0,0,10,0,K,,,0,0,;CH1-01B,1,,100,0,0,0,10,1,J,,,0,0,;CH1-02A,1,,100,0,0,0,10,1,T,,,0,0,;CH1-02B,1,,100,0,0,0,10,1,N,,,0,0,;CH1-03A,1,,100,0,0,0,10,1,N,,,0,0,;CH1-03B,1,,100,0,0,0,10,1,B,,,0,0,;CH1-04A,1,,100,0,0,0,10,1,N,,,0,0,;CH1-04B,1,,100,0,0,0,10,1,J,,,0,0,;CH1-05A,1,,100,0,0,0,10,1,J,,,0,0,;CH1-05B,1,,100,0,0,0,10,1,J,,,0,0,;CH1-06A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-06B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-07A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-07B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-08A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-08B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-09A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-09B,1,,100,0,0,0,10,1,K,,,0,0,;CH1-10A,1,,100,0,0,0,10,1,K,,,0,0,;CH1-10B,1,,100,0,0,0,10,1,K,,,0,0,;",
     ],
 )
-def test_coerce_ChannelConfig_TC(additel, response, expected_tc_channel_config):
+def test_coerce_ChannelConfig_TC(response, expected_tc_channel_config):
     actual = DIFunctionChannelConfig.from_str(response)
     for a, e in zip(actual, expected_tc_channel_config):
         assert a == DIFunctionTCChannelConfig(**e)
