@@ -1,0 +1,9 @@
+Bytes,Decimalism value,Definition,Explanation
+0,1,Unused,"Always 0"
+1,2,Unused,"Always 0"
+2,4,"Error queue","error queue is not empty"
+3,8,"Question data","Many Bits set 1 or one of question data register (corresponding places of enabling register must work)"
+4,16,Unused,"0 always 0"
+5,32,"Standard event","Many Bits set 1 or one of Standard event register (corresponding places of enabling register must work)"
+6,64,"Service request","Many Bits set 1 or 1 bit except this bit (corresponding places of enabling register must work)"
+7,128,"Operation state","Many Bits set 1 or one of Standard event register (corresponding places of enabling register must work)"

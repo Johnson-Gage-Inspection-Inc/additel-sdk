@@ -1,0 +1,9 @@
+Bits,Decimalism value,Definition,Explanation
+0,1,Finished operation,"Before *OPC command, the other command are all executed"
+1,2,Unused,"always 0"
+2,4,Unused,"always 0"
+3,8,Instrument error,"The error of self-testing, calibration or overloading"
+4,16,Execution error,"Execution error occurred"
+5,32,Commands erroe,"Commands grammatical error occurred"
+6,64,Unused,""
+7,128,Power on,"Power on and off operation occurred"
