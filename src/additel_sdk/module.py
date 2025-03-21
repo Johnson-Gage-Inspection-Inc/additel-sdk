@@ -210,10 +210,8 @@ class Module:
         """
         raise NotImplementedError("This method is not yet implemented.")
         # Validate parameters
-        if not isinstance(module_index, int):
-            raise TypeError(
-                f"Invalid parameter type: {type(module_index)}. Expected int."
-            )
+        if module_index not in range(5):
+            raise ValueError("Module index must be between 0 and 4 inclusive.")
         if not isinstance(params, List):
             raise TypeError(f"Invalid parameter type: {type(params)}. Expected List.")
         for param in params:
