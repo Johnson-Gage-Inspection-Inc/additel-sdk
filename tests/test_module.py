@@ -1,8 +1,8 @@
 """Tests for the Additel SDK Module functionality."""
 
 import pytest
-from src.module import DIModuleInfo
-from src.channel import DIFunctionChannelConfig
+from src.additel_sdk.module import DIModuleInfo
+from src.additel_sdk.channel import DIFunctionChannelConfig
 from conftest import compare_keys
 
 
@@ -45,3 +45,17 @@ def test_query_channel_config_json(additel):
 def test_module_config(additel, module_config, module_config_json):
     """Test module configuration functionality."""
     compare_keys(module_config, module_config_json)
+
+
+@pytest.mark.parametrize(
+    "response,expected",
+    [
+        ('REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0;REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0;',
+         ['REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0',
+          'REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0']),  # RTD
+    ],
+)
+def test_coerce_ChannelConfig(additel, response, expected):
+    configs = DIFunctionChannelConfig.from_str(response)
+    for conf, exp in zip(configs, expected):
+        assert str(conf) == exp

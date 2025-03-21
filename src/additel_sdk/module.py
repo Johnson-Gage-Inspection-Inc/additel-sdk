@@ -165,14 +165,6 @@ class Module:
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         if response := self.parent.cmd(f"MODule:CONFig? {module_index}"):
-            array = response.split(";")
-            if not array[-1]:
-                array.pop()
-            for string in array:
-                rebuilt_str = str(DIFunctionChannelConfig.from_str(string))
-                assert (
-                    string == rebuilt_str
-                ), f"Unexpected response: {string}\nExpected: {rebuilt_str}"
             return DIFunctionChannelConfig.from_str(response)
 
     # 1.2.5
@@ -189,19 +181,10 @@ class Module:
         Returns:
             List[type.DIFunctionChannelConfig]: A list of channel configurations for the specified module.
         """
-        if module_index not in range(5):
-            raise ValueError("Module index must be between 0 and 4 inclusive.")
-        if module_index != 0:
-            raise Exception(
-                "This method is not effective for module_index != 0. Please use the getConfiguration method instead."
-            )
-
+        assert module_index in range(5), "Module index must be between 0 and 4 inclusive."
+        assert (module_index == 0), "This method requires module_index == 0. Use the getConfiguration method instead."
         if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
-            try:
-                return coerce(response)
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON response: {e}")
-                print(f"Response length: {len(response)}")
+            return coerce(response)
         raise ValueError("No channel configuration received")
 
     def configure(

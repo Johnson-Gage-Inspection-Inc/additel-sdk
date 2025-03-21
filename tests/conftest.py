@@ -3,7 +3,7 @@
 import os
 import sys
 import pytest
-from src.base import Additel
+from src.additel_sdk.base import Additel
 
 # Add the project root directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -59,11 +59,11 @@ def channel_config(additel, channel_name="REF1"):
 def compare_keys(a, b):
     """Helper function to compare keys between two objects."""
     for i, x in enumerate(a):
-        for key in x.keys():
-            assert key in b[i].keys(), f"Key {key} not found"
+        for key in x.__dict__.keys():
+            assert key in b[i].__dict__.keys(), f"Key {key} not found"
     for i, x in enumerate(b):
-        for key in x.keys():
-            assert key in a[i].keys(), f"Key {key} not found"
+        for key in x.__dict__.keys():
+            assert key in a[i].__dict__.keys(), f"Key {key} not found"
 
 
 # Example mock in conftest.py

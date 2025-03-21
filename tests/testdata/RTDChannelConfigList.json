@@ -1,0 +1,49 @@
+{
+    "$type": "System.Collections.Generic.List`1[[TAU.Module.Channels.DI.DIFunctionChannelConfig, TAU.Module.Channels]], mscorlib",
+    "$values": [
+        {
+            "$type": "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig, TAU.Module.Channels",
+            "Wire": 4,
+            "CompensateInterval": 0,
+            "IsSquareRooting2Current": false,
+            "IsCurrentCommutation": true,
+            "SensorName": "AM1660",
+            "SensorSN": "1624273",
+            "Id": "291f5ef50aff4ccabb4e2a421d6fd8e0",
+            "Name": "REF1",
+            "Enabled": true,
+            "Label": "",
+            "ElectricalFunctionType": 102,
+            "IsAutoRange": true,
+            "Range": 1,
+            "Delay": 0,
+            "FilteringCount": 10,
+            "ChannelInfo1": "",
+            "ChannelInfo2": "",
+            "ChannelInfo3": "",
+            "ClassName": "DIFunctionRTDChannelConfig"
+        },
+        {
+            "$type": "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig, TAU.Module.Channels",
+            "Wire": 4,
+            "CompensateInterval": 0,
+            "IsSquareRooting2Current": false,
+            "IsCurrentCommutation": true,
+            "SensorName": "Pt100(385)",
+            "SensorSN": "",
+            "Id": "",
+            "Name": "REF2",
+            "Enabled": false,
+            "Label": "",
+            "ElectricalFunctionType": 3,
+            "IsAutoRange": true,
+            "Range": 1,
+            "Delay": 0,
+            "FilteringCount": 10,
+            "ChannelInfo1": "",
+            "ChannelInfo2": "",
+            "ChannelInfo3": "",
+            "ClassName": "DIFunctionRTDChannelConfig"
+        }
+    ]
+}

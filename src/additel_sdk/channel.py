@@ -1,262 +1,325 @@
-# channel.py
+from dataclasses import dataclass
+from typing import List, Optional, Type
 from .coerce import coerce
-from typing import List
 
 
-class DIFunctionChannelConfig(dict):
-    """Data structure for channel configuration.
+@dataclass(kw_only=True)
+class DIFunctionChannelConfig:
+    Name: str
+    Enabled: bool
+    Label: str
+    ElectricalFunctionType: int
+    Range: int
+    Delay: int
+    IsAutoRange: bool
+    FilteringCount: int
+    IsCurrentCommutation: Optional[bool] = None
+    ChannelInfo1: Optional[str] = None
+    ChannelInfo2: Optional[str] = None
+    ChannelInfo3: Optional[str] = None
 
-    channel_name (str): The name of the channel to configure.
-    enabled (int): Enable or disable the channel (1 for enabled, 0 for disabled).
-    label (str): A custom label for the channel.
-    func_type (int): Function type, with the following values:
-        - 0: Voltage
-        - 1: Current
-        - 2: Resistance
-        - 3: RTD
-        - 4: Thermistor
-        - 100: Thermocouple (TC)
-        - 101: Switch
-        - 102: SPRT
-        - 103: Voltage Transmitter
-        - 104: Current Transmitter
-        - 105: Standard TC
-        - 106: Custom RTD
-        - 110: Standard Resistance
-    range_index (int): The range index for the channel.
-    delay (int): Channel delay.
-    auto_range (int): Automatic range setting (1 for enabled, 0 for disabled).
-    filters (int): Number of filters.
-    other_params (str): Additional parameters based on the function type:
-        - Voltage: High impedance or not.
-        - Current: None.
-        - Resistance: Wires, whether to open positive and negative current.
-        - RTD/SPRT/Custom RTD: Sensor name, wires, sensor serial number, sensor ID,
-        whether to open 1.4 times current, compensation interval.
-        - Thermistor: Sensor name, wires, sensor serial number, sensor ID.
-        - TC/Standard TC: Break detection, sensor name, sensor serial number,
-        sensor ID, cold junction type (0 internal, 1 external, 2 custom),
-        cold end fixed value, external cold junction channel name.
-        - Switch: Switch type.
-        - Current/Voltage Transmitter: Wires, sensor name, sensor serial number, sensor ID.
+    struct = {
+        'Name': str,
+        'Enabled': int,  # bool
+        'Label': str,
+        'ElectricalFunctionType': int,
+        'Range': int,
+        'Delay': int,
+        'IsAutoRange': int,  # bool
+        'FilteringCount': int,
+    }
 
-    Raises:
-        ValueError: If the ElectricalFunctionType is not one of the expected values.
-        TypeError: If the value of a key does not match the expected type.
+    def __str__(cls: Type["DIFunctionChannelConfig"]) -> str:
+        """Serialize the channel configuration to a string.
 
-    Returns:
-        DIFunctionChannelConfig: An instance of DIFunctionChannelConfig.
-    """
+        Args:
+            cls (Type[&quot;DIFunctionChannelConfig&quot;]): The channel configuration object.
 
-    valid_names = [
-        "REF1",
-        "REF2",
-        "CH1-01A",
-        "CH1-01B",
-        "CH1-02A",
-        "CH1-02B",
-        "CH1-03A",
-        "CH1-03B",
-        "CH1-04A",
-        "CH1-04B",
-        "CH1-05A",
-        "CH1-05B",
-        "CH1-06A",
-        "CH1-06B",
-        "CH1-07A",
-        "CH1-07B",
-        "CH1-08A",
-        "CH1-08B",
-        "CH1-09A",
-        "CH1-09B",
-        "CH1-10A",
-        "CH1-10B",
-    ]
+        Returns:
+            str: The serialized channel configuration.
+        """
+        def serialize(value):
+            if isinstance(value, bool):
+                return "1" if value else "0"
+            return str(value) if value is not None else ""
 
-    def validate_name(self, channel_name):
-        assert channel_name in self.valid_names, f"Invalid channel name: {channel_name}"
+        return ",".join(serialize(getattr(cls, k, "")) for k in cls.struct.keys())
 
     @classmethod
-    def get_keys_and_types(self, **kwargs):
-        types = {
-            "Name": str,  # Channel name
-            "Enabled": int,  # Enable or not
-            "Label": str,  # Label
-            "ElectricalFunctionType": int,  # Function type
-            "Range": int,  # Range index
-            "Delay": int,  # Channel delay
-            "IsAutoRange": int,  # Automatic range or not
-            "FilteringCount": int,  # Filter
-        }
+    def from_str(cls, data: str) -> "DIFunctionChannelConfig":
+        """Deserialize the channel configuration from a string.
 
-        func_type = kwargs.get("ElectricalFunctionType")
+        Args:
+            data (str): The serialized channel configuration.
 
-        function_handlers = {
-            0: {"highImpedance": int},  # high impedence or not  # Voltage
-            1: {},  # Current
-            2: {  # Resistance
-                "Wire": int,  # wires
-                "IsOpenDetect": int,  # whether to open positive or negative current
-            },
-            3: {  # RTD
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
-                "CompensateInterval": int,  # compensation interval
-            },
-            4: {  # Thermistor
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-            },
-            100: {  # Thermocouple (TC)
-                "IsOpenDetect": int,  # Whether the break detection
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "CjcType": int,  # cold junction type
-                "CJCFixedValue": int,  # Was float, but we're trying int.,  # cold junction fixed value
-                "CjcChannelName": str,  # custom cold junction channel name
-            },
-            101: {  # Switch
-                # NOTE: Not specified in the documentation
-            },
-            102: {  # SPRT
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
-                "CompensateInterval": int,  # compensation interval
-            },
-            103: {
-                "Wire": int,
-                "SensorName": str,
-                "SensorSN": str,
-                "Id": str,
-            },  # Voltage Transmitter
-            104: {
-                "Wire": int,
-                "SensorName": str,
-                "SensorSN": str,
-                "Id": str,
-            },  # Current Transmitter
-            105: {  # Standard TC
-                "IsOpenDetect": int,  # Whether the break detection
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "CjcType": int,  # cold junction type
-                "CJCFixedValue": int,  # Was float, but we're trying int.,  # cold junction fixed value
-                "CjcChannelName": str,  # custom cold junction channel name
-            },
-            106: {  # Custom RTD
-                "Wire": int,  # wires
-                "SensorName": str,  # sensor name
-                "SensorSN": str,  # sensor serial number
-                "Id": str,  # sensor Id
-                "IsSquareRooting2Current": int,  # whether to open 1.4 times current
-                "CompensateInterval": int,  # compensation interval
-            },
-            110: {  # Standard Resistance
-                # NOTE: Not specified in the documentation
-            },
-        }
+        Raises:
+            ValueError: If the ElectricalFunctionType is not supported.
 
-        if func_type in function_handlers:
-            return {**types, **function_handlers[func_type]}
-        raise ValueError(
-            f"ElectricalFunctionType must be one of {list(function_handlers.keys())}, got {func_type}."
-        )
-
-    def __init__(self, **kwargs):
-        for key, expected_type in self.get_keys_and_types(**kwargs).items():
-            value = kwargs.get(key, None)
-            self.validate(key, expected_type, value)
-            self[key] = expected_type(value) if value is not None else ""
-            self.validate_name(self.get("Name"))
-
-    def validate(self, key, expected_type, value):
-        if value is not None and not isinstance(value, expected_type):
-            raise TypeError(f"Key '{key}' expects {expected_type}, got {type(value)}.")
-
-    @classmethod
-    def from_str(self, data: str):
-        """Parse the channel configuration from a string."""
+        Returns:
+            DIFunctionChannelConfig: The deserialized channel configuration.
+        """
         if ";" in data:
-            assert not data.split(";")[-1], "Trailing semicolon expected"
-            return [self.from_str(d) for d in data.split(";")[:-1]]
-        if not data:
-            return None
+            return [cls.from_str(p) for p in data.split(";") if p]
         values = data.split(",")
         func_type = int(values[3])
-        keys_and_types = self.get_keys_and_types(ElectricalFunctionType=func_type)
-        keys = list(keys_and_types.keys())
-        kwargs = {
-            key: (keys_and_types[key](value) if value else None)
-            for key, value in zip(keys, values)
-        }
-        assert len(kwargs) == len(keys), f"Missing keys: {keys}"
-        assert (
-            str(self(**kwargs)) == data
-        ), f"Unexpected response: {data}\nExpected: {str(self(**kwargs))}"
-        return self(**kwargs)
+        if subclass := getSubclass(func_type):
+            attr_map = zip(subclass.struct.keys(), data.split(","), subclass.struct.values())
+            return subclass(**{
+                k: t(v) if v != "" else None for k, v, t in attr_map
+                })
+        raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
 
-    def __str__(self):
-        """Convert the DIFunctionChannelConfig object to a string representation."""
-        keys = self.keys()
-        return ",".join(str(self[key]) if self[key] is not None else "" for key in keys)
+
+@dataclass
+class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
+    """Voltage Function Channel Configuration"""
+    highImpedance: Optional[int] = None
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "highImpedance": int,
+    }
+
+
+@dataclass
+class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
+    struct = DIFunctionChannelConfig.struct
+
+
+@dataclass
+class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
+    """func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)"""
+    Wire: int
+    IsOpenDetect: bool
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "IsOpenDetect": int,
+        }
+
+
+@dataclass
+class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
+    """func_type 3: RTD – extra parameters: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+    IsSquareRooting2Current: bool
+    CompensateInterval: int
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "IsSquareRooting2Current": int,
+        "CompensateInterval": int
+    }
+
+
+@dataclass
+class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
+    """func_type 4: Thermistor – extra parameters: Wire, SensorName, SensorSN, Id"""
+
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+    }
+
+
+@dataclass
+class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
+    """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
+    IsOpenDetect: bool
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+    CjcType: Optional[int]
+    CJCFixedValue: Optional[float]
+    CjcChannelName: Optional[str]
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "IsOpenDetect": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "CjcType": int,
+        "CJCFixedValue": float,
+        "CjcChannelName": str,
+    }
+
+
+@dataclass
+class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
+    """func_type 101: Switch – not specified in the documentation."""
+    struct = DIFunctionChannelConfig.struct
+
+
+@dataclass
+class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
+    """func_type 102: SPRT – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    Wire: int
+    SensorName: str
+    SensorSN: str
+    Id: str
+    IsSquareRooting2Current: bool
+    CompensateInterval: int
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "IsSquareRooting2Current": int,
+        "CompensateInterval": int,
+    }
+
+
+@dataclass
+class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
+    """func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id"""
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+    }
+
+
+@dataclass
+class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
+    """func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id"""
+    Wire: int
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+    }
+
+
+@dataclass
+class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
+    """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
+    IsOpenDetect: bool
+    SensorName: str
+    SensorSN: Optional[str]
+    Id: Optional[str]
+    CjcType: Optional[int]
+    CJCFixedValue: Optional[float]
+    CjcChannelName: Optional[str]
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "IsOpenDetect": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "CjcType": int,
+        "CJCFixedValue": float,
+        "CjcChannelName": str,
+    }
+
+
+@dataclass
+class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
+    """func_type 106: Custom RTD – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    Wire: int
+    SensorName: str
+    SensorSN: str
+    Id: str
+    IsSquareRooting2Current: bool
+    CompensateInterval: int
+
+    struct = {
+        **DIFunctionChannelConfig.struct,
+        "Wire": int,
+        "SensorName": str,
+        "SensorSN": str,
+        "Id": str,
+        "IsSquareRooting2Current": int,
+        "CompensateInterval": int,
+    }
+
+
+@dataclass
+class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
+    struct = DIFunctionChannelConfig.struct
+
+
+def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
+    return {
+        0: DIFunctionVoltageChannelConfig,
+        1: DIFunctionCurrentChannelConfig,
+        2: DIFunctionResistanceChannelConfig,
+        3: DIFunctionRTDChannelConfig,
+        4: DIFunctionThermistorChannelConfig,
+        100: DIFunctionTCChannelConfig,
+        101: DIFunctionSwitchChannelConfig,
+        102: DIFunctionSPRTChannelConfig,
+        103: DIFunctionVoltageTransmitterChannelConfig,
+        104: DIFunctionCurrentTransmitterChannelConfig,
+        105: DIFunctionStandardTCChannelConfig,
+        106: DIFunctionCustomRTDChannelConfig,
+        110: DIFunctionStandardResistanceChannelConfig,
+    }[key]
+
+
+# --- Channel Command Interface ---
 
 
 class Channel:
-    def __init__(self, parent):
-        self.parent = parent
+    valid_names = [
+        "REF1", "REF2", "CH1-01A", "CH1-01B", "CH1-02A", "CH1-02B",
+        "CH1-03A", "CH1-03B", "CH1-04A", "CH1-04B", "CH1-05A", "CH1-05B",
+        "CH1-06A", "CH1-06B", "CH1-07A", "CH1-07B", "CH1-08A", "CH1-08B",
+        "CH1-09A", "CH1-09B", "CH1-10A", "CH1-10B"
+    ]
 
-    def get_configuration_json(
-        self, channel_names: List[str]
-    ) -> List[DIFunctionChannelConfig]:  # Tested!
-        """Acquire the configuration of a specific channel.
+    def __init__(cls, parent):
+        cls.parent = parent
 
-        This command retrieves the configuration for a specified channel.
+    def _validate_name(cls, name):
+        if name not in cls.valid_names:
+            raise ValueError(f"Invalid channel name: {name}")
 
-        Args:
-            channel_names (str): The channels to query.
-
-        Returns:
-            List[DIFunctionChannelConfig]:
-                - Channel name
-                - Enable or not (0 or 1)
-                - Label
-                - Function type
-                - Range index
-                - Channel delay
-                - Automatic range (0 or 1)
-                - Number of filters
-                - m additional parameters, based on the type of electrical measurement:
-                    * Voltage (m=1): High impedance or not
-                    * Current (m=0): None
-                    * Resistance (m=2): Wires, open positive/negative current
-                    * RTD/SPRT/Custom RTD (m=6): Wires, sensor name, sensor serial number, sensor ID,
-                    whether to open 1.4x current, compensation interval
-                    * Thermistors (m=4): Wires, sensor name, sensor serial number, sensor ID
-                    * TC/Standard TC (m=7): Break detection, sensor name, sensor serial number, sensor ID,
-                    cold junction type, cold junction fixed value, custom cold junction channel name
-                    * Current/Voltage Transmitters (m=4): Wires, sensor name, sensor serial number, sensor ID
-        """
+    def get_configuration_json(cls, channel_names: List[str]) -> List[DIFunctionChannelConfig]:
+        for name in channel_names:
+            cls._validate_name(name)
         names_str = ",".join(channel_names)
-        if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
+        if response := cls.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
-    def get_configuration(
-        self, channel_name: str
-    ) -> List[DIFunctionChannelConfig]:  # Tested!
-        if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
+    def get_configuration(cls, channel_name: str) -> List[DIFunctionChannelConfig]:
+        cls._validate_name(channel_name)
+        if response := cls.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 
-    def configure(self, config: DIFunctionChannelConfig):  # Not yet implemented.
+    def configure(cls, config: DIFunctionChannelConfig):  # Not yet implemented.
         """Set channel configuration.
 
         Args:
@@ -267,9 +330,9 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:CONFig {config};"
-        self.parent.send_command(command)
+        cls.parent.send_command(command)
 
-    def set_zero(self, enable: bool):  # Not yet implemented.
+    def set_zero(cls, enable: bool):
         """Enable or disable zero clearing for a single channel.
 
         This command sets or cancels zero clearing for a specific channel.
@@ -282,4 +345,4 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:ZERo {int(enable)}"
-        self.parent.send_command(command)
+        cls.parent.send_command(command)

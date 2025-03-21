@@ -5,9 +5,10 @@ import json
 from .coerce import coerce
 import logging
 from datetime import datetime, timedelta
+from math import inf
 
 
-class DIReading(dict):
+class DIReading:
     """Represents a single channel's measurement data."""
 
     def __init__(self, **kwargs):
@@ -17,6 +18,8 @@ class DIReading(dict):
         self.ValuesFiltered: List[float] = kwargs.pop("ValuesFiltered", [])
         self.DateTimeTicks: List[datetime] = kwargs.pop("DateTimeTicks", [])
         self.ValueDecimals: int = kwargs.pop("ValueDecimals", 0)
+        if kwargs:
+            logging.warning(f"Unhandled keys: {kwargs.keys()}")
         try:
             if kwargs.pop("ClassName", None):
                 self.validate_structure(kwargs)
@@ -28,12 +31,12 @@ class DIReading(dict):
         # If there are extra keys that haven't been handled by the subclass,
         # you can either ignore them or raise an error.
         if kwargs:
-            raise ValueError(f"Unexpected keys: {list(kwargs.keys())}")
+            logging.warning(f"Unhandled keys: {kwargs.keys()}")
 
         # Make sure no values are null
         for key, value in self.__dict__.items():
             if not value:
-                raise ValueError(f"Value for {key} is null")
+                logging.warning(f"Value for {key} is null")
 
     @staticmethod
     def ticksToDatetime(ticks):
@@ -244,9 +247,9 @@ class DITemperatureReading(DIReading):
     """
 
     def __init__(self, **kwargs):
-        self.TempValues: List[float] = kwargs.pop("TempValues", [])
-        self.TempUnit: int = kwargs.pop("TempUnit", 0)
-        self.TempDecimals: int = kwargs.pop("TempDecimals", 0)
+        self.TempValues: List[float] = kwargs.pop("TempValues")
+        self.TempUnit: int = kwargs.pop("TempUnit")
+        self.TempDecimals: int = kwargs.pop("TempDecimals")
         # Ensure the ClassName is correctly set for validation
         kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITemperatureReading")
         super().__init__(**kwargs)
@@ -280,7 +283,13 @@ class DITemperatureReading(DIReading):
         dictionary["ValuesFiltered"] = [
             float(d["ValuesFiltered"]) for d in dictionaries
         ]
-        dictionary["TempValues"] = [float(d["TempValues"]) for d in dictionaries]
+
+        def extendedFloat(x) -> float:
+            if x == '------':
+                return -inf
+            return float(x)
+
+        dictionary["TempValues"] = [extendedFloat(d["TempValues"]) for d in dictionaries]
 
         assert all(
             dictionaries[i]["ChannelName"] == dictionaries[i + 1]["ChannelName"]
@@ -386,15 +395,14 @@ class DITCReading(DIReading):
             "NumElectrical", len(kwargs.get("Values", []))
         )
         # Additional TC-specific fields:
-        self.IndicationUnit: int = kwargs.pop("IndicationUnit", 0)
-        self.NumIndication: int = kwargs.pop("NumIndication", 0)
-        self.IndicationData: list[float] = kwargs.pop("IndicationData", [])
-        self.CJElectricalUnit: int = kwargs.pop("CJElectricalUnit", 0)
-        self.NumCJElectrical: int = kwargs.pop("NumCJElectrical", 0)
-        self.CJElectricalTest: float = kwargs.pop("CJElectricalTest", 0.0)
-        self.CJTemperatureUnit: int = kwargs.pop("CJTemperatureUnit", 0)
-        self.NumCJTemperature: int = kwargs.pop("NumCJTemperature", 0)
-        self.CJTemperatureData: list[float] = kwargs.pop("CJTemperatureData", [])
+        self.CJCs: List[int] = kwargs.pop("CJCs")
+        self.CJCUnit: int = kwargs.pop("CJCUnit")
+        self.CjcRaws: list = kwargs.pop("CjcRaws")
+        self.CJCRawsUnit: int = kwargs.pop("CJCRawsUnit")
+        self.CJCDecimals: int = kwargs.pop("CJCDecimals")
+        self.TempValues: list = kwargs.pop("TempValues")
+        self.TempUnit: int = kwargs.pop("TempUnit")
+        self.TempDecimals: int = kwargs.pop("TempDecimals")
         # Set the proper ClassName for later coercion.
-        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITCReading")
+        kwargs.setdefault("ClassName", "DITCReading")
         super().__init__(**kwargs)

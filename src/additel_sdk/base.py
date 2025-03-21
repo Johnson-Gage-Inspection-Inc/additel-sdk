@@ -75,7 +75,7 @@ class Additel:
     ### Section 1.1 - IEEE488.2 common commands
 
     # 1.1.1 *CLS - Clear Status Command
-    def clear_status(self):  # NOTE: Not tested
+    def clear_status(self):
         """Clear the device status.
 
         This command eliminates the following registers:
@@ -94,7 +94,7 @@ class Additel:
         self.send_command("*CLS")
 
     # 1.1.2
-    def identify(self) -> str:  # Tested!
+    def identify(self) -> str:
         """Query the device identification.
 
         This command queries the instrument's identification details. The returned data is divided into two parts:
@@ -110,7 +110,7 @@ class Additel:
         return self.cmd("*IDN?")
 
     # 1.1.3
-    def reset(self):  # NOTE: Not tested
+    def reset(self):
         """Perform a software reset.
 
         This command resets the device's main software, reinitializing its state.
