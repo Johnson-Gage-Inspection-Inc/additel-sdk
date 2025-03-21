@@ -132,8 +132,6 @@ class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
 
     Wire: int
     SensorName: str
-    SensorSN: str
-    Id: str
 
 
 @dataclass
@@ -141,8 +139,6 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
-    SensorSN: str
-    Id: str
     CjcType: int
     CJCFixedValue: float
     CjcChannelName: str
