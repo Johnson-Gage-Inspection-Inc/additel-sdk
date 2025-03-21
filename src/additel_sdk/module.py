@@ -181,12 +181,12 @@ class Module:
         Returns:
             List[type.DIFunctionChannelConfig]: A list of channel configurations for the specified module.
         """
-        assert module_index in range(
-            5
-        ), "Module index must be between 0 and 4 inclusive."
-        assert (
-            module_index == 0
-        ), "This method requires module_index == 0. Use the getConfiguration method instead."
+        if module_index not in range(5):
+            raise ValueError("Module index must be between 0 and 4 inclusive.")
+        if module_index != 0:
+            raise ValueError(
+                "Only the front panel module can be queried in JSON format. Use the getConfiguration method instead."
+            )
         if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
             return coerce(response)
         raise ValueError("No channel configuration received")
