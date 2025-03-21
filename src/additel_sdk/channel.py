@@ -73,7 +73,7 @@ class DIFunctionChannelConfig:
 @dataclass
 class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
     """Voltage Function Channel Configuration"""
-    highImpedance: Optional[int] = None
+    highImpedance: int = None
 
     struct = {
         **DIFunctionChannelConfig.struct,
@@ -95,7 +95,7 @@ class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     struct = {
         **DIFunctionChannelConfig.struct,
         "Wire": int,
-        "IsOpenDetect": int,
+        "IsOpenDetect": int,  # bool
         }
 
 
@@ -104,8 +104,8 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
     """func_type 3: RTD – extra parameters: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
     Wire: int
     SensorName: str
-    SensorSN: Optional[str]
-    Id: Optional[str]
+    SensorSN: str
+    Id: str
     IsSquareRooting2Current: bool
     CompensateInterval: int
 
@@ -126,8 +126,8 @@ class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
 
     Wire: int
     SensorName: str
-    SensorSN: Optional[str]
-    Id: Optional[str]
+    SensorSN: str
+    Id: str
 
     struct = {
         **DIFunctionChannelConfig.struct,
@@ -143,11 +143,11 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     """func_type 100: Thermocouple (TC) – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
     IsOpenDetect: bool
     SensorName: str
-    SensorSN: Optional[str]
-    Id: Optional[str]
-    CjcType: Optional[int]
-    CJCFixedValue: Optional[float]
-    CjcChannelName: Optional[str]
+    SensorSN: str
+    Id: str
+    CjcType: int
+    CJCFixedValue: float
+    CjcChannelName: str
 
     struct = {
         **DIFunctionChannelConfig.struct,
@@ -193,8 +193,8 @@ class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
     """func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id"""
     Wire: int
     SensorName: str
-    SensorSN: Optional[str]
-    Id: Optional[str]
+    SensorSN: str
+    Id: str
 
     struct = {
         **DIFunctionChannelConfig.struct,
@@ -210,8 +210,8 @@ class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
     """func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id"""
     Wire: int
     SensorName: str
-    SensorSN: Optional[str]
-    Id: Optional[str]
+    SensorSN: str
+    Id: str
 
     struct = {
         **DIFunctionChannelConfig.struct,
@@ -227,11 +227,11 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
     IsOpenDetect: bool
     SensorName: str
-    SensorSN: Optional[str]
-    Id: Optional[str]
-    CjcType: Optional[int]
-    CJCFixedValue: Optional[float]
-    CjcChannelName: Optional[str]
+    SensorSN: str
+    Id: str
+    CjcType: int
+    CJCFixedValue: float
+    CjcChannelName: str
 
     struct = {
         **DIFunctionChannelConfig.struct,
