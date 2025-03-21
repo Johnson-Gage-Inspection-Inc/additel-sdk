@@ -1,7 +1,7 @@
 """Tests for the Additel SDK Scan functionality."""
 
 import pytest
-from src.additel_sdk.scan import DIScanInfo, DIReading, DITemperatureReading
+from src.additel_sdk.scan import DIScanInfo, DIReading
 
 
 def test_scan_config(additel, scan_config, scan_config_json):

@@ -51,7 +51,12 @@ class DIFunctionChannelConfig:
             if isinstance(value, bool):
                 return "1" if value else "0"
             return str(value)
-        required_fields = [f for f in fields(cls) if f.default is MISSING and f.default_factory is MISSING]
+
+        required_fields = [
+            f
+            for f in fields(cls)
+            if f.default is MISSING and f.default_factory is MISSING
+        ]
         return ",".join(serialize(getattr(cls, f.name)) for f in required_fields)
 
     @classmethod
@@ -72,7 +77,11 @@ class DIFunctionChannelConfig:
         values = data.split(",")
         func_type = int(values[3])
         if subclass := getSubclass(func_type):
-            required_fields = [f for f in fields(subclass) if f.default is MISSING and f.default_factory is MISSING]
+            required_fields = [
+                f
+                for f in fields(subclass)
+                if f.default is MISSING and f.default_factory is MISSING
+            ]
 
             parsed = {
                 f.name: cast_value(v, resolve_caster(f.metadata.get("cast", f.type)))
@@ -85,25 +94,30 @@ class DIFunctionChannelConfig:
 
 @dataclass
 class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
-    """Voltage Function Channel Configuration"""
+    """func_type 0: Voltage – Function Channel Configuration"""
+
     highImpedance: int = None
 
 
 @dataclass
 class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
+    """func_type 1: Current – extra parameters: None"""
+
     pass
 
 
 @dataclass
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
-    """func_type 2: Resistance – extra parameters: Wire (int), IsOpenDetect (int)"""
+    """func_type 2: Resistance – extra parameters: wires, positive and negative current"""
+
     Wire: int
     IsOpenDetect: bool = field(metadata={"cast": int})
 
 
 @dataclass
 class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
-    """func_type 3: RTD – extra parameters: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    """func_type 3: RTD – extra parameters: Sensor Name, wires, compensation interval, whether 1.4 times current"""
+
     Wire: int
     SensorName: str
     SensorSN: str
@@ -137,12 +151,14 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
     """func_type 101: Switch – not specified in the documentation."""
+
     pass
 
 
 @dataclass
 class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
-    """func_type 102: SPRT – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    """func_type 102: SPRT – extra: Sensor Name, Wires, compensation interval, whether 1.4 times current"""
+
     Wire: int
     SensorName: str
     SensorSN: str
@@ -154,6 +170,7 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
     """func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id"""
+
     Wire: int
     SensorName: str
     SensorSN: str
@@ -163,6 +180,7 @@ class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
     """func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id"""
+
     Wire: int
     SensorName: str
     SensorSN: str
@@ -172,6 +190,7 @@ class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
+
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
     SensorSN: str
@@ -183,7 +202,8 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
-    """func_type 106: Custom RTD – extra: Wire, SensorName, SensorSN, Id, IsSquareRooting2Current, CompensateInterval"""
+    """func_type 106: Custom RTD – extra: Sensor Name, wires, compensation interval, whether 1.4 times current"""
+
     Wire: int
     SensorName: str
     SensorSN: str
@@ -233,7 +253,9 @@ class Channel:
         if name not in cls.valid_names:
             raise ValueError(f"Invalid channel name: {name}")
 
-    def get_configuration_json(cls, channel_names: List[str]) -> List[DIFunctionChannelConfig]:
+    def get_configuration_json(
+        cls, channel_names: List[str]
+    ) -> List[DIFunctionChannelConfig]:
         for name in channel_names:
             cls._validate_name(name)
         names_str = ",".join(channel_names)

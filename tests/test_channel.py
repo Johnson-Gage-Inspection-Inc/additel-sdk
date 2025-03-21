@@ -47,9 +47,13 @@ def test_channel_types(additel, channel_name, expected_type):
 @pytest.mark.parametrize(
     "file,expected",
     [
-        ("RTDChannelConfigList.json",
-         ['REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0',
-          'REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0']),  # RTD
+        (
+            "RTDChannelConfigList.json",
+            [
+                "REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0",
+                "REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0",
+            ],
+        ),  # RTD
     ],
 )
 def test_coerce_ChannelConfig(additel, file, expected):

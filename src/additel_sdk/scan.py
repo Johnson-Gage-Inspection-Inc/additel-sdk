@@ -285,11 +285,13 @@ class DITemperatureReading(DIReading):
         ]
 
         def extendedFloat(x) -> float:
-            if x == '------':
+            if x == "------":
                 return -inf
             return float(x)
 
-        dictionary["TempValues"] = [extendedFloat(d["TempValues"]) for d in dictionaries]
+        dictionary["TempValues"] = [
+            extendedFloat(d["TempValues"]) for d in dictionaries
+        ]
 
         assert all(
             dictionaries[i]["ChannelName"] == dictionaries[i + 1]["ChannelName"]
