@@ -62,9 +62,6 @@ class Scan:
             - NPLC (Number of Power Line Cycles)
             - The name of the current scanning channel
 
-        Args:
-            None
-
         Returns:
             str: A comma-separated string containing the scanning configuration:
                 - NPLC value
@@ -85,9 +82,6 @@ class Scan:
         This command retrieves the current scanning configuration, including:
             - NPLC (Number of Power Line Cycles)
             - The name of the current scanning channel
-
-        Args:
-            None
 
         Returns:
             str: A comma-separated string containing the scanning configuration:
