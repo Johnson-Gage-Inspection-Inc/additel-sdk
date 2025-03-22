@@ -40,7 +40,7 @@ class Additel:
     def __exit__(self, exc_type, exc_value, traceback):
         self.connection.disconnect()
 
-    def send_command(self, command):
+    def send_command(self, command) -> None:
         """Send a command to the connected device and return the response."""
         try:
             if hasattr(self.connection.connection, "send_command"):
@@ -53,7 +53,7 @@ class Additel:
             logging.error(f"Error sending command '{command}': {e}")
             raise
 
-    def read_response(self):
+    def read_response(self) -> str:
         """Read the response from the connected device."""
         try:
             if hasattr(self.connection.connection, "read_response"):
@@ -66,7 +66,7 @@ class Additel:
             logging.error(f"Error reading response: {e}")
             raise
 
-    def cmd(self, command):
+    def cmd(self, command) -> str:
         self.send_command(command)
         return self.read_response()
 
@@ -75,7 +75,7 @@ class Additel:
     # Section 1.1 - IEEE488.2 common commands
 
     # 1.1.1 *CLS - Clear Status Command
-    def clear_status(self):
+    def clear_status(self) -> None:
         """Clear the device status.
 
         This command eliminates the following registers:
@@ -84,12 +84,6 @@ class Additel:
         - Operating event register
         - Status byte register
         - Error queue
-
-        Args:
-            None
-
-        Returns:
-            None
         """
         self.send_command("*CLS")
 
@@ -101,24 +95,15 @@ class Additel:
         - Product sequence number
         - Software version number
 
-        Args:
-            None
-
         Returns:
             str: A string containing the product sequence number and software version number.
         """
         return self.cmd("*IDN?")
 
     # 1.1.3
-    def reset(self):
+    def reset(self) -> None:
         """Perform a software reset.
 
         This command resets the device's main software, reinitializing its state.
-
-        Args:
-            None
-
-        Returns:
-            None
         """
         self.send_command("*RST")
