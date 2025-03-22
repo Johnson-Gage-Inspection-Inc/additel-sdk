@@ -1,13 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 
 @dataclass
 class TimeTick:
-    TickTime: int
-    time: datetime = None
-
-    DOTNET_EPOCH = datetime(1, 1, 1)
+    TickTime: str
+    time: datetime = field(init=False)
 
     def __post_init__(self):
         self.time = datetime.strptime(self.TickTime, "%Y-%m-%d %H:%M:%S %f")
@@ -22,12 +20,14 @@ class TimeTick:
 
     @classmethod
     def from_ticks(cls, ticks: int) -> "TimeTick":
-        dt = cls.DOTNET_EPOCH + timedelta(microseconds=ticks // 10)
-        return cls(dt, str(ticks))
+        dt = datetime(1, 1, 1) + timedelta(microseconds=ticks // 10)
+        return cls(dt.strftime("%Y-%m-%d %H:%M:%S %f"))
 
+    @classmethod
     def to_ticks(self) -> int:
-        return int((self.time - self.DOTNET_EPOCH).total_seconds() * 10_000_000)
+        return int((self.time - datetime(1, 1, 1)).total_seconds() * 1e7)
 
+    @classmethod
     def to_short_format(self) -> str:
         return self.time.strftime("%Y:%m:%d %H:%M:%S %f")[:-3]
 

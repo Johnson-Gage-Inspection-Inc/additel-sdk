@@ -32,6 +32,7 @@ def test_get_latest_data(device):
     """Test retrieval of latest scan data."""
     scan = Scan(device)
     data = scan.get_latest_data()
+    print(data)
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
