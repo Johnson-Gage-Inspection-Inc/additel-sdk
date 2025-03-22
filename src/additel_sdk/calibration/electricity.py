@@ -2,12 +2,11 @@ from typing import List
 
 
 class Electricity:
-    raise NotImplementedError("Electricity calibration is not implemented yet.")
 
     def __init__(self, parent):
         self.parent = parent
 
-    def start_scan(self, mode: int, function: int, range_: int):
+    def start_scan(self, function: int, range_: int, mode: int = 0) -> None:
         """
         Start an electrical calibration scan.
 
@@ -15,7 +14,6 @@ class Electricity:
         based on the specified mode, function, and range.
 
         Args:
-            mode (int): The mode of calibration. Only `0` (active calibration) is supported.
             function (int): The function type for calibration:
                 - 0: Voltage
                 - 1: Current
@@ -29,17 +27,15 @@ class Electricity:
                 4 (1 MΩ), 5 (10 MΩ), 6 (100 MΩ)
                 - PRT: 0 (100 Ω), 1 (400 Ω), 2 (4 kΩ)
                 - Thermistor: 0 (0–10 kΩ), 1 (10–100 kΩ), 2 (0.1–1 MΩ)
+            mode (int): The mode of calibration. Only `0` (active calibration) is supported. Defaults to 0.
 
         Raises:
             ValueError: If `mode` is not 0, or if invalid parameters are provided.
-
-        Returns:
-            None
         """
         if mode != 0:
             raise ValueError("Only mode 0 (active calibration) is supported")
         command = f"CALibration:ElECtricity:SCAN {mode},{function},{range_}"
-        self.parent.parent.cmd(command)
+        self.parent.send_command(command)
 
     def get_scan_data(self) -> dict:
         """
@@ -61,7 +57,7 @@ class Electricity:
                 - 'data': The original value as a float if the status is available, otherwise None.
         """
 
-        response = self.parent.parent.cmd("CALibration:ElECtricity:SCAN?")
+        response = self.parent.send_command("CALibration:ElECtricity:SCAN?")
         if response:
             parts = response.split(",")
             return {
@@ -144,7 +140,7 @@ class Electricity:
             f"{channel},{function},{range_},{unit_id},{count},"
             f'"{points_str}","{values_str}",{year},{month},{day}'
         )
-        self.parent.parent.cmd(command)
+        self.parent.cmd(command)
 
     def get_calibration_data(
         self,
@@ -195,7 +191,7 @@ class Electricity:
                 - "day": Calibration day.
         """
         command = f"CALibration:ElECtricity:DATA? {manufacturer_or_user},{password},{channel},{function},{range_}"
-        response = self.parent.parent.cmd(command)
+        response = self.parent.cmd(command)
 
         if response:
             parts = response.split(",")
@@ -225,7 +221,7 @@ class Electricity:
         """
 
         command = f"CALibration:ELECtricity:CJCenable {int(enable)}"
-        self.parent.parent.cmd(command)
+        self.parent.cmd(command)
 
     def get_cjc_data(
         self, manufacturer_or_user: str, password: str, location: int, channel: int
@@ -258,7 +254,7 @@ class Electricity:
                 - "day": Calibration day.
         """
         command = f"CALibration:ELECtricity:DATA:CJC? {manufacturer_or_user},{password},{location},{channel}"
-        response = self.parent.parent.cmd(command)
+        response = self.parent.cmd(command)
 
         if response:
             parts = response.split(",")
@@ -311,4 +307,4 @@ class Electricity:
             f"CALibration:ELECtricity:DATA:CJC {manufacturer_or_user},{password},"
             f"{location},{channel},{offset},{year},{month},{day}"
         )
-        self.parent.parent.send_command(command)
+        self.parent.send_command(command)
