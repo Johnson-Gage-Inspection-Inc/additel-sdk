@@ -3,7 +3,7 @@
 import os
 import sys
 import pytest
-from src.additel_sdk.base import Additel
+from src.additel_sdk import Additel
 from src.additel_sdk.channel import Channel, DIFunctionChannelConfig
 from src.additel_sdk.module import Module
 from src.additel_sdk.scan import Scan, DIScanInfo
@@ -87,7 +87,6 @@ def pytest_addoption(parser):
 @pytest.fixture
 def device(request, device_ip):
     """Fixture that provides an Additel device - either real or mock based on the --real flag."""
-    from src.additel_sdk.base import Additel
     
     if request.config.getoption("--real"):
         # Use real connection
