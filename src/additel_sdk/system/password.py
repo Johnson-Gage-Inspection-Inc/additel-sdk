@@ -1,8 +1,10 @@
 # system\password.py
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk.system import System
 
 class Password:
-    def __init__(self, parent):
+    def __init__(self, parent: "System"):
         self.parent = parent
 
     # 1.4.40
@@ -19,7 +21,7 @@ class Password:
             new_password (str): The new password.
             new_password_confirm (str): The new password confirmation.
         """
-        self.parent.cmd(
+        self.parent.parent.send_command(
             f"SYSTem:PASSword {old_password},{new_password},{new_password_confirm}"
         )
 
@@ -33,7 +35,7 @@ class Password:
         Returns:
             bool: True if the protection of sensor bank password is opened, False if not.
         """
-        if response := self.parent.cmd("SYSTem:PASSword:ENABle:SENSor?"):
+        if response := self.parent.parent.cmd("SYSTem:PASSword:ENABle:SENSor?"):
             return bool(response.strip())
         raise ValueError("No protection information returned.")
 
@@ -47,4 +49,4 @@ class Password:
         Args:
             enable (bool): Set to True to enable the protection of sensor bank password.
         """
-        self.parent.cmd(f"SYSTem:PASSword:ENABle:SENSor {int(enable)}")
+        self.parent.parent.send_command(f"SYSTem:PASSword:ENABle:SENSor {int(enable)}")
