@@ -39,11 +39,10 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
             typ = List[map[match.group(1)]]
             adt = adt["$values"]
             return coerce_list(adt, map)
-        else:
-            typeStr = typeStr.split(",")[0]
-            typ = map[typeStr]
 
-        if typeStr not in map:
+        typeStr = typeStr.split(",")[0]
+        typ = map.get(typeStr, None)
+        if typ is None:
             raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
 
         if typ == TimeTick:
