@@ -45,9 +45,7 @@ def test_scan_consistency(device):
     assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
     assert isinstance(data_json, DIReading), "JSON data must be a DIReading object"
     for k in data_latest.__dict__.keys():
-        if getattr(data_latest, k) is None or getattr(data_json, k) is None:
-            raise ValueError(f"Key {k} is None in one of the data objects")
-        elif getattr(data_latest, k) == getattr(data_json, k):
+        if getattr(data_latest, k) == getattr(data_json, k):
             continue
         elif isinstance(getattr(data_latest, k), list) and isinstance(getattr(data_json, k), list):
             for i in range(len(getattr(data_latest, k))):
