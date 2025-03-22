@@ -45,9 +45,6 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
         if typ is None:
             raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
 
-        if typ == TimeTick:
-            return TimeTick(**adt).time
-
         # Recursively coerce nested dictionaries:
         for key, value in adt.items():
             if isinstance(value, dict):
