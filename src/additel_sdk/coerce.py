@@ -40,7 +40,7 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
             adt = adt["$values"]
             return coerce_list(adt, map)
         else:
-            typeStr, _ = typeStr.split(",")
+            typeStr = typeStr.split(",")[0]
             typ = map[typeStr]
 
         if typeStr not in map:
@@ -87,7 +87,7 @@ def json(obj) -> dict:
 
 
 def load_mapping():
-    from . import channel, module, scan
+    from . import channel, module, scan, time
 
     map = {
         "System.Double": float,
@@ -111,7 +111,7 @@ def load_mapping():
         "TAU.Module.Channels.DI.DITemperatureReading": scan.DITemperatureReading,
         "TAU.Module.Channels.DI.DIElectricalReading": scan.DIElectricalReading,
         "TAU.Module.Channels.DI.DITCReading": scan.DITCReading,
-        "TAU.Module.Channels.DI.TimeTick": datetime,
+        "TAU.Module.Channels.DI.TimeTick": time.TimeTick,
     }
 
     return map

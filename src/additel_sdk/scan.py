@@ -23,6 +23,7 @@ def datetime_to_ticks(dt: datetime) -> int:
     return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
 
 
+
 @dataclass
 class DIReading:
     ChannelName: str = ""
