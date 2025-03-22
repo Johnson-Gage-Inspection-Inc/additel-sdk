@@ -60,7 +60,7 @@ def test_channel_types(device, channel_name, expected_type):
         ),  # RTD
     ],
 )
-def test_coerce_ChannelConfig(additel, file, expected):
+def test_coerce_ChannelConfig(file, expected):
     test_data_dir = "tests/testdata/"
     with open(test_data_dir + file, "r") as f:
         config = f.read()
