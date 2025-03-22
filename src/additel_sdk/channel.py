@@ -244,28 +244,12 @@ def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
 
 class Channel:
     valid_names = [
-        "REF1",
-        "REF2",
-        "CH1-01A",
-        "CH1-01B",
-        "CH1-02A",
-        "CH1-02B",
-        "CH1-03A",
-        "CH1-03B",
-        "CH1-04A",
-        "CH1-04B",
-        "CH1-05A",
-        "CH1-05B",
-        "CH1-06A",
-        "CH1-06B",
-        "CH1-07A",
-        "CH1-07B",
-        "CH1-08A",
-        "CH1-08B",
-        "CH1-09A",
-        "CH1-09B",
-        "CH1-10A",
-        "CH1-10B",
+        "REF1", "REF2",
+        "CH1-01A","CH1-01B","CH1-02A","CH1-02B",
+        "CH1-03A","CH1-03B","CH1-04A","CH1-04B",
+        "CH1-05A","CH1-05B","CH1-06A","CH1-06B",
+        "CH1-07A","CH1-07B","CH1-08A","CH1-08B",
+        "CH1-09A","CH1-09B","CH1-10A","CH1-10B",
     ]
 
     def __init__(cls, parent):
