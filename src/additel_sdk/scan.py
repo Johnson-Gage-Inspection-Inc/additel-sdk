@@ -114,7 +114,7 @@ class Scan:
                 Defaults to False.
 
         Returns:
-            DIReading: _description_
+            DIReading: An object containing the latest scanning data.
         """
         response = self.parent.cmd(f"SCAN:DATA:Last? {2 if longformat else 1}")
         # FIXME: We're assuming temperature data for now
@@ -129,11 +129,7 @@ class Scan:
             count (int): The number of scanning data points to retrieve.
 
         Returns:
-            dict: A dictionary representation of the scanning data. Each entry includes:
-                - Channel name
-                - Electrical measurement data
-                - Filtered data
-                - Additional parameters depending on the measurement type
+            DIReading: An object containing the scanning data.
         """
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
