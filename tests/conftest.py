@@ -23,13 +23,6 @@ def device_ip():
 
 
 @pytest.fixture
-def additel(device_ip):
-    """Fixture to provide an Additel connection object."""
-    with Additel("wlan", ip=device_ip) as device:
-        yield device
-
-
-@pytest.fixture
 def module_config(device, module_index=0) -> List[DIFunctionChannelConfig]:
     """Fixture to provide module configuration."""
     mod = Module(device)
