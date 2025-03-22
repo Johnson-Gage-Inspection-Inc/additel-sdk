@@ -16,8 +16,7 @@ class System:
 
     # 1.4.1
     def getVersion(self, module: Optional[str] = None) -> dict:
-        """
-        Retrieve version information for the system or a specific module.
+        """Retrieve version information for the system or a specific module.
 
         Command:
             SYSTem:VERSion? [<module>]
@@ -45,8 +44,7 @@ class System:
 
     # 1.4.2
     def get_next_error(self) -> dict:
-        """
-        Retrieve the next error in the system error queue.
+        """Retrieve the next error in the system error queue.
 
         Command:
             SYSTem:ERRor[:NEXT]?
@@ -67,8 +65,7 @@ class System:
 
     # 1.4.3
     def set_date(self, year: int, month: int, day: int):
-        """
-        Set the system date.
+        """Set the system date.
 
         Command:
             SYSTem:DATE <year>,<month>,<day>
@@ -86,8 +83,7 @@ class System:
 
     # 1.4.4
     def get_date(self) -> date:
-        """
-        Query the system date.
+        """Query the system date.
 
         Command:
             SYSTem:DATE?
@@ -104,8 +100,7 @@ class System:
 
     # 1.4.5
     def set_time(self, hour: int, minute: int, second: int):
-        """
-        Set the system time.
+        """Set the system time.
 
         Command:
             SYSTem:TIME <hour>,<minute>,<second>
@@ -123,8 +118,7 @@ class System:
 
     # 1.4.6
     def set_local_lock(self, lock: bool):
-        """
-        Set the local lock-out state of the system.
+        """Set the local lock-out state of the system.
 
         Command:
             SYSTem:KLOCk <Boolean>|ON|OFF
@@ -140,8 +134,7 @@ class System:
 
     # 1.4.7
     def get_local_lock(self) -> bool:
-        """
-        Query the local lock-out state of the system.
+        """Query the local lock-out state of the system.
 
         Command:
             SYSTem:KLOCk?
@@ -159,8 +152,7 @@ class System:
 
     # 1.4.8
     def set_warning_tone(self, enable: bool):
-        """
-        Set the state of the system's warning tone.
+        """Set the state of the system's warning tone.
 
         Command:
             SYSTem:BEEPer:ALARm <Boolean>|ON|OFF
@@ -176,8 +168,7 @@ class System:
 
     # 1.4.9
     def set_keypad_tone(self, enable: bool):
-        """
-        Set the state of the keypad tone.
+        """Set the state of the keypad tone.
 
         Command:
             SYSTem:BEEPer:TOUCh <Boolean>|ON|OFF

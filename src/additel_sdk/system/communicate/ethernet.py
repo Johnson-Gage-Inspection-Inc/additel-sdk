@@ -7,8 +7,7 @@ class Ethernet:
 
     # 1.4.26
     def getDHCP(self) -> bool:
-        """
-        Query the DHCP state for the system's Ethernet functionality.
+        """Query the DHCP state for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:DHCP?
@@ -26,8 +25,7 @@ class Ethernet:
 
     # 1.4.27
     def setDHCP(self, enable: bool):
-        """
-        Set the DHCP state for the system's Ethernet functionality.
+        """Set the DHCP state for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:DHCP <Boolean>|ON|OFF
@@ -43,8 +41,7 @@ class Ethernet:
 
     # 1.4.28
     def getIP(self) -> str:
-        """
-        Query the IP address for the system's Ethernet functionality.
+        """Query the IP address for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess?
@@ -61,8 +58,7 @@ class Ethernet:
 
     # 1.4.29
     def setIP(self, ip_address: str):
-        """
-        Set the IP address for the system's Ethernet functionality.
+        """Set the IP address for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess <ip_address>
@@ -81,8 +77,7 @@ class Ethernet:
 
     # 1.4.30
     def getMASK(self) -> str:
-        """
-        Query the subnet mask for the system's Ethernet functionality.
+        """Query the subnet mask for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MASK?
@@ -99,8 +94,7 @@ class Ethernet:
 
     # 1.4.31
     def setMASK(self, subnet_mask: str):
-        """
-        Set the subnet mask for the system's Ethernet functionality.
+        """Set the subnet mask for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MASK <subnet_mask>
@@ -119,8 +113,7 @@ class Ethernet:
 
     # 1.4.32
     def getGATEway(self) -> str:
-        """
-        Query the gateway for the system's Ethernet functionality.
+        """Query the gateway for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:GATEway?
@@ -137,8 +130,7 @@ class Ethernet:
 
     # 1.4.33
     def setGATEway(self, gateway: str):
-        """
-        Set the gateway for the system's Ethernet functionality.
+        """Set the gateway for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:GATEway <gateway>
@@ -157,8 +149,7 @@ class Ethernet:
 
     # 1.4.34
     def getMAC(self) -> str:
-        """
-        Query the MAC address for the system's Ethernet functionality.
+        """Query the MAC address for the system's Ethernet functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MAC?
@@ -175,8 +166,7 @@ class Ethernet:
 
     # 1.4.35
     def initialize(self, enable: bool):
-        """
-        Initialize the Ethernet registry.
+        """Initialize the Ethernet registry.
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:INITialize
@@ -191,8 +181,7 @@ class Ethernet:
 
     # 1.4.36
     def setKey(self, path: str, name: str, keyValue: str, valueType):
-        """
-        Write the key value to the registry.
+        """Write the key value to the registry.
         BINary is binary data, and each byte is
         separated by -, for example, binary data
         0x11, 0x22, 0xaa, 0xbb, expressed as "11-
@@ -226,8 +215,7 @@ class Ethernet:
 
     # 1.4.37
     def getKey(self, path: str, name: str) -> str:
-        """
-        Read the key value from the registry.
+        """Read the key value from the registry.
 
         Command:
             SYSTem:REGistry:DATA? <QuoteStr>,<QuoteStr>
@@ -245,8 +233,7 @@ class Ethernet:
 
     # 1.4.38
     def deleteKey(self, path: str, name: str):
-        """
-        Delete the key from the registry.
+        """Delete the key from the registry.
 
         Command:
             SYSTem:REGistry:DELete<QuoteStr>,<QuoteStr>
@@ -262,8 +249,7 @@ class Ethernet:
 
     # 1.4.39
     def saveRegistry(self, keyName: str):
-        """
-        Save the registry to the file.
+        """Save the registry to the file.
 
         Command:
             SYSTem:REGistry:SAVE HKEY_LOCAL_MACHINE|HKEY_CLASSES_ROOT|HKEY_CURRENT_USER|HKEY_USERS| ALL

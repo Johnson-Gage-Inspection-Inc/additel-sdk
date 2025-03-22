@@ -7,8 +7,7 @@ class Electricity:
         self.parent = parent
 
     def start_scan(self, function: int, range_: int, mode: int = 0) -> None:
-        """
-        Start an electrical calibration scan.
+        """Start an electrical calibration scan.
 
         This method initiates a calibration scan for electrical parameters
         based on the specified mode, function, and range.
@@ -38,8 +37,7 @@ class Electricity:
         self.parent.send_command(command)
 
     def get_scan_data(self) -> dict:
-        """
-        Retrieve the original data of electrical logging during calibration.
+        """Retrieve the original data of electrical logging during calibration.
 
         Command:
             CALibration:ElECtricity:SCAN?
@@ -85,8 +83,7 @@ class Electricity:
         month: int,
         day: int,
     ):
-        """
-        Write calibration data to the device.
+        """Write calibration data to the device.
 
         Command:
             CALibration:ElECtricity:DATA <Manufacturer|User>,<password>,<channel>,<function>,<range>,
@@ -150,8 +147,7 @@ class Electricity:
         function: int,
         range_: int,
     ) -> dict:
-        """
-        Retrieve calibration data from the device.
+        """Retrieve calibration data from the device.
 
         Command:
             CALibration:ElECtricity:DATA? <Manufacturer|User>,<password>,<channel>,<function>,<range>
@@ -207,8 +203,7 @@ class Electricity:
         return {}
 
     def cjcnable(self, enable: bool):
-        """
-        Enable or disable cold junction calibration.
+        """Enable or disable cold junction calibration.
 
         Command:
             CALibration:ELECtricity:CJCenable <enable>
@@ -226,8 +221,7 @@ class Electricity:
     def get_cjc_data(
         self, manufacturer_or_user: str, password: str, location: int, channel: int
     ) -> dict:
-        """
-        Retrieve cold junction calibration data.
+        """Retrieve cold junction calibration data.
 
         Command:
             CALibration:ELECtricity:DATA:CJC? <Manufacturer|User>,<password>,<location>,<channel>
@@ -281,8 +275,7 @@ class Electricity:
         month: int,
         day: int,
     ) -> None:
-        """
-        Write cold junction calibration data.
+        """Write cold junction calibration data.
 
         Command:
             CALibration:ELECtricity:DATA:CJC <Manufacturer|User>,<password>,<location>,<channel>,<offset>,<year>,<month>,<day>

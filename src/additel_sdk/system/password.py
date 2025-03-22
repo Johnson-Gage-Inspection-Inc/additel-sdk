@@ -9,8 +9,7 @@ class Password:
     def setPassword(
         self, old_password: str, new_password: str, new_password_confirm: str
     ):
-        """
-        Edit the user password
+        """Edit the user password
 
         Command:
             SYSTem:PASSword <password>
@@ -29,8 +28,7 @@ class Password:
 
     # 1.4.41
     def getProtection(self) -> bool:
-        """
-        Query that the protection of sensor bank
+        """Query that the protection of sensor bank
         password is opened or not
 
         Command:
@@ -48,8 +46,7 @@ class Password:
 
     # 1.4.42
     def setProtection(self, enable: bool):
-        """
-        Set the protection of sensor bank password
+        """Set the protection of sensor bank password
 
         Command:
             SYSTem:PASSword:ENABle:SENSor <enable>

@@ -7,8 +7,7 @@ class WLAN:
 
     # 1.4.10
     def setstate(self, enable: bool):
-        """
-        Set the state of the system's WiFi functionality.
+        """Set the state of the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN[:STATe] <Boolean>|ON|OFF
@@ -24,8 +23,7 @@ class WLAN:
 
     # 1.4.11
     def getstate(self) -> bool:
-        """
-        Query the state of the system's WiFi functionality.
+        """Query the state of the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN[:STATe]?
@@ -43,8 +41,7 @@ class WLAN:
 
     # 1.4.12
     def set_wlan_ip_address(self, ip_address: str):
-        """
-        Set the IP address for the system's WiFi functionality.
+        """Set the IP address for the system's WiFi functionality.
 
         Design the IP address of WIFI
         Before designing the DHCP、IP subset
@@ -67,8 +64,7 @@ class WLAN:
 
     # 1.4.13
     def get_ip_address(self) -> str:
-        """
-        Query the IP address for the system's WiFi functionality.
+        """Query the IP address for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:ADDRess?
@@ -85,8 +81,7 @@ class WLAN:
 
     # 1.4.14
     def set_subnet_mask(self, subnet_mask: str):
-        """
-        Set the subnet mask for the system's WiFi functionality.
+        """Set the subnet mask for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MASK <subnet_mask>
@@ -105,8 +100,7 @@ class WLAN:
 
     # 1.4.15
     def get_subnet_mask(self) -> str:
-        """
-        Query the subnet mask for the system's WiFi functionality.
+        """Query the subnet mask for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MASK?
@@ -123,8 +117,7 @@ class WLAN:
 
     # 1.4.16
     def setGateway(self, IPaddress: str):
-        """
-        Set the gateway for the system's WiFi functionality.
+        """Set the gateway for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:GATEway <gateway>
@@ -143,8 +136,7 @@ class WLAN:
 
     # 1.4.17
     def getGateway(self) -> str:
-        """
-        Query the gateway for the system's WiFi functionality.
+        """Query the gateway for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:GATEway?
@@ -161,8 +153,7 @@ class WLAN:
 
     # 1.4.18
     def getMAC(self) -> str:
-        """
-        Query the MAC address for the system's WiFi functionality.
+        """Query the MAC address for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MAC?
@@ -179,8 +170,7 @@ class WLAN:
 
     # 1.4.19
     def setDHCP(self, enable: bool):
-        """
-        Set the DHCP state for the system's WiFi functionality.
+        """Set the DHCP state for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DHCP <Boolean>|ON|OFF
@@ -196,8 +186,7 @@ class WLAN:
 
     # 1.4.20
     def getDHCP(self) -> bool:
-        """
-        Query the DHCP state for the system's WiFi functionality.
+        """Query the DHCP state for the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DHCP?
@@ -215,8 +204,7 @@ class WLAN:
 
     # 1.4.21
     def setSSID(self, ssid: str):
-        """
-        Set the SSID for the system's WiFi functionality.
+        """Set the SSID for the system's WiFi functionality.
 
         If the parameter is all, the Query will be
         done and all the Queried SSID names and
@@ -242,8 +230,7 @@ class WLAN:
 
     # 1.4.22
     def connect(self, ssid: str, password: str):
-        """
-        Connect to a WiFi network.
+        """Connect to a WiFi network.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:CONNect <ssid>,<password>
@@ -261,8 +248,7 @@ class WLAN:
 
     # 1.4.23
     def getConnection(self) -> str:
-        """
-        Query the connection status of the system's WiFi functionality.
+        """Query the connection status of the system's WiFi functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:CONNect?
@@ -279,8 +265,7 @@ class WLAN:
 
     # 1.4.24
     def disconnect(self):
-        """
-        Disconnect from the current WiFi network.
+        """Disconnect from the current WiFi network.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DISConnect
