@@ -1,10 +1,10 @@
 # connection/__init__.py
-from .wlan_connection import WLANConnection
+from .connections.wlan import WLANConnection
 
-# from .usb_connection import USBConnection
-# from .serial_connection import SerialConnection
-# from .bluetooth_connection import BluetoothConnection
-# from .ethernet_connection import EthernetConnection
+# from .connections.usb_connection import USBConnection
+# from .connections.serial_connection import SerialConnection
+# from .connections.bluetooth_connection import BluetoothConnection
+# from .connections.ethernet_connection import EthernetConnection
 
 
 class Connection:
