@@ -7,31 +7,31 @@ class Connection:
         self.parent = parent
         self.connType = connection_type
         if connection_type == "wlan":
-            from .connections.wlan import WLANConnection
+            from .wlan import WLANConnection
             self.connection = WLANConnection(self, **kwargs)
 
         elif connection_type == 'usb':
-            from .connections.usb import USBConnection
+            from .usb import USBConnection
             assert 'port' in kwargs, "Port is required for USB connection."
             self.connection = USBConnection(parent, **kwargs)
 
         elif connection_type == 'serial':
-            from .connections.serial import SerialConnection
+            from .serial import SerialConnection
             assert 'port' in kwargs, "Port is required for Serial connection."
             self.connection = SerialConnection(parent, **kwargs)
 
         elif connection_type == 'bluetooth':
-            from .connections.bluetooth import BluetoothConnection
+            from .bluetooth import BluetoothConnection
             assert 'port' in kwargs, "Port is required for Bluetooth connection."
             self.connection = BluetoothConnection(parent, **kwargs)
 
         elif connection_type == 'ethernet':
-            from .connections.ethernet import EthernetConnection
+            from .ethernet import EthernetConnection
             assert 'ip' in kwargs, "IP address is required for Ethernet connection."
             self.connection = EthernetConnection(parent, **kwargs)
 
         elif connection_type == 'mock':
-            from .connections.mock import MockConnection  # For testing purposes
+            from .mock import MockConnection  # For testing purposes
             self.connection = MockConnection(parent, **kwargs)
 
         else:
