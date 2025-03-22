@@ -3,13 +3,15 @@ from datetime import date
 from typing import Optional
 from .communicate import Communicate
 from .password import Password
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 # Section 1.4 - System Commands
 
 
 class System:
-
-    def __init__(self, parent):
+    def __init__(self, parent: "Additel"):
         self.parent = parent
         self.Communicate = Communicate(self)
         self.Password = Password(self)

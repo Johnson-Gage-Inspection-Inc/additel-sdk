@@ -1,8 +1,11 @@
 # system\communicate\wlan.py
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk.system.communicate import Communicate
 
 
 class WLAN:
-    def __init__(self, parent):
+    def __init__(self, parent: "Communicate"):
         self.parent = parent
 
     # 1.4.10
@@ -48,9 +51,9 @@ class WLAN:
         Args:
             ip_address (str): The IP address to set.
         """
-        # FIXME: Validate IP address format
+        self.parent.validate_ip(ip_address)
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:ADDRess {ip_address}"
-        self.parent.cmd(command)
+        self.parent.parent.cmd(command)
 
     # 1.4.13
     def get_ip_address(self) -> str:

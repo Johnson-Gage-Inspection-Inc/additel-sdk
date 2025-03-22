@@ -1,8 +1,11 @@
 # system\communicate\bluetooth.py
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk.system.communicate import Communicate
 
 
 class Bluetooth:
-    def __init__(self, parent):
+    def __init__(self, parent: "Communicate"):
         self.parent = parent
 
     # 1.4.43

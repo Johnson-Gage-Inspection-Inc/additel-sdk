@@ -1,8 +1,11 @@
 # system\communicate\ethernet.py
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk.system.communicate import Communicate
 
 
 class Ethernet:
-    def __init__(self, parent):
+    def __init__(self, parent: "Communicate"):
         self.parent = parent
 
     # 1.4.26
@@ -55,11 +58,10 @@ class Ethernet:
         Args:
             ip_address (str): The IP address to set.
         """
-        if response := self.parent.cmd(
+        self.parent.validate_ip(ip_address)
+        self.parent.cmd(
             f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"
-        ):
-            return response.strip()
-        raise ValueError("No IP address information returned.")
+        )
 
     # 1.4.30
     def getMASK(self) -> str:

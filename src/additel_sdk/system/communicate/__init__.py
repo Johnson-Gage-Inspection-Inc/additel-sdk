@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class Communicate:
     def __init__(self, parent: "System"):
-        self.parent: "System" = parent
+        self.parent = parent
         self.WLAN = WLAN(self)
         self.Ethernet = Ethernet(self)
         self.Bluetooth = Bluetooth(self)
