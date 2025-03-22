@@ -4,22 +4,6 @@ from .coerce import coerce
 from typing import get_origin, get_args
 
 
-def resolve_caster(annotation):
-    origin = get_origin(annotation)
-    if origin is Union:
-        args = [arg for arg in get_args(annotation) if arg is not type(None)]
-        return args[0] if args else str
-    return annotation
-
-
-def cast_value(v, caster):
-    if v == "":
-        return None
-    if caster is bool:
-        return bool(int(v))
-    return caster(v)
-
-
 @dataclass(kw_only=True)
 class DIFunctionChannelConfig:
     Name: str
@@ -83,8 +67,23 @@ class DIFunctionChannelConfig:
                 if f.default is MISSING and f.default_factory is MISSING
             ]
 
+            def _cast_value(v: str, f: field):
+                if v == "":
+                    return None
+                caster = _resolve_caster(f)
+                if caster is bool:
+                    return bool(int(v))
+                return caster(v)
+
+            def _resolve_caster(f: field) -> Type:
+                annotation = f.metadata.get("cast", f.type)
+                if get_origin(annotation) is Union:
+                    args = [arg for arg in get_args(annotation) if arg is not type(None)]
+                    return args[0] if args else str
+                return annotation
+
             parsed = {
-                f.name: cast_value(v, resolve_caster(f.metadata.get("cast", f.type)))
+                f.name: _cast_value(v, f)
                 for f, v in zip(required_fields, values)
             }
 
