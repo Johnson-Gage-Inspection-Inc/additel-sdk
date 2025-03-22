@@ -8,7 +8,7 @@ class Program:
         self.parent = parent
 
     # 1.5.1
-    def run(self, progname: str, parameters: str):
+    def run(self, progname: str, parameters = None) -> None:
         """Run the appointed program
 
         Command:
@@ -16,12 +16,12 @@ class Program:
 
         Args:
             progname (str): The name of the program to run.
-            parameters (str): The parameters of the program.
+            parameters (_type_, optional): The parameters of the program. Defaults to None.
         """
-        self.parent.cmd(f'PROGram:RUN "{progname}" "{parameters}"')
+        self.parent.send_command(f'PROGram:RUN "{progname}" "{parameters}"')
 
     # 1.5.2
-    def exit(self, progname: str = ""):
+    def exit(self, progname: str = "") -> None:
         """Stop the program. without parameters
             means Stop program specified by
             PROGram:RUN
@@ -29,7 +29,8 @@ class Program:
         Command:
             PROGram:EXIT [<progname>]
         """
-        self.parent.cmd(f'PROGram:EXIT "{progname}"'.strip())
+        exit_cmd = f'PROGram:EXIT "{progname}"' if progname else "PROGram:EXIT"
+        self.parent.send_command(exit_cmd)
 
     # 1.5.3
     def state(self, progname: str = "") -> str:
@@ -48,6 +49,7 @@ class Program:
         Returns:
             str: The state of the program.
         """
-        if response := self.parent.cmd(f'PROGram:STATe "{progname}"'):
+        state_query = f'PROGram:STATe "{progname}"' if progname else "PROGram:STATe"
+        if response := self.parent.cmd(state_query):
             return response.strip()
         raise ValueError("No program state information returned.")
