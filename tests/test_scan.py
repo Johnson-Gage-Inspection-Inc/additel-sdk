@@ -48,17 +48,26 @@ def test_scan_consistency(device):
     for k in data_latest.__dict__.keys():
         if getattr(data_latest, k) == getattr(data_json, k):
             continue
-        elif isinstance(getattr(data_latest, k), list) and isinstance(getattr(data_json, k), list):
+        elif isinstance(getattr(data_latest, k), list) and isinstance(
+            getattr(data_json, k), list
+        ):
             for i in range(len(getattr(data_latest, k))):
                 if getattr(data_latest, k)[i] == getattr(data_json, k)[i]:
                     continue
                 # assert that getattr(data_latest, k)[i] and getattr(data_json, k)[i] are the same type
-                assert isinstance(getattr(data_latest, k)[i], type(getattr(data_json, k)[i])), "List values should be the same type"
+                assert isinstance(
+                    getattr(data_latest, k)[i], type(getattr(data_json, k)[i])
+                ), "List values should be the same type"
                 type_ = type(getattr(data_latest, k)[i])
                 if type_ is float:
-                    assert abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i]) < 0.01, "List values should be close"
+                    assert (
+                        abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i])
+                        < 0.01
+                    ), "List values should be close"
                 elif type_ is datetime:
-                    assert (getattr(data_latest, k)[i] - getattr(data_json, k)[i]).total_seconds() < 3, "List values should be close"
+                    assert (
+                        getattr(data_latest, k)[i] - getattr(data_json, k)[i]
+                    ).total_seconds() < 3, "List values should be close"
             continue
         raise ValueError(f"Key {k} values do not match between data objects")
 

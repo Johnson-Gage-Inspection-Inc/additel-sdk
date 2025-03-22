@@ -8,7 +8,7 @@ class Program:
         self.parent = parent
 
     # 1.5.1
-    def run(self, progname: str, parameters = None) -> None:
+    def run(self, progname: str, parameters=None) -> None:
         """Run the appointed program
 
         Command:

@@ -8,10 +8,12 @@ import logging
 from datetime import datetime, timedelta
 from math import inf
 
+
 def count_decimals(value: float) -> int:
     """Return the number of decimals for a float value."""
     s = str(value)
     return len(s.split(".")[1]) if "." in s else 0
+
 
 def ticks_to_datetime(ticks: int) -> datetime:
     """Convert ticks to a datetime."""
@@ -21,7 +23,6 @@ def ticks_to_datetime(ticks: int) -> datetime:
 def datetime_to_ticks(dt: datetime) -> int:
     """Convert a datetime to ticks."""
     return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
-
 
 
 @dataclass
@@ -49,6 +50,7 @@ class DIScanInfo:
         """Convert the DIScanInfo object to a string representation."""
         return f"{self.NPLC},{self.ChannelName}"
 
+
 @dataclass
 class DITemperatureReading(DIReading):
     TempValues: list[float] = field(default_factory=list)
@@ -63,8 +65,15 @@ class DITemperatureReading(DIReading):
             array = string.split(",")
             # Define keys for the expected ordering:
             keys = [
-                "ChannelName", "Unit", "ValuesCount", "DateTimeTicks",
-                "Values", "ValuesFiltered", "TempUnit", "TempValuesCount", "TempValues"
+                "ChannelName",
+                "Unit",
+                "ValuesCount",
+                "DateTimeTicks",
+                "Values",
+                "ValuesFiltered",
+                "TempUnit",
+                "TempValuesCount",
+                "TempValues",
             ]
             dictionary = dict(zip(keys, array))
             # Compute the number of decimals from the raw value string; this is ValueDecimals.
@@ -76,9 +85,13 @@ class DITemperatureReading(DIReading):
             d["DateTimeTicks"] = ticks_to_datetime(d["DateTimeTicks"])
             d["Values"] = float(d["Values"])
             d["ValuesFiltered"] = float(d["ValuesFiltered"])
-            d["TempValues"] = -inf if d["TempValues"] == "------" else float(d["TempValues"])
+            d["TempValues"] = (
+                -inf if d["TempValues"] == "------" else float(d["TempValues"])
+            )
 
-        assert all(d["ChannelName"] == ChannelName for d in dictionaries), "Mismatched ChannelNames"
+        assert all(
+            d["ChannelName"] == ChannelName for d in dictionaries
+        ), "Mismatched ChannelNames"
 
         instance = cls(
             ChannelName=ChannelName,
@@ -90,7 +103,7 @@ class DITemperatureReading(DIReading):
             TempUnit=int(dictionaries[0]["TempUnit"]),
             # Here we assume TempDecimals is fixed at 4 (or you could derive it from elsewhere)
             TempDecimals=4,
-            TempValues=[d["TempValues"] for d in dictionaries]
+            TempValues=[d["TempValues"] for d in dictionaries],
         )
         return instance
 
@@ -110,6 +123,7 @@ class DITemperatureReading(DIReading):
             )
         # Return the complete string wrapped in quotes
         return '"' + "".join(parts) + '"'
+
 
 @dataclass
 class DIElectricalReading(DIReading):
@@ -236,4 +250,3 @@ class Scan:
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
-

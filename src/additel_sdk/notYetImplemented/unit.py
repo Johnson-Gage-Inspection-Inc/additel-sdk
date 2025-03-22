@@ -1,18 +1,23 @@
 import os
 import csv
 from typing import List, Union
-import src.additel_sdk.appendices as appendices 
+import src.additel_sdk.appendices as appendices
+
 
 # Section 1.8 - Unit commands
 class Unit:
     unit_lookup = {}
-    with open(os.path.join(appendices.__path__[0], 'unit_lookup.csv'),
-                mode='r', newline='', encoding='utf-8') as csvfile:
+    with open(
+        os.path.join(appendices.__path__[0], "unit_lookup.csv"),
+        mode="r",
+        newline="",
+        encoding="utf-8",
+    ) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             # Adjust the keys below to match your CSV headers
-            unit_id = row['Unit_Id'].strip()
-            unit_value = row['Unit'].strip()
+            unit_id = row["Unit_Id"].strip()
+            unit_value = row["Unit"].strip()
             unit_lookup[unit_id] = unit_value
 
     def __init__(self, parent):
@@ -36,12 +41,21 @@ class Unit:
             unit = unit_str
         elif isinstance(unit, str):
             # If unit is a string, find the corresponding ID
-            found_id = next((uid for uid, name in self.unit_lookup.items() if name.lower() == unit.lower()), None)
+            found_id = next(
+                (
+                    uid
+                    for uid, name in self.unit_lookup.items()
+                    if name.lower() == unit.lower()
+                ),
+                None,
+            )
             if found_id is None:
                 raise ValueError(f"Unit name '{unit}' not found in lookup table.")
             unit = found_id
         else:
-            raise TypeError("Unit must be either a string (unit name) or an integer (unit ID).")
+            raise TypeError(
+                "Unit must be either a string (unit name) or an integer (unit ID)."
+            )
         self.parent.send_command(f"UNIT:TEMPerature {unit}")
 
     # 1.8.3

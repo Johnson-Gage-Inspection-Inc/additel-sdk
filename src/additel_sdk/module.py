@@ -10,6 +10,7 @@ from .channel import DIFunctionChannelConfig
 from .coerce import coerce
 from dataclasses import dataclass
 
+
 @dataclass
 class DIModuleInfo:
     """Data structure for module information.
@@ -28,6 +29,7 @@ class DIModuleInfo:
     Total number of box channel
     Label of box
     """
+
     Index: int  # Identifier of box (e.g., 0: front panel, 1: embedded junction box, 2-4: serial-wound junction boxes).
     Category: int  # Module Category type.
     SN: str  # Box serial number
@@ -45,15 +47,17 @@ class DIModuleInfo:
             if not mod:
                 continue
             parts = mod.split(",")
-            modules.append(cls(
-                Index=int(parts[0]),
-                Category=int(parts[2]),
-                SN=parts[1],
-                HwVersion=parts[3],
-                SwVersion=parts[4],
-                TotalChannelCount=int(parts[5]),
-                Label=parts[6] if len(parts) > 6 else None
-            ))
+            modules.append(
+                cls(
+                    Index=int(parts[0]),
+                    Category=int(parts[2]),
+                    SN=parts[1],
+                    HwVersion=parts[3],
+                    SwVersion=parts[4],
+                    TotalChannelCount=int(parts[5]),
+                    Label=parts[6] if len(parts) > 6 else None,
+                )
+            )
         return modules
 
     def __str__(self):

@@ -10,7 +10,9 @@ class MockConnection:
     device behavior without requiring an actual physical connection.
     """
 
-    def __init__(self, parent, response_file='tests/mockADT286.json', ip=None, **kwargs):
+    def __init__(
+        self, parent, response_file="tests/mockADT286.json", ip=None, **kwargs
+    ):
         self.parent = parent
         self.response_file = response_file
         self.connected = False
@@ -25,7 +27,9 @@ class MockConnection:
                 self._responses = json.load(f)
             self.connected = True
         except FileNotFoundError:
-            raise FileNotFoundError(f"Mock responses file not found: {self.response_file}")
+            raise FileNotFoundError(
+                f"Mock responses file not found: {self.response_file}"
+            )
 
         # If IP is provided, initialize WLAN connection for fallback
         if self.ip:
@@ -69,7 +73,7 @@ class MockConnection:
     def _save_response(self, command, response):
         """Saves the command and response to the JSON file."""
         try:
-            with open(self.response_file, 'r+') as f:
+            with open(self.response_file, "r+") as f:
                 data = json.load(f)
                 data[command] = response
                 f.seek(0)  # Go back to the beginning of the file

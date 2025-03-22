@@ -9,6 +9,7 @@ from .password import Password
 
 class System:
     raise NotImplementedError("This class is not implemented yet.")
+
     def __init__(self, parent):
         self.parent = parent
         self.Communicate = Communicate(self)

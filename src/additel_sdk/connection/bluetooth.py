@@ -5,7 +5,9 @@ from queue import Queue, Empty
 
 class BluetoothConnection:
     """Class to handle Bluetooth connection to the device."""
+
     raise NotImplementedError("Bluetooth connection is not implemented yet.")
+
     def __init__(self, parent, **kwargs):
         self.parent = parent
         self.device_name = kwargs.get("device_name")

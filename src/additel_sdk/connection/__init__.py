@@ -1,5 +1,6 @@
 # connection/__init__.py
 
+
 class Connection:
     """Class to handle different ways of connecting to the device."""
 
@@ -8,30 +9,36 @@ class Connection:
         self.connType = connection_type
         if connection_type == "wlan":
             from .wlan import WLANConnection
+
             self.connection = WLANConnection(self, **kwargs)
 
-        elif connection_type == 'usb':
+        elif connection_type == "usb":
             from .usb import USBConnection
-            assert 'port' in kwargs, "Port is required for USB connection."
+
+            assert "port" in kwargs, "Port is required for USB connection."
             self.connection = USBConnection(parent, **kwargs)
 
-        elif connection_type == 'serial':
+        elif connection_type == "serial":
             from .serial import SerialConnection
-            assert 'port' in kwargs, "Port is required for Serial connection."
+
+            assert "port" in kwargs, "Port is required for Serial connection."
             self.connection = SerialConnection(parent, **kwargs)
 
-        elif connection_type == 'bluetooth':
+        elif connection_type == "bluetooth":
             from .bluetooth import BluetoothConnection
-            assert 'port' in kwargs, "Port is required for Bluetooth connection."
+
+            assert "port" in kwargs, "Port is required for Bluetooth connection."
             self.connection = BluetoothConnection(parent, **kwargs)
 
-        elif connection_type == 'ethernet':
+        elif connection_type == "ethernet":
             from .ethernet import EthernetConnection
-            assert 'ip' in kwargs, "IP address is required for Ethernet connection."
+
+            assert "ip" in kwargs, "IP address is required for Ethernet connection."
             self.connection = EthernetConnection(parent, **kwargs)
 
-        elif connection_type == 'mock':
+        elif connection_type == "mock":
             from .mock import MockConnection  # For testing purposes
+
             self.connection = MockConnection(parent, **kwargs)
 
         else:
