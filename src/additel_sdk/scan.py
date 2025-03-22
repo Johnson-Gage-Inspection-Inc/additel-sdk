@@ -67,14 +67,8 @@ class Scan:
                 - NPLC value
                 - Channel name
         """
-        response = self.parent.cmd("JSON:SCAN:STARt?")
-        if response:
-            raw_data = json.loads(response)
-            dTypes = raw_data.pop("$type").split(",")
-            assert "TAU.Module.Channels.DI.DIScanInfo" in dTypes, "Unexpected type"
-            dType = raw_data.pop("ClassName")
-            assert dType == "DIScanInfo", f"Unexpected class name: {dType}"
-            return DIScanInfo(**raw_data)
+        if response := self.parent.cmd("JSON:SCAN:STARt?"):
+            return coerce(response)
 
     def get_configuration(self) -> DIScanInfo:
         """Acquire the scanning configuration.
