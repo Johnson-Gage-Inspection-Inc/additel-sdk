@@ -1,9 +1,8 @@
 # system.py = This file contains the class for the System commands.
 from datetime import date
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from .communicate import Communicate
 from .password import Password
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -78,7 +77,7 @@ class System:
             day (int): Day to set (1-31).
         """
         command = f"SYSTem:DATE {year},{month},{day}"
-        self.parent.cmd(command)
+        self.parent.send_command(command)
 
     # 1.4.4
     def get_date(self) -> date:
@@ -107,7 +106,7 @@ class System:
             second (int): Second to set (0-59).
         """
         command = f"SYSTem:TIME {hour},{minute},{second}"
-        self.parent.cmd(command)
+        self.parent.send_command(command)
 
     # 1.4.6
     def set_local_lock(self, lock: bool) -> None:
@@ -120,7 +119,7 @@ class System:
             lock (bool): Set to True to lock the system (ON) or False to unlock it (OFF).
         """
         command = f"SYSTem:KLOCk {int(lock)}"
-        self.parent.cmd(command)
+        self.parent.send_command(command)
 
     # 1.4.7
     def get_local_lock(self) -> bool:
@@ -147,7 +146,7 @@ class System:
             enable (bool): Set to True to enable the warning tone (ON) or False to disable it (OFF).
         """
         command = f"SYSTem:BEEPer:ALARm {int(enable)}"
-        self.parent.cmd(command)
+        self.parent.send_command(command)
 
     # 1.4.9
     def set_keypad_tone(self, enable: bool) -> None:
@@ -160,4 +159,4 @@ class System:
             enable (bool): Set to True to enable the keypad tone (ON) or False to disable it (OFF).
         """
         command = f"SYSTem:BEEPer:TOUCh {int(enable)}"
-        self.parent.cmd(command)
+        self.parent.send_command(command)
