@@ -3,9 +3,9 @@
 import pytest
 
 
-def test_identify(additel):
+def test_identify(device):
     """Test device identification functionality."""
-    identity = additel.identify()
+    identity = device.identify()
     assert identity == "'685022040027',TAU-HOST 1.1.1.0", "Identity must be correct"
 
 
