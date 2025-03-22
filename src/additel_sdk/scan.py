@@ -8,7 +8,7 @@ import logging
 from datetime import datetime, timedelta
 from math import inf
 
-def get_decimals(value: float) -> int:
+def count_decimals(value: float) -> int:
     """Return the number of decimals for a float value."""
     s = str(value)
     return len(s.split(".")[1]) if "." in s else 0
