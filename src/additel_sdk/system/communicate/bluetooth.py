@@ -7,8 +7,7 @@ class Bluetooth:
 
     # 1.4.43
     def setstate(self, enable: bool):
-        """
-        Set the state of the system's Bluetooth functionality.
+        """Set the state of the system's Bluetooth functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe] <Boolean>|ON|OFF
@@ -24,8 +23,7 @@ class Bluetooth:
 
     # 1.4.44
     def getstate(self) -> bool:
-        """
-        Query the state of the system's Bluetooth functionality.
+        """Query the state of the system's Bluetooth functionality.
 
         Command:
             SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe]?
@@ -43,8 +41,7 @@ class Bluetooth:
 
     # 1.4.45
     def getName(self) -> str:
-        """
-        Query the name of the Bluetooth device.
+        """Query the name of the Bluetooth device.
 
         Command:
             SYSTem:COMMunicate:BLUEtooth:NAMe?
@@ -61,8 +58,7 @@ class Bluetooth:
 
     # 1.4.46 (SYSTem:COMMunicate:BLUEtooth:NAMe<UnquoStr>))
     def setName(self, name: str):
-        """
-        Set the name of the Bluetooth device.
+        """Set the name of the Bluetooth device.
 
         Command:
             SYSTem:COMMunicate:BLUEtooth:NAMe <UnquoStr>
