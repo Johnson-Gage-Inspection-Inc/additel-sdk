@@ -1,23 +1,34 @@
-from datetime import datetime
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 
+@dataclass
 class TimeTick:
-    def __init__(self, TickTime: str):
-        self.raw = TickTime
-        self.time = datetime.strptime(TickTime, "%Y-%m-%d %H:%M:%S %f")
+    TickTime: int
+    time: datetime = None
 
-    def __repr__(self):
-        return f"<TimeTick {self.time.isoformat()}>"
+    DOTNET_EPOCH = datetime(1, 1, 1)
 
-    def __eq__(self, other):
-        if isinstance(other, TimeTick):
-            return self.time == other.time
-        if isinstance(other, datetime):
-            return self.time == other
-        return False
+    def __post_init__(self):
+        self.time = datetime.strptime(self.TickTime, "%Y-%m-%d %H:%M:%S %f")
 
-    def __lt__(self, other):
-        return self.time < (other.time if isinstance(other, TimeTick) else other)
+    @classmethod
+    def from_iso_string(cls, s: str) -> "TimeTick":
+        return cls(datetime.strptime(s, "%Y-%m-%d %H:%M:%S %f"), s)
 
-    # Add passthrough for datetime attributes if needed
-    def __getattr__(self, name):
-        return getattr(self.time, name)
+    @classmethod
+    def from_short_format(cls, s: str) -> "TimeTick":
+        return cls(datetime.strptime(s, "%Y:%m:%d %H:%M:%S %f"), s)
+
+    @classmethod
+    def from_ticks(cls, ticks: int) -> "TimeTick":
+        dt = cls.DOTNET_EPOCH + timedelta(microseconds=ticks // 10)
+        return cls(dt, str(ticks))
+
+    def to_ticks(self) -> int:
+        return int((self.time - self.DOTNET_EPOCH).total_seconds() * 10_000_000)
+
+    def to_short_format(self) -> str:
+        return self.time.strftime("%Y:%m:%d %H:%M:%S %f")[:-3]
+
+    def __getattr__(self, attr):
+        return getattr(self.time, attr)

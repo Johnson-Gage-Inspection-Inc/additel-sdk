@@ -1,4 +1,4 @@
-from datetime import datetime
+from .time import TimeTick
 from typing import List, Union
 import re
 import logging
@@ -46,9 +46,8 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
         if typeStr not in map:
             raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
 
-        # Handle date formatting
-        if typ == datetime:
-            return datetime.strptime(adt["TickTime"], "%Y-%m-%d %H:%M:%S %f")
+        if typ == TimeTick:
+            return TimeTick(**adt).time
 
         # Recursively coerce nested dictionaries:
         for key, value in adt.items():
@@ -87,7 +86,7 @@ def json(obj) -> dict:
 
 
 def load_mapping():
-    from . import channel, module, scan, time
+    from . import channel, module, scan
 
     map = {
         "System.Double": float,
@@ -111,7 +110,7 @@ def load_mapping():
         "TAU.Module.Channels.DI.DITemperatureReading": scan.DITemperatureReading,
         "TAU.Module.Channels.DI.DIElectricalReading": scan.DIElectricalReading,
         "TAU.Module.Channels.DI.DITCReading": scan.DITCReading,
-        "TAU.Module.Channels.DI.TimeTick": time.TimeTick,
+        "TAU.Module.Channels.DI.TimeTick": TimeTick,
     }
 
     return map

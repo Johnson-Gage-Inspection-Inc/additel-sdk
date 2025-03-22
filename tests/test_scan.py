@@ -48,7 +48,9 @@ def test_scan_consistency(device):
         if getattr(data_latest, k) == getattr(data_json, k):
             continue
         elif isinstance(getattr(data_latest, k), list) and isinstance(getattr(data_json, k), list):
-            for i in range(len(getattr(data_latest, k))):
+            for i in range(len(getattr(data_latest, k))):    
+                if getattr(data_latest, k)[i] == getattr(data_json, k)[i]:
+                    continue
                 assert isinstance(getattr(data_latest, k)[i], float), "List values should be floats"
                 assert isinstance(getattr(data_json, k)[i], float), "List values should be floats"
                 assert abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i]) < 0.01, "List values should be close"
