@@ -1,12 +1,12 @@
 import os
 import csv
 from typing import List, Union
-
+import src.additel_sdk.appendices as appendices 
 
 # Section 1.8 - Unit commands
 class Unit:
     unit_lookup = {}
-    with open(os.path.join(os.path.dirname(__file__), 'appendices', 'Table1.csv'),
+    with open(os.path.join(appendices.__path__[0], 'unit_lookup.csv'),
                 mode='r', newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
