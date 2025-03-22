@@ -85,41 +85,16 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def device(request, device_ip, mock_additel):
+def device(request, device_ip):
+    """Fixture that provides an Additel device - either real or mock based on the --real flag."""
+    from src.additel_sdk.base import Additel
+    
     if request.config.getoption("--real"):
-        from src.additel_sdk.base import Additel  # import the real connection
+        # Use real connection
         with Additel("wlan", ip=device_ip) as real_device:
             yield real_device
     else:
-        yield mock_additel
-
-
-@pytest.fixture
-def mock_additel(monkeypatch):
-    """Fixture that returns a mocked Additel object with a dummy connection.
-
-    This fixture uses a dictionary of fake responses to emulate the Additel machine.
-    """
-    from unittest.mock import MagicMock
-    import json
-    mock_device = MagicMock(spec=Additel)
-
-    # Pre-defined responses for commands
-    with open('tests\mockADT286.json') as f:
-        responses = json.load(f)
-
-    def fake_cmd(command):
-        # Return the fake response if available
-        return responses.get(command, "OK")
-
-    mock_device.cmd.side_effect = fake_cmd
-    mock_device.connection = MagicMock()
-    mock_device.connection.connection = True
-    
-    # Add identify method to the mock
-    def identify():
-        return mock_device.cmd("*IDN?")
-    
-    mock_device.identify = identify
-    
-    return mock_device
+        # Use mock connection
+        response_file = os.path.join(os.path.dirname(__file__), 'mockADT286.json')
+        with Additel("mock", response_file=response_file) as mock_device:
+            yield mock_device
