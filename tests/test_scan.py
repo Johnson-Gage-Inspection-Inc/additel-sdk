@@ -4,7 +4,7 @@ import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 
 
-def test_scan_config(device, scan_config, scan_config_json):
+def test_scan_config(device, scan_config: DIScanInfo, scan_config_json: DIScanInfo):
     """Test scan configuration consistency."""
     assert isinstance(
         scan_config, DIScanInfo
