@@ -1,6 +1,6 @@
 # scan.py - This file contains the class for the Scan commands.
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 import json
 from .coerce import coerce
@@ -9,43 +9,14 @@ from datetime import datetime, timedelta
 from math import inf
 
 
+@dataclass
 class DIReading:
-    """Represents a single channel's measurement data."""
-
-    def __init__(self, **kwargs):
-        self.ChannelName = kwargs.pop("ChannelName", "")
-        self.Unit: int = kwargs.pop("Unit", 0)
-        self.Values: List[float] = kwargs.pop("Values", [])
-        self.ValuesFiltered: List[float] = kwargs.pop("ValuesFiltered", [])
-        self.DateTimeTicks: List[datetime] = kwargs.pop("DateTimeTicks", [])
-        self.ValueDecimals: int = kwargs.pop("ValueDecimals", 0)
-        if kwargs:
-            logging.warning(f"Unhandled keys: {kwargs.keys()}")
-        try:
-            if kwargs.pop("ClassName", None):
-                self.validate_structure(kwargs)
-            self.__dict__.update(kwargs)
-        except Exception as e:
-            print(f"Error: {e}")
-
-    def validate_structure(self, kwargs={}):
-        # If there are extra keys that haven't been handled by the subclass,
-        # you can either ignore them or raise an error.
-        if kwargs:
-            logging.warning(f"Unhandled keys: {kwargs.keys()}")
-
-        # Make sure no values are null
-        for key, value in self.__dict__.items():
-            if not value:
-                logging.warning(f"Value for {key} is null")
-
-    @staticmethod
-    def ticksToDatetime(ticks):
-        return datetime(1, 1, 1) + timedelta(seconds=int(ticks) / 10_000_000)
-
-    @staticmethod
-    def datetimeToTicks(dt):
-        return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
+    ChannelName: str = ""
+    Unit: int = 0
+    Values: List[float] = field(default_factory=list)
+    ValuesFiltered: List[float] = field(default_factory=list)
+    DateTimeTicks: List[datetime] = field(default_factory=list)
+    ValueDecimals: int = 0
 
 
 @dataclass
@@ -201,178 +172,81 @@ class Scan:
             return coerce(response)
 
 
+def ticks_to_datetime(ticks):
+    return datetime(1, 1, 1) + timedelta(seconds=int(ticks) / 10_000_000)
+
+
+def datetime_to_ticks(dt):
+    return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
+
+
+
+@dataclass
 class DITemperatureReading(DIReading):
-    """Represents a single channel's temperature measurement data.
-
-    Args:
-        DIReading: The base class for all DI readings. Includes:
-            * Channel name
-            * Electrical unit ID
-            * Number of electrical measurement data
-            * Electrical measurement data
-            * Filtered electrical measurement data
-            * Indication unit ID
-            * Number of indication data
-            * Indication data
-    """
-
-    def __init__(self, **kwargs):
-        self.TempValues: List[float] = kwargs.pop("TempValues")
-        self.TempUnit: int = kwargs.pop("TempUnit")
-        self.TempDecimals: int = kwargs.pop("TempDecimals")
-        # Ensure the ClassName is correctly set for validation
-        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DITemperatureReading")
-        super().__init__(**kwargs)
+    TempValues: List[float] = field(default_factory=list)
+    TempUnit: int = 0
+    TempDecimals: int = 0
 
     @classmethod
-    def from_str(self, input: str):
+    def from_str(cls, input: str):
         dictionaries = []
-        for string in input[1:-1].split(";")[0:-1]:
-            # if string starts and ends with double quotes, remove them
+        for string in input[1:-1].split(";")[:-1]:
             array = string.split(",")
-            keys = [
-                "ChannelName",
-                "Unit",
-                "?",
-                "DateTimeTicks",
-                "Values",
-                "ValuesFiltered",
-                "TempUnit",
-                "?",  # TempDecimals?
-                "TempValues",
-            ]
-            dictionary = dict(zip(keys, array))
+            dictionary = dict(zip([
+                "ChannelName", "Unit", "?", "DateTimeTicks",
+                "Values", "ValuesFiltered", "TempUnit", "?", "TempValues"
+            ], array))
             dictionary["TempDecimals"] = len(str(array[4]).split(".")[1])
             dictionaries.append(dictionary)
 
-        ChannelName = dictionary["ChannelName"]
-        dictionary["DateTimeTicks"] = [
-            self.ticksToDatetime(d["DateTimeTicks"]) for d in dictionaries
-        ]
-        dictionary["Values"] = [float(d["Values"]) for d in dictionaries]
-        dictionary["ValuesFiltered"] = [
-            float(d["ValuesFiltered"]) for d in dictionaries
-        ]
+        ChannelName = dictionaries[0]["ChannelName"]
+        for d in dictionaries:
+            d["DateTimeTicks"] = ticks_to_datetime(d["DateTimeTicks"])
+            d["Values"] = float(d["Values"])
+            d["ValuesFiltered"] = float(d["ValuesFiltered"])
+            d["TempValues"] = -inf if d["TempValues"] == "------" else float(d["TempValues"])
 
-        def extendedFloat(x) -> float:
-            if x == "------":
-                return -inf
-            return float(x)
+        assert all(d["ChannelName"] == ChannelName for d in dictionaries), "Mismatched ChannelNames"
 
-        dictionary["TempValues"] = [
-            extendedFloat(d["TempValues"]) for d in dictionaries
-        ]
-
-        assert all(
-            dictionaries[i]["ChannelName"] == dictionaries[i + 1]["ChannelName"]
-            for i in range(len(dictionaries) - 1)
-        ), "Channel names do not match"
-        assert all(
-            dictionaries[i]["Unit"] == dictionaries[i + 1]["Unit"]
-            for i in range(len(dictionaries) - 1)
-        ), f"Units do not match for channel {ChannelName}: {[dictionaries[i]['Unit'] for i in range(len(dictionaries))]}"
-        assert all(
-            dictionaries[i]["TempUnit"] == dictionaries[i + 1]["TempUnit"]
-            for i in range(len(dictionaries) - 1)
-        ), f"Temperature units do not match for channel {ChannelName}"
-        assert all(
-            dictionaries[i]["TempDecimals"] == dictionaries[i + 1]["TempDecimals"]
-            for i in range(len(dictionaries) - 1)
-        ), f"Temperature decimals do not match for channel {ChannelName}"
-        assert (
-            len(dictionary["Values"])
-            == len(dictionary["ValuesFiltered"])
-            == len(dictionary["TempValues"])
-            == len(dictionary["DateTimeTicks"])
-        ), f"Lengths of data do not match for channel {ChannelName}"
-
-        return self(**dictionary)
+        instance = cls(
+            ChannelName=ChannelName,
+            Unit=int(dictionaries[0]["Unit"]),
+            Values=[d["Values"] for d in dictionaries],
+            ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
+            DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
+            TempUnit=int(dictionaries[0]["TempUnit"]),
+            TempDecimals=int(dictionaries[0]["TempDecimals"]),
+            TempValues=[d["TempValues"] for d in dictionaries]
+        )
+        return instance
 
     def __str__(self):
-        def rnd(li: list, n: int = None) -> List[float]:
-            if not n:
-                n = self.TempDecimals
-            return [f"{round(float(x), n):.{n}f}" for x in li]
+        def fmt(val, dec):
+            return f"{round(val, dec):.{dec}f}"
 
-        DateTimeTicks = [
-            int(self.datetimeToTicks(x) / 1000) * 1000 for x in self.DateTimeTicks
-        ]
-        Values = rnd(self.Values)
-        ValuesFiltered = rnd(self.ValuesFiltered)
-        TempValues = rnd(self.TempValues, 4)
-        output = ""
-        n = len(self.Values)
-        for i in range(n):
-            output += f"{self.ChannelName},{self.Unit},1,{DateTimeTicks[i]},{Values[i]},{ValuesFiltered[i]},{self.TempUnit},1,{TempValues[i]};"
-        return f'"{output}"'
+        parts = []
+        for i in range(len(self.Values)):
+            dt_ticks = int(datetime_to_ticks(self.DateTimeTicks[i]) / 1000) * 1000
+            parts.append(
+                f"{self.ChannelName},{self.Unit},1,{dt_ticks},{fmt(self.Values[i], self.TempDecimals)},"
+                f"{fmt(self.ValuesFiltered[i], self.TempDecimals)},{self.TempUnit},1,{fmt(self.TempValues[i], 4)};"
+            )
+        return f'"{''.join(parts)}"'
 
 
-
+@dataclass
 class DIElectricalReading(DIReading):
-    """Represents a single channel's electrical measurement data.
-
-    Args:
-        DIReading: The base class for all DI readings. Includes:                - For Electrical Measurement Data:
-            * Channel name
-            * Electrical unit ID
-            * Number of electrical measurement data
-            * Electrical measurement data
-            * Filtered electrical measurement data
-    """
-
-    def __init__(self, **kwargs):
-        logging.warning("DIElectricalReading.__init__() has not been tested.")
-        kwargs.setdefault("ClassName", "TAU.Module.Channels.DI.DIElectricalReading")
-        super().__init__(**kwargs)
+    pass
 
 
+@dataclass
 class DITCReading(DIReading):
-    """Represents a single channel's thermocouple measurement data.
-
-    Args:
-        DIReading: The base class for all DI readings. Includes:
-            * Channel name
-            * Electrical unit ID
-            * Number of electrical measurement data
-            * Electrical measurement data
-            * Filtered electrical measurement data
-            * Indication unit ID
-            * Number of indication data
-            * Indication data
-            * Cold junction electrical unit ID
-            * Cold junction electrical test data
-            * Cold junction temperature unit ID
-            * Cold junction temperature data
-
-        TC data:
-            Channel name
-            Electrical unit Id
-            Number of electrical measurement data 1 electrical measurement data
-            electrical measurement data after filter Indication unit Id
-            Number of indication data 1 the indication data
-            Cold junction electrical unitId
-            Cold junction electrical measurement data number 1
-            cold junction electrical test data
-            Cold junction temperature unit Id
-            Cold junction temperature data number 1
-            cold junction temperature data
-    """
-
-    def __init__(self, **kwargs):
-        logging.warning("DITCReading.__init__() has not been tested.")
-        # For the electrical measurement part, we can add a count if desired.
-        self.NumElectrical: int = kwargs.pop(
-            "NumElectrical", len(kwargs.get("Values", []))
-        )
-        # Additional TC-specific fields:
-        self.CJCs: List[int] = kwargs.pop("CJCs")
-        self.CJCUnit: int = kwargs.pop("CJCUnit")
-        self.CjcRaws: list = kwargs.pop("CjcRaws")
-        self.CJCRawsUnit: int = kwargs.pop("CJCRawsUnit")
-        self.CJCDecimals: int = kwargs.pop("CJCDecimals")
-        self.TempValues: list = kwargs.pop("TempValues")
-        self.TempUnit: int = kwargs.pop("TempUnit")
-        self.TempDecimals: int = kwargs.pop("TempDecimals")
-        # Set the proper ClassName for later coercion.
-        kwargs.setdefault("ClassName", "DITCReading")
-        super().__init__(**kwargs)
+    NumElectrical: int = 0
+    CJCs: List[int] = field(default_factory=list)
+    CJCUnit: int = 0
+    CjcRaws: List[float] = field(default_factory=list)
+    CJCRawsUnit: int = 0
+    CJCDecimals: int = 0
+    TempValues: List[float] = field(default_factory=list)
+    TempUnit: int = 0
+    TempDecimals: int = 0
