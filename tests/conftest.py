@@ -4,9 +4,10 @@ import os
 import sys
 import pytest
 from src.additel_sdk.base import Additel
-from src.additel_sdk.channel import Channel
+from src.additel_sdk.channel import Channel, DIFunctionChannelConfig
 from src.additel_sdk.module import Module
-from src.additel_sdk.scan import Scan
+from src.additel_sdk.scan import Scan, DIScanInfo
+from typing import List
 
 # Add the project root directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -29,21 +30,21 @@ def additel(device_ip):
 
 
 @pytest.fixture
-def module_config(device, module_index=0):
+def module_config(device, module_index=0) -> List[DIFunctionChannelConfig]:
     """Fixture to provide module configuration."""
     mod = Module(device)
     return mod.getConfiguration(module_index=module_index)
 
 
 @pytest.fixture
-def module_config_json(device, module_index=0):
+def module_config_json(device, module_index=0) -> List[DIFunctionChannelConfig]:
     """Fixture to provide module configuration in JSON format."""
     mod = Module(device)
     return mod.getConfiguration_json(module_index=module_index)
 
 
 @pytest.fixture
-def scan_config(device):
+def scan_config(device) -> DIScanInfo:
     """Fixture to provide scan configuration."""
     scan = Scan(device)
     return scan.get_configuration()
