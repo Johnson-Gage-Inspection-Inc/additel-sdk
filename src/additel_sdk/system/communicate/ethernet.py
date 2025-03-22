@@ -1,4 +1,4 @@
-# ethernet.py
+# system\communicate\ethernet.py
 
 
 class Ethernet:
