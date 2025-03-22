@@ -41,36 +41,30 @@ class MockConnection:
         if self.wlan_connection:
             self.wlan_connection.disconnect()
 
-    def send_command(self, command: str) -> str:
-        """Simulates sending a command and returns the pre-defined response."""
+    def send_command(self, command: str) -> None:
+        """Stores the command to be processed by read_response."""
         if not self.connected:
             raise ConnectionError("Not connected to device")
         self.last_command = command
 
     def read_response(self) -> str:
-        """Returns the pre-defined response for the last sent command."""
-        return self._responses.get(self.last_command)
-
-    def cmd(self, command):
-        """Send a command to the device and return the response."""
-        if not self.connected:
-            raise ConnectionError("Not connected to device")
-        
-        response = self._responses.get(command)
-        
+        """Returns the pre-defined or fallback response for the last command."""
+        response = self._responses.get(self.last_command)
         if response is None and self.wlan_connection:
             try:
-                response = self.wlan_connection.cmd(command)
-                if response:  # Check for a non-trivial response
-                    self._responses[command] = response
-                    self._save_response(command, response)  # Save the new command/response pair
-                return response
+                response = self.wlan_connection.cmd(self.last_command)
+                if response:  # Save only non-trivial responses
+                    self._responses[self.last_command] = response
+                    self._save_response(self.last_command, response)
             except Exception as e:
                 logging.warning(f"WLAN fallback failed: {e}")
-                return
-        
-        # Return the fake response if available, otherwise return OK
+                return None
+
         return response
+
+    def cmd(self, command):
+        self.send_command(command)
+        return self.read_response()
 
     def _save_response(self, command, response):
         """Saves the command and response to the JSON file."""
