@@ -283,7 +283,7 @@ class Electricity:
         year: int,
         month: int,
         day: int,
-    ):
+    ) -> None:
         """
         Write cold junction calibration data.
 
@@ -310,4 +310,4 @@ class Electricity:
             f"CALibration:ELECtricity:DATA:CJC {manufacturer_or_user},{password},"
             f"{location},{channel},{offset},{year},{month},{day}"
         )
-        self.parent.parent.cmd(command)
+        self.parent.parent.send_command(command)
