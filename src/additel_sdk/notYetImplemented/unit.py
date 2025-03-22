@@ -45,7 +45,7 @@ class Unit:
         self.parent.send_command(f"UNIT:TEMPerature {unit}")
 
     # 1.8.3
-    def getUnitTemp(self) -> List[str]:
+    def get_unit_temp(self) -> List[str]:
         """Query the temperature unit of the device
 
         Command:
