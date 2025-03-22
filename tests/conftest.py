@@ -80,13 +80,14 @@ def pytest_addoption(parser):
 @pytest.fixture
 def device(request, device_ip):
     """Fixture that provides an Additel device - either real or mock based on the --real flag."""
-    
+
     if request.config.getoption("--real"):
         # Use real connection
         with Additel("wlan", ip=device_ip) as real_device:
             yield real_device
     else:
         # Use mock connection
-        response_file = os.path.join(os.path.dirname(__file__), 'mockADT286.json')
-        with Additel("mock", response_file=response_file) as mock_device:
+        response_file = os.path.join(os.path.dirname(__file__), "mockADT286.json")
+        # Pass the device_ip to MockConnection
+        with Additel("mock", response_file=response_file, ip=device_ip) as mock_device:
             yield mock_device

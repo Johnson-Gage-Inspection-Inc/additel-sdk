@@ -3,6 +3,7 @@ from typing import List
 
 class Electricity:
     raise NotImplementedError("Electricity calibration is not implemented yet.")
+
     def __init__(self, parent):
         self.parent = parent
 
