@@ -49,7 +49,7 @@ def test_scan_consistency(device):
         if getattr(data_latest, k) == getattr(data_json, k):
             continue
         elif isinstance(getattr(data_latest, k), list) and isinstance(getattr(data_json, k), list):
-            for i in range(len(getattr(data_latest, k))):    
+            for i in range(len(getattr(data_latest, k))):
                 if getattr(data_latest, k)[i] == getattr(data_json, k)[i]:
                     continue
                 # assert that getattr(data_latest, k)[i] and getattr(data_json, k)[i] are the same type

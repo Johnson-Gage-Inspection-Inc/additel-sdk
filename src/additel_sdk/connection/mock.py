@@ -1,14 +1,15 @@
 import json
-from .wlan import WLANConnection  
+from .wlan import WLANConnection
 import logging
+
 
 class MockConnection:
     """A mock connection class for testing purposes.
-    
+
     This connection type uses pre-defined responses from a JSON file to simulate
     device behavior without requiring an actual physical connection.
     """
-    
+
     def __init__(self, parent, response_file='tests/mockADT286.json', ip=None, **kwargs):
         self.parent = parent
         self.response_file = response_file
@@ -16,7 +17,7 @@ class MockConnection:
         self._responses = {}
         self.wlan_connection = None  # Initialize wlan_connection
         self.ip = ip  # Store the IP address
-        
+
     def connect(self):
         """Simulates connecting to the device."""
         try:
@@ -25,7 +26,7 @@ class MockConnection:
             self.connected = True
         except FileNotFoundError:
             raise FileNotFoundError(f"Mock responses file not found: {self.response_file}")
-        
+
         # If IP is provided, initialize WLAN connection for fallback
         if self.ip:
             try:
