@@ -87,7 +87,7 @@ def json(obj) -> dict:
 def load_mapping():
     from . import channel, module, scan
 
-    map = {
+    return {
         "System.Double": float,
         "TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig": channel.DIFunctionVoltageChannelConfig,  # - 0: Voltage
         "TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig": channel.DIFunctionCurrentChannelConfig,  # - 1: Current
@@ -111,5 +111,3 @@ def load_mapping():
         "TAU.Module.Channels.DI.DITCReading": scan.DITCReading,
         "TAU.Module.Channels.DI.TimeTick": TimeTick,
     }
-
-    return map
