@@ -159,35 +159,19 @@ class Scan:
         logging.warning("This command has not been tested.")
         self.parent.cmd("SCAN:STOP")
 
-    def get_latest_data(self, format=2) -> DIReading:  # Tested!
-        """This command retrieves the latest scanning data for all active channels. Optionally, the `time` parameter specifies
-        the desired timestamp format:
-            - 1: "yyyy:MM:dd HH:mm:ss fff" format
-            - 2: Long format (ticks since 1/1/0001)
+    def get_latest_data(self, longformat=True) -> DIReading:
+        """Retrieves the latest scanning data for all active channels.
 
         Args:
-            format (int): The desired timestamp format (1: "yyyy:MM:dd HH:mm:ss fff", 2: long format)). Default is 2.
+            longformat (bool, optional): Specifies the timestamp format.
+                If True, uses long timestamp format (ticks since 1/1/0001)
+                If False, uses "yyyy:MM:dd HH:mm:ss fff" format.
+                Defaults to False.
 
         Returns:
-            str: A semicolon-separated string where each entry represents data for a channel. Each entry includes:
-                - For Switch Data:
-                    * Status data (based on TC or RTD data)
-                - For Voltage/Current Transmitter Data:
-                    * Channel name
-                    * Electrical unit ID
-                    * Number of electrical measurement data
-                    * Electrical measurement data
-                    * Filtered electrical measurement data
-                    * Input signal unit ID
-                    * Input signal name
-                    * Number of input signals
-                    * Input signal data
+            DIReading: _description_
         """
-        if format not in [1, 2]:
-            raise ValueError("Invalid format. Must be 1 or 2.")
-        if format == 1:
-            raise NotImplementedError("This format is not implemented.")
-        response = self.parent.cmd(f"SCAN:DATA:Last? {format}")
+        response = self.parent.cmd(f"SCAN:DATA:Last? {2 if longformat else 1}")
         # FIXME: We're assuming temperature data for now
         return DITemperatureReading.from_str(response)
 
