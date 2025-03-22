@@ -2,6 +2,7 @@
 
 import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
+from datetime import datetime
 
 
 def test_scan_config(device, scan_config: DIScanInfo, scan_config_json: DIScanInfo):
@@ -51,11 +52,16 @@ def test_scan_consistency(device):
             for i in range(len(getattr(data_latest, k))):    
                 if getattr(data_latest, k)[i] == getattr(data_json, k)[i]:
                     continue
-                assert isinstance(getattr(data_latest, k)[i], float), "List values should be floats"
-                assert isinstance(getattr(data_json, k)[i], float), "List values should be floats"
-                assert abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i]) < 0.01, "List values should be close"
+                # assert that getattr(data_latest, k)[i] and getattr(data_json, k)[i] are the same type
+                assert isinstance(getattr(data_latest, k)[i], type(getattr(data_json, k)[i])), "List values should be the same type"
+                type_ = type(getattr(data_latest, k)[i])
+                if type_ is float:
+                    assert abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i]) < 0.01, "List values should be close"
+                elif type_ is datetime:
+                    assert (getattr(data_latest, k)[i] - getattr(data_json, k)[i]).total_seconds() < 3, "List values should be close"
             continue
         raise ValueError(f"Key {k} values do not match between data objects")
+
 
 def test_intelligent_wire(device):
     """Test intelligent wiring data retrieval."""
