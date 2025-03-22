@@ -41,15 +41,21 @@ def test_scan_consistency(device):
     data_json = scan.get_data_json(1)
     data_latest = scan.get_latest_data()
 
-    # We can't compare directly due to timestamp differences, but we can check structure
-    assert len(data_latest.Values) > 0, "Latest data should not be empty"
-    assert len(data_json.Values) > 0, "Data from JSON should not be empty"
-
-    # Check same channel is reported
-    assert (
-        data_json.ChannelName == data_latest.ChannelName
-    ), "Channel names should match"
-
+    # Compare the two data objects
+    assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
+    assert isinstance(data_json, DIReading), "JSON data must be a DIReading object"
+    for k in data_latest.__dict__.keys():
+        if getattr(data_latest, k) is None or getattr(data_json, k) is None:
+            raise ValueError(f"Key {k} is None in one of the data objects")
+        elif getattr(data_latest, k) == getattr(data_json, k):
+            continue
+        elif isinstance(getattr(data_latest, k), list) and isinstance(getattr(data_json, k), list):
+            for i in range(len(getattr(data_latest, k))):
+                assert isinstance(getattr(data_latest, k)[i], float), "List values should be floats"
+                assert isinstance(getattr(data_json, k)[i], float), "List values should be floats"
+                assert abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i]) < 0.01, "List values should be close"
+            continue
+        raise ValueError(f"Key {k} values do not match between data objects")
 
 def test_intelligent_wire(device):
     """Test intelligent wiring data retrieval."""
