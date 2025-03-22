@@ -11,7 +11,7 @@ def test_identify(device):
 
 def test_connection(device):
     """Test that connection is properly established."""
-    assert device.connection.connection is True, "Connection was not established"
+    assert device.connection.connection is not None, "Connection was not established"
 
 
 @pytest.mark.parametrize(

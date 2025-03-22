@@ -1,10 +1,10 @@
 # connection/__init__.py
 from .connections.wlan import WLANConnection
-
 from .connections.usb import USBConnection
 from .connections.serial import SerialConnection
 from .connections.bluetooth import BluetoothConnection
 from .connections.ethernet import EthernetConnection
+from .connections.mock import MockConnection  # For testing purposes
 
 
 class Connection:
@@ -31,6 +31,9 @@ class Connection:
         elif connection_type == 'ethernet':
             assert 'ip' in kwargs, "IP address is required for Ethernet connection."
             self.connection = EthernetConnection(parent, **kwargs)
+
+        elif connection_type == 'mock':
+            self.connection = MockConnection(parent, **kwargs)
 
         else:
             raise ValueError(f"Connection type '{connection_type}' is not supported.")
