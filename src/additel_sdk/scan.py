@@ -8,6 +8,20 @@ import logging
 from datetime import datetime, timedelta
 from math import inf
 
+def get_decimals(value: float) -> int:
+    """Return the number of decimals for a float value."""
+    s = str(value)
+    return len(s.split(".")[1]) if "." in s else 0
+
+def ticks_to_datetime(ticks: int) -> datetime:
+    """Convert ticks to a datetime."""
+    return datetime(1, 1, 1) + timedelta(seconds=int(ticks) / 10_000_000)
+
+
+def datetime_to_ticks(dt: datetime) -> int:
+    """Convert a datetime to ticks."""
+    return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
+
 
 @dataclass
 class DIReading:
@@ -142,14 +156,6 @@ class Scan:
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
-
-
-def ticks_to_datetime(ticks):
-    return datetime(1, 1, 1) + timedelta(seconds=int(ticks) / 10_000_000)
-
-
-def datetime_to_ticks(dt):
-    return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
 
 
 @dataclass
