@@ -180,23 +180,26 @@ def datetime_to_ticks(dt):
     return (dt - datetime(1, 1, 1)) / timedelta(seconds=1) * 10_000_000
 
 
-
 @dataclass
 class DITemperatureReading(DIReading):
-    TempValues: List[float] = field(default_factory=list)
+    TempValues: list[float] = field(default_factory=list)
     TempUnit: int = 0
-    TempDecimals: int = 0
+    TempDecimals: int = 0  # e.g. usually 4
 
     @classmethod
     def from_str(cls, input: str):
         dictionaries = []
+        # Remove the surrounding quotes, split by ";" and ignore trailing empty element.
         for string in input[1:-1].split(";")[:-1]:
             array = string.split(",")
-            dictionary = dict(zip([
-                "ChannelName", "Unit", "?", "DateTimeTicks",
-                "Values", "ValuesFiltered", "TempUnit", "?", "TempValues"
-            ], array))
-            dictionary["TempDecimals"] = len(str(array[4]).split(".")[1])
+            # Define keys for the expected ordering:
+            keys = [
+                "ChannelName", "Unit", "ValuesCount", "DateTimeTicks",
+                "Values", "ValuesFiltered", "TempUnit", "TempValuesCount", "TempValues"
+            ]
+            dictionary = dict(zip(keys, array))
+            # Compute the number of decimals from the raw value string; this is ValueDecimals.
+            dictionary["ValueDecimals"] = len(str(array[4]).split(".")[1])
             dictionaries.append(dictionary)
 
         ChannelName = dictionaries[0]["ChannelName"]
@@ -214,8 +217,10 @@ class DITemperatureReading(DIReading):
             Values=[d["Values"] for d in dictionaries],
             ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
             DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
+            ValueDecimals=int(dictionaries[0]["ValueDecimals"]),
             TempUnit=int(dictionaries[0]["TempUnit"]),
-            TempDecimals=int(dictionaries[0]["TempDecimals"]),
+            # Here we assume TempDecimals is fixed at 4 (or you could derive it from elsewhere)
+            TempDecimals=4,
             TempValues=[d["TempValues"] for d in dictionaries]
         )
         return instance
@@ -228,11 +233,14 @@ class DITemperatureReading(DIReading):
         for i in range(len(self.Values)):
             dt_ticks = int(datetime_to_ticks(self.DateTimeTicks[i]) / 1000) * 1000
             parts.append(
-                f"{self.ChannelName},{self.Unit},1,{dt_ticks},{fmt(self.Values[i], self.TempDecimals)},"
-                f"{fmt(self.ValuesFiltered[i], self.TempDecimals)},{self.TempUnit},1,{fmt(self.TempValues[i], 4)};"
+                f"{self.ChannelName},{self.Unit},1,{dt_ticks},"
+                f"{fmt(self.Values[i], self.ValueDecimals)},"
+                f"{fmt(self.ValuesFiltered[i], self.ValueDecimals)},"
+                f"{self.TempUnit},1,"
+                f"{fmt(self.TempValues[i], self.TempDecimals)};"
             )
-        return f'"{''.join(parts)}"'
-
+        # Return the complete string wrapped in quotes
+        return '"' + "".join(parts) + '"'
 
 @dataclass
 class DIElectricalReading(DIReading):
