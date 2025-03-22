@@ -320,8 +320,6 @@ class DITemperatureReading(DIReading):
             output += f"{self.ChannelName},{self.Unit},1,{DateTimeTicks[i]},{Values[i]},{ValuesFiltered[i]},{self.TempUnit},1,{TempValues[i]};"
         return f'"{output}"'
 
-    def __repr__(self):
-        return str(self)
 
 
 class DIElectricalReading(DIReading):
