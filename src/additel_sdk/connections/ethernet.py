@@ -3,7 +3,7 @@ import socket
 
 class EthernetConnection:
     """Class to handle Ethernet connection to the device."""
-
+    raise NotImplementedError("Ethernet connection is not implemented yet.")
     def __init__(self, parent, **kwargs):
         self.parent = parent
         self.ip_address = kwargs.get("ip")
