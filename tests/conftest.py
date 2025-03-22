@@ -145,5 +145,11 @@ def mock_additel(monkeypatch):
     mock_device.cmd.side_effect = fake_cmd
     mock_device.connection = MagicMock()
     mock_device.connection.connection = True
-
+    
+    # Add identify method to the mock
+    def identify():
+        return mock_device.cmd("*IDN?")
+    
+    mock_device.identify = identify
+    
     return mock_device
