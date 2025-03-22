@@ -6,7 +6,7 @@ class WLAN:
         self.parent = parent
 
     # 1.4.10
-    def setstate(self, enable: bool):
+    def setstate(self, enable: bool) -> None:
         """Set the state of the system's WiFi functionality.
 
         Command:
@@ -14,9 +14,6 @@ class WLAN:
 
         Args:
             enable (bool): Set to True to enable WiFi (ON) or False to disable it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:STATe {int(enable)}"
         self.parent.cmd(command)
@@ -27,10 +24,6 @@ class WLAN:
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN[:STATe]?
-
-        Args:
-            None
-
         Returns:
             bool: True if WiFi is enabled (ON), False if disabled (OFF).
         """
@@ -40,7 +33,7 @@ class WLAN:
         raise ValueError("No WiFi state information returned.")
 
     # 1.4.12
-    def set_wlan_ip_address(self, ip_address: str):
+    def set_ip(self, ip_address: str) -> None:
         """Set the IP address for the system's WiFi functionality.
 
         Design the IP address of WIFI
@@ -54,9 +47,6 @@ class WLAN:
 
         Args:
             ip_address (str): The IP address to set.
-
-        Returns:
-            None
         """
         # FIXME: Validate IP address format
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:ADDRess {ip_address}"
@@ -68,10 +58,6 @@ class WLAN:
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:ADDRess?
-
-        Args:
-            None
-
         Returns:
             str: The IP address.
         """
@@ -80,7 +66,7 @@ class WLAN:
         raise ValueError("No IP address information returned.")
 
     # 1.4.14
-    def set_subnet_mask(self, subnet_mask: str):
+    def set_subnet_mask(self, subnet_mask: str) -> None:
         """Set the subnet mask for the system's WiFi functionality.
 
         Command:
@@ -88,9 +74,6 @@ class WLAN:
 
         Args:
             subnet_mask (str): The subnet mask to set.
-
-        Returns:
-            None
         """
         if response := self.parent.cmd(
             f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"
@@ -105,9 +88,6 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MASK?
 
-        Args:
-            None
-
         Returns:
             str: The subnet mask.
         """
@@ -116,7 +96,7 @@ class WLAN:
         raise ValueError("No subnet mask information returned.")
 
     # 1.4.16
-    def setGateway(self, IPaddress: str):
+    def set_gateway(self, IPaddress: str) -> None:
         """Set the gateway for the system's WiFi functionality.
 
         Command:
@@ -124,9 +104,6 @@ class WLAN:
 
         Args:
             IPaddress (str): The gateway to set.
-
-        Returns:
-            None
         """
         if response := self.parent.cmd(
             f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}"
@@ -140,9 +117,6 @@ class WLAN:
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:GATEway?
-
-        Args:
-            None
 
         Returns:
             str: The gateway.
@@ -158,9 +132,6 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:MAC?
 
-        Args:
-            None
-
         Returns:
             str: The MAC address.
         """
@@ -169,7 +140,7 @@ class WLAN:
         raise ValueError("No MAC address information returned.")
 
     # 1.4.19
-    def setDHCP(self, enable: bool):
+    def set_dhcp(self, enable: bool) -> None:
         """Set the DHCP state for the system's WiFi functionality.
 
         Command:
@@ -177,9 +148,6 @@ class WLAN:
 
         Args:
             enable (bool): Set to True to enable DHCP (ON) or False to disable it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:DHCP {int(enable)}"
         self.parent.cmd(command)
@@ -190,9 +158,6 @@ class WLAN:
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DHCP?
-
-        Args:
-            None
 
         Returns:
             bool: True if DHCP is open (1), False if closed (0).
@@ -229,7 +194,7 @@ class WLAN:
         raise ValueError("No SSID information returned.")
 
     # 1.4.22
-    def connect(self, ssid: str, password: str):
+    def connect(self, ssid: str, password: str) -> None:
         """Connect to a WiFi network.
 
         Command:
@@ -239,9 +204,6 @@ class WLAN:
             ssid (str): hot spot name, the character string with quotation
             encryptionMode, WEP_OFF, WEP_ON, WEP_AUTO, WPA_PSK, WPA_TKIP, WPA2_PSK, WPA2_AES,CCKM_TKIP, WEP_CKIP, WEP_AUTO_CKIP, CCKM_AES, WPA_PSK_AES, WPA_AES, WPA2_PSK_TKIP, WPA2_TKIP, WAPI_PSK, WAPI_CERT
             password (str): The password for the WiFi network, the character string with quotation
-
-        Returns:
-            None
         """
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
         self.parent.cmd(command)
@@ -253,9 +215,6 @@ class WLAN:
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:CONNect?
 
-        Args:
-            None
-
         Returns:
             str: The connection status.
         """
@@ -264,17 +223,11 @@ class WLAN:
         raise ValueError("No connection information returned.")
 
     # 1.4.24
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Disconnect from the current WiFi network.
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DISConnect
-
-        Args:
-            None
-
-        Returns:
-            None
         """
         self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:DISConnect")
 
@@ -284,10 +237,6 @@ class WLAN:
 
         Command:
             SYSTem:COMMunicate:SOCKet:WLAN:DBM?
-
-        Args:
-            None
-
         Returns:
             str: The signal strength and dBm value.
         """

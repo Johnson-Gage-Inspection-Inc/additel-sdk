@@ -110,7 +110,7 @@ class Module:
             return coerce(modules)
         raise ValueError("No module information received")
 
-    def set_label(self, index: int, label: str):  # Not yet implemented
+    def set_label(self, index: int, label: str) -> None:
         """Set the label of a specific junction box module.
 
         This command assigns a custom label to a specified module.
@@ -121,9 +121,6 @@ class Module:
                 - 1: Embedded junction box
                 - 2, 3, 4: Serial-wound junction boxes
             label (str): The label to assign to the module (enclosed in quotation marks).
-
-        Returns:
-            None
         """
         raise NotImplementedError("This method is not yet implemented.")
         if index not in range(5):

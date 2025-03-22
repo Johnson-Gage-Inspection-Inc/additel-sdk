@@ -6,7 +6,7 @@ class Bluetooth:
         self.parent = parent
 
     # 1.4.43
-    def setstate(self, enable: bool):
+    def setstate(self, enable: bool) -> None:
         """Set the state of the system's Bluetooth functionality.
 
         Command:
@@ -14,9 +14,6 @@ class Bluetooth:
 
         Args:
             enable (bool): Set to True to enable Bluetooth (ON) or False to disable it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:COMMunicate:SOCKet:BLUetooth:STATe {int(enable)}"
         self.parent.cmd(command)
@@ -27,10 +24,6 @@ class Bluetooth:
 
         Command:
             SYSTem:COMMunicate:SOCKet:BLUetooth[:STATe]?
-
-        Args:
-            None
-
         Returns:
             bool: True if Bluetooth is enabled (ON), False if disabled (OFF).
         """
@@ -46,9 +39,6 @@ class Bluetooth:
         Command:
             SYSTem:COMMunicate:BLUEtooth:NAMe?
 
-        Args:
-            None
-
         Returns:
             str: The name of the Bluetooth device.
         """
@@ -57,7 +47,7 @@ class Bluetooth:
         raise ValueError("No Bluetooth name information returned.")
 
     # 1.4.46 (SYSTem:COMMunicate:BLUEtooth:NAMe<UnquoStr>))
-    def setName(self, name: str):
+    def setName(self, name: str) -> None:
         """Set the name of the Bluetooth device.
 
         Command:
@@ -65,8 +55,5 @@ class Bluetooth:
 
         Args:
             name (str): The name to set.
-
-        Returns:
-            None
         """
         self.parent.cmd(f"SYSTem:COMMunicate:BLUEtooth:NAMe {name}")

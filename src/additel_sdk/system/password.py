@@ -8,7 +8,7 @@ class Password:
     # 1.4.40
     def setPassword(
         self, old_password: str, new_password: str, new_password_confirm: str
-    ):
+    ) -> None:
         """Edit the user password
 
         Command:
@@ -18,9 +18,6 @@ class Password:
             old_password (str): The old password.
             new_password (str): The new password.
             new_password_confirm (str): The new password confirmation.
-
-        Returns:
-            None
         """
         self.parent.cmd(
             f"SYSTem:PASSword {old_password},{new_password},{new_password_confirm}"
@@ -33,10 +30,6 @@ class Password:
 
         Command:
             SYSTem:PASSword:ENABle:SENSor?
-
-        Args:
-            None
-
         Returns:
             bool: True if the protection of sensor bank password is opened, False if not.
         """
@@ -45,7 +38,7 @@ class Password:
         raise ValueError("No protection information returned.")
 
     # 1.4.42
-    def setProtection(self, enable: bool):
+    def setProtection(self, enable: bool) -> None:
         """Set the protection of sensor bank password
 
         Command:
@@ -53,8 +46,5 @@ class Password:
 
         Args:
             enable (bool): Set to True to enable the protection of sensor bank password.
-
-        Returns:
-            None
         """
         self.parent.cmd(f"SYSTem:PASSword:ENABle:SENSor {int(enable)}")

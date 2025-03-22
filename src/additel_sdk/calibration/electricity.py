@@ -41,10 +41,6 @@ class Electricity:
 
         Command:
             CALibration:ElECtricity:SCAN?
-
-        Args:
-            None
-
         Returns:
             dict: A dictionary containing the following keys:
                 - 'exception_code': 4-byte exception code.
@@ -82,7 +78,7 @@ class Electricity:
         year: int,
         month: int,
         day: int,
-    ):
+    ) -> None:
         """Write calibration data to the device.
 
         Command:
@@ -122,9 +118,6 @@ class Electricity:
 
         Raises:
             ValueError: If the number of `points` and `values` does not match `count`.
-
-        Returns:
-            None
         """
         if len(points) != count or len(values) != count:
             raise ValueError("Number of points and values must match the count")
@@ -202,7 +195,7 @@ class Electricity:
             }
         return {}
 
-    def cjcnable(self, enable: bool):
+    def cjcnable(self, enable: bool) -> None:
         """Enable or disable cold junction calibration.
 
         Command:
@@ -210,9 +203,6 @@ class Electricity:
 
         Args:
             enable (bool): Set to True to enable cold junction calibration or False to disable it.
-
-        Returns:
-            None
         """
 
         command = f"CALibration:ELECtricity:CJCenable {int(enable)}"
@@ -291,9 +281,6 @@ class Electricity:
             year (int): Year of calibration.
             month (int): Month of calibration.
             day (int): Day of calibration.
-
-        Returns:
-            None
         """
 
         command = (

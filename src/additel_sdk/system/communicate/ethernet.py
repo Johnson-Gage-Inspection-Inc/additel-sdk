@@ -11,10 +11,6 @@ class Ethernet:
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:DHCP?
-
-        Args:
-            None
-
         Returns:
             bool: True if DHCP is open (1), False if closed (0).
         """
@@ -24,7 +20,7 @@ class Ethernet:
         raise ValueError("No DHCP state information returned.")
 
     # 1.4.27
-    def setDHCP(self, enable: bool):
+    def setDHCP(self, enable: bool) -> None:
         """Set the DHCP state for the system's Ethernet functionality.
 
         Command:
@@ -32,9 +28,6 @@ class Ethernet:
 
         Args:
             enable (bool): Set to True to enable DHCP (ON) or False to disable it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:COMMunicate:SOCKet:ETHernet:DHCP {int(enable)}"
         self.parent.cmd(command)
@@ -45,10 +38,6 @@ class Ethernet:
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess?
-
-        Args:
-            None
-
         Returns:
             str: The IP address.
         """
@@ -57,7 +46,7 @@ class Ethernet:
         raise ValueError("No IP address information returned.")
 
     # 1.4.29
-    def setIP(self, ip_address: str):
+    def set_ip(self, ip_address: str) -> None:
         """Set the IP address for the system's Ethernet functionality.
 
         Command:
@@ -65,9 +54,6 @@ class Ethernet:
 
         Args:
             ip_address (str): The IP address to set.
-
-        Returns:
-            None
         """
         if response := self.parent.cmd(
             f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"
@@ -82,9 +68,6 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MASK?
 
-        Args:
-            None
-
         Returns:
             str: The subnet mask.
         """
@@ -93,7 +76,7 @@ class Ethernet:
         raise ValueError("No subnet mask information returned.")
 
     # 1.4.31
-    def setMASK(self, subnet_mask: str):
+    def setMASK(self, subnet_mask: str) -> None:
         """Set the subnet mask for the system's Ethernet functionality.
 
         Command:
@@ -101,9 +84,6 @@ class Ethernet:
 
         Args:
             subnet_mask (str): The subnet mask to set.
-
-        Returns:
-            None
         """
         if response := self.parent.cmd(
             f"SYSTem:COMMunicate:SOCKet:ETHernet:MASK {subnet_mask}"
@@ -118,9 +98,6 @@ class Ethernet:
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:GATEway?
 
-        Args:
-            None
-
         Returns:
             str: The gateway.
         """
@@ -129,7 +106,7 @@ class Ethernet:
         raise ValueError("No gateway information returned.")
 
     # 1.4.33
-    def setGATEway(self, gateway: str):
+    def setGATEway(self, gateway: str) -> None:
         """Set the gateway for the system's Ethernet functionality.
 
         Command:
@@ -137,9 +114,6 @@ class Ethernet:
 
         Args:
             gateway (str): The gateway to set.
-
-        Returns:
-            None
         """
         if response := self.parent.cmd(
             f"SYSTem:COMMunicate:SOCKet:ETHernet:GATEway {gateway}"
@@ -153,10 +127,6 @@ class Ethernet:
 
         Command:
             SYSTem:COMMunicate:SOCKet:ETHernet:MAC?
-
-        Args:
-            None
-
         Returns:
             str: The MAC address.
         """
@@ -165,7 +135,7 @@ class Ethernet:
         raise ValueError("No MAC address information returned.")
 
     # 1.4.35
-    def initialize(self, enable: bool):
+    def initialize(self, enable: bool) -> None:
         """Initialize the Ethernet registry.
 
         Command:
@@ -173,14 +143,11 @@ class Ethernet:
 
         Args:
             enable (bool): Set to True to initialize the Ethernet registry.
-
-        Returns:
-            None
         """
         self.parent.cmd(f"SYSTem:COMMunicate:SOCKet:ETHernet:INITialize {int(enable)}")
 
     # 1.4.36
-    def setKey(self, path: str, name: str, keyValue: str, valueType):
+    def setKey(self, path: str, name: str, keyValue: str, valueType) -> None:
         """Write the key value to the registry.
         BINary is binary data, and each byte is
         separated by -, for example, binary data
@@ -207,9 +174,6 @@ class Ethernet:
             name (str): The name of the key: a quoted string
             keyValue (str): The value of the key: a quoted string
             valueType (_type_): Value type
-
-        Returns:
-            None
         """
         self.parent.cmd(f"SYSTem:REGistry:DATA{path},{name},{keyValue},{valueType}")
 
@@ -232,7 +196,7 @@ class Ethernet:
         raise ValueError("No key value information returned.")
 
     # 1.4.38
-    def deleteKey(self, path: str, name: str):
+    def deleteKey(self, path: str, name: str) -> None:
         """Delete the key from the registry.
 
         Command:
@@ -241,14 +205,11 @@ class Ethernet:
         Args:
             path (str): The path of the key.
             name (str): The name of the key.
-
-        Returns:
-            None
         """
         self.parent.cmd(f"SYSTem:REGistry:DELete {path},{name}")
 
     # 1.4.39
-    def saveRegistry(self, keyName: str):
+    def saveRegistry(self, keyName: str) -> None:
         """Save the registry to the file.
 
         Command:
@@ -256,9 +217,6 @@ class Ethernet:
 
         Args:
             keyName (str): The key name to save.
-
-        Returns:
-            None
         """
         assert keyName in [
             "HKEY_LOCAL_MACHINE",

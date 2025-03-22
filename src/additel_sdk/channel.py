@@ -289,29 +289,23 @@ class Channel:
         if response := cls.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 
-    def configure(cls, config: DIFunctionChannelConfig):  # Not yet implemented.
+    def configure(cls, config: DIFunctionChannelConfig) -> None:
         """Set channel configuration.
 
         Args:
             config (DIFunctionChannelConfig): A channel configuration object.
-
-        Returns:
-            None
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:CONFig {config};"
         cls.parent.send_command(command)
 
-    def set_zero(cls, enable: bool):
+    def set_zero(cls, enable: bool) -> None:
         """Enable or disable zero clearing for a single channel.
 
         This command sets or cancels zero clearing for a specific channel.
 
         Args:
             enable (bool): True to enable zero clearing, False to cancel.
-
-        Returns:
-            None
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:ZERo {int(enable)}"

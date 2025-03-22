@@ -64,7 +64,7 @@ class System:
         raise ValueError("No error information returned.")
 
     # 1.4.3
-    def set_date(self, year: int, month: int, day: int):
+    def set_date(self, year: int, month: int, day: int) -> None:
         """Set the system date.
 
         Command:
@@ -74,9 +74,6 @@ class System:
             year (int): Year to set.
             month (int): Month to set (1-12).
             day (int): Day to set (1-31).
-
-        Returns:
-            None
         """
         command = f"SYSTem:DATE {year},{month},{day}"
         self.parent.cmd(command)
@@ -88,9 +85,6 @@ class System:
         Command:
             SYSTem:DATE?
 
-        Args:
-            None
-
         Returns:
             date: The current system date.
         """
@@ -99,7 +93,7 @@ class System:
         raise ValueError("No date information returned.")
 
     # 1.4.5
-    def set_time(self, hour: int, minute: int, second: int):
+    def set_time(self, hour: int, minute: int, second: int) -> None:
         """Set the system time.
 
         Command:
@@ -109,15 +103,12 @@ class System:
             hour (int): Hour to set (0-23).
             minute (int): Minute to set (0-59).
             second (int): Second to set (0-59).
-
-        Returns:
-            None
         """
         command = f"SYSTem:TIME {hour},{minute},{second}"
         self.parent.cmd(command)
 
     # 1.4.6
-    def set_local_lock(self, lock: bool):
+    def set_local_lock(self, lock: bool) -> None:
         """Set the local lock-out state of the system.
 
         Command:
@@ -125,9 +116,6 @@ class System:
 
         Args:
             lock (bool): Set to True to lock the system (ON) or False to unlock it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:KLOCk {int(lock)}"
         self.parent.cmd(command)
@@ -138,10 +126,6 @@ class System:
 
         Command:
             SYSTem:KLOCk?
-
-        Args:
-            None
-
         Returns:
             bool: True if the system is locked (ON), False if unlocked (OFF).
         """
@@ -151,7 +135,7 @@ class System:
         raise ValueError("No lock state information returned.")
 
     # 1.4.8
-    def set_warning_tone(self, enable: bool):
+    def set_warning_tone(self, enable: bool) -> None:
         """Set the state of the system's warning tone.
 
         Command:
@@ -159,15 +143,12 @@ class System:
 
         Args:
             enable (bool): Set to True to enable the warning tone (ON) or False to disable it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:BEEPer:ALARm {int(enable)}"
         self.parent.cmd(command)
 
     # 1.4.9
-    def set_keypad_tone(self, enable: bool):
+    def set_keypad_tone(self, enable: bool) -> None:
         """Set the state of the keypad tone.
 
         Command:
@@ -175,9 +156,6 @@ class System:
 
         Args:
             enable (bool): Set to True to enable the keypad tone (ON) or False to disable it (OFF).
-
-        Returns:
-            None
         """
         command = f"SYSTem:BEEPer:TOUCh {int(enable)}"
         self.parent.cmd(command)

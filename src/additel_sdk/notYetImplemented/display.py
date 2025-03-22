@@ -8,7 +8,7 @@ class Display:
         self.parent = parent
 
     # 1.6.1
-    def setBrightness(self, type, level):
+    def setBrightness(self, type, level) -> None:
         """Set the brightness of the display
 
         Command:
@@ -17,9 +17,6 @@ class Display:
         Args:
             type (float): The type of display (Percentage)
             level (int): The value of brightness
-
-        Returns:
-            None
         """
         self.parent.cmd(f"DISPaly:BRIGHTness {type},{level}")
 
@@ -55,17 +52,14 @@ class Display:
         raise ValueError("No language information returned.")
 
     # 1.6.5
-    def Messagebox(self, message):
+    def Messagebox(self, message: str) -> None:
         """Display dialog box
 
         Command:
             DISPlay:MESSagebox < "Message ">
 
         Args:
-            message (_type_): _description_
-
-        Returns:
-            None
+            message (str): The message to display
         """
         self.parent.cmd(f'DISPlay:MESSagebox "{message}"')
 
@@ -112,7 +106,7 @@ class Display:
         raise ValueError("No theme information returned.")
 
     # 1.6.10
-    def setTheme(self, theme):
+    def setTheme(self, theme: str) -> None:
         """Set system theme( work after restarting)
 
         Command:
@@ -120,9 +114,6 @@ class Display:
 
         Args:
             theme (str): A supported theme name.
-
-        Returns:
-            None
         """
         self.parent.cmd(f"DISPaly:THEMe {theme}")
 
@@ -132,7 +123,7 @@ class Diagnostic:
         self.parent = parent
 
     # 1.6.4
-    def setLanguage(self, lcid, reboot: bool = False):
+    def setLanguage(self, lcid: str, reboot: bool = False) -> None:
         """Set the language of the display
 
         Command:
@@ -141,8 +132,5 @@ class Diagnostic:
         Args:
             lcid (str): The language of the display
             reboot (bool): Set to True to reboot the display
-
-        Returns:
-            None
         """
         self.parent.cmd(f"DISPaly:LANGuage {lcid},{int(reboot)}")
