@@ -48,6 +48,85 @@ class DIScanInfo:
         """Convert the DIScanInfo object to a string representation."""
         return f"{self.NPLC},{self.ChannelName}"
 
+@dataclass
+class DITemperatureReading(DIReading):
+    TempValues: list[float] = field(default_factory=list)
+    TempUnit: int = 0
+    TempDecimals: int = 0  # e.g. usually 4
+
+    @classmethod
+    def from_str(cls, input: str) -> "DITemperatureReading":
+        dictionaries = []
+        # Remove the surrounding quotes, split by ";" and ignore trailing empty element.
+        for string in input[1:-1].split(";")[:-1]:
+            array = string.split(",")
+            # Define keys for the expected ordering:
+            keys = [
+                "ChannelName", "Unit", "ValuesCount", "DateTimeTicks",
+                "Values", "ValuesFiltered", "TempUnit", "TempValuesCount", "TempValues"
+            ]
+            dictionary = dict(zip(keys, array))
+            # Compute the number of decimals from the raw value string; this is ValueDecimals.
+            dictionary["ValueDecimals"] = len(str(array[4]).split(".")[1])
+            dictionaries.append(dictionary)
+
+        ChannelName = dictionaries[0]["ChannelName"]
+        for d in dictionaries:
+            d["DateTimeTicks"] = ticks_to_datetime(d["DateTimeTicks"])
+            d["Values"] = float(d["Values"])
+            d["ValuesFiltered"] = float(d["ValuesFiltered"])
+            d["TempValues"] = -inf if d["TempValues"] == "------" else float(d["TempValues"])
+
+        assert all(d["ChannelName"] == ChannelName for d in dictionaries), "Mismatched ChannelNames"
+
+        instance = cls(
+            ChannelName=ChannelName,
+            Unit=int(dictionaries[0]["Unit"]),
+            Values=[d["Values"] for d in dictionaries],
+            ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
+            DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
+            ValueDecimals=int(dictionaries[0]["ValueDecimals"]),
+            TempUnit=int(dictionaries[0]["TempUnit"]),
+            # Here we assume TempDecimals is fixed at 4 (or you could derive it from elsewhere)
+            TempDecimals=4,
+            TempValues=[d["TempValues"] for d in dictionaries]
+        )
+        return instance
+
+    def __str__(self):
+        def fmt(val, dec):
+            return f"{round(val, dec):.{dec}f}"
+
+        parts = []
+        for i in range(len(self.Values)):
+            dt_ticks = int(datetime_to_ticks(self.DateTimeTicks[i]) / 1000) * 1000
+            parts.append(
+                f"{self.ChannelName},{self.Unit},1,{dt_ticks},"
+                f"{fmt(self.Values[i], self.ValueDecimals)},"
+                f"{fmt(self.ValuesFiltered[i], self.ValueDecimals)},"
+                f"{self.TempUnit},1,"
+                f"{fmt(self.TempValues[i], self.TempDecimals)};"
+            )
+        # Return the complete string wrapped in quotes
+        return '"' + "".join(parts) + '"'
+
+@dataclass
+class DIElectricalReading(DIReading):
+    pass
+
+
+@dataclass
+class DITCReading(DIReading):
+    NumElectrical: int = 0
+    CJCs: List[int] = field(default_factory=list)
+    CJCUnit: int = 0
+    CjcRaws: List[float] = field(default_factory=list)
+    CJCRawsUnit: int = 0
+    CJCDecimals: int = 0
+    TempValues: List[float] = field(default_factory=list)
+    TempUnit: int = 0
+    TempDecimals: int = 0
+
 
 class Scan:
     def __init__(self, parent):
@@ -157,82 +236,3 @@ class Scan:
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
 
-
-@dataclass
-class DITemperatureReading(DIReading):
-    TempValues: list[float] = field(default_factory=list)
-    TempUnit: int = 0
-    TempDecimals: int = 0  # e.g. usually 4
-
-    @classmethod
-    def from_str(cls, input: str) -> "DITemperatureReading":
-        dictionaries = []
-        # Remove the surrounding quotes, split by ";" and ignore trailing empty element.
-        for string in input[1:-1].split(";")[:-1]:
-            array = string.split(",")
-            # Define keys for the expected ordering:
-            keys = [
-                "ChannelName", "Unit", "ValuesCount", "DateTimeTicks",
-                "Values", "ValuesFiltered", "TempUnit", "TempValuesCount", "TempValues"
-            ]
-            dictionary = dict(zip(keys, array))
-            # Compute the number of decimals from the raw value string; this is ValueDecimals.
-            dictionary["ValueDecimals"] = len(str(array[4]).split(".")[1])
-            dictionaries.append(dictionary)
-
-        ChannelName = dictionaries[0]["ChannelName"]
-        for d in dictionaries:
-            d["DateTimeTicks"] = ticks_to_datetime(d["DateTimeTicks"])
-            d["Values"] = float(d["Values"])
-            d["ValuesFiltered"] = float(d["ValuesFiltered"])
-            d["TempValues"] = -inf if d["TempValues"] == "------" else float(d["TempValues"])
-
-        assert all(d["ChannelName"] == ChannelName for d in dictionaries), "Mismatched ChannelNames"
-
-        instance = cls(
-            ChannelName=ChannelName,
-            Unit=int(dictionaries[0]["Unit"]),
-            Values=[d["Values"] for d in dictionaries],
-            ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
-            DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
-            ValueDecimals=int(dictionaries[0]["ValueDecimals"]),
-            TempUnit=int(dictionaries[0]["TempUnit"]),
-            # Here we assume TempDecimals is fixed at 4 (or you could derive it from elsewhere)
-            TempDecimals=4,
-            TempValues=[d["TempValues"] for d in dictionaries]
-        )
-        return instance
-
-    def __str__(self):
-        def fmt(val, dec):
-            return f"{round(val, dec):.{dec}f}"
-
-        parts = []
-        for i in range(len(self.Values)):
-            dt_ticks = int(datetime_to_ticks(self.DateTimeTicks[i]) / 1000) * 1000
-            parts.append(
-                f"{self.ChannelName},{self.Unit},1,{dt_ticks},"
-                f"{fmt(self.Values[i], self.ValueDecimals)},"
-                f"{fmt(self.ValuesFiltered[i], self.ValueDecimals)},"
-                f"{self.TempUnit},1,"
-                f"{fmt(self.TempValues[i], self.TempDecimals)};"
-            )
-        # Return the complete string wrapped in quotes
-        return '"' + "".join(parts) + '"'
-
-@dataclass
-class DIElectricalReading(DIReading):
-    pass
-
-
-@dataclass
-class DITCReading(DIReading):
-    NumElectrical: int = 0
-    CJCs: List[int] = field(default_factory=list)
-    CJCUnit: int = 0
-    CjcRaws: List[float] = field(default_factory=list)
-    CJCRawsUnit: int = 0
-    CJCDecimals: int = 0
-    TempValues: List[float] = field(default_factory=list)
-    TempUnit: int = 0
-    TempDecimals: int = 0
