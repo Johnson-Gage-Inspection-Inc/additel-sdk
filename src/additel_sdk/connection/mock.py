@@ -54,6 +54,7 @@ class MockConnection:
     def read_response(self) -> str:
         """Returns the pre-defined or fallback response for the last command."""
         response = self._responses.get(self.last_command)
+        self.last_command = None
         if response is None and self.wlan_connection:
             try:
                 response = self.wlan_connection.cmd(self.last_command)
