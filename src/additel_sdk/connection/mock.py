@@ -11,7 +11,7 @@ class MockConnection:
     """
 
     def __init__(
-        self, parent, response_file="tests/mockADT286.json", ip=None, **kwargs
+        self, parent, response_file="tests/mockADT286.json", ip=None, use_wlan_fallback=False, **kwargs
     ):
         self.parent = parent
         self.response_file = response_file
@@ -19,6 +19,7 @@ class MockConnection:
         self._responses = {}
         self.wlan_connection = None  # Initialize wlan_connection
         self.ip = ip  # Store the IP address
+        self.use_wlan_fallback = use_wlan_fallback
 
     def connect(self):
         """Simulates connecting to the device."""
@@ -32,7 +33,7 @@ class MockConnection:
             )
 
         # If IP is provided, initialize WLAN connection for fallback
-        if self.ip:
+        if self.ip and self.use_wlan_fallback:
             try:
                 self.wlan_connection = WLANConnection(self.parent, ip=self.ip)
             except Exception as e:
@@ -55,7 +56,7 @@ class MockConnection:
         """Returns the pre-defined or fallback response for the last command."""
         response = self._responses.get(self.last_command)
         self.last_command = None
-        if response is None and self.wlan_connection:
+        if response is None and self.wlan_connection and self.use_wlan_fallback:
             try:
                 response = self.wlan_connection.cmd(self.last_command)
                 if response:  # Save only non-trivial responses

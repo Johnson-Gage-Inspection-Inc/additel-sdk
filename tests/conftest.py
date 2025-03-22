@@ -75,19 +75,26 @@ def pytest_addoption(parser):
         default=False,
         help="Use real Additel device instead of mock",
     )
+    parser.addoption(
+        "--wlan_fallback",
+        action="store_true",
+        default=False,
+        help="Use WLAN fallback in mock connection",
+    )
 
 
 @pytest.fixture
 def device(request, device_ip):
     """Fixture that provides an Additel device - either real or mock based on the --real flag."""
-
+    
     if request.config.getoption("--real"):
         # Use real connection
         with Additel("wlan", ip=device_ip) as real_device:
             yield real_device
     else:
         # Use mock connection
-        response_file = os.path.join(os.path.dirname(__file__), "mockADT286.json")
+        response_file = os.path.join(os.path.dirname(__file__), 'mockADT286.json')
         # Pass the device_ip to MockConnection
-        with Additel("mock", response_file=response_file, ip=device_ip) as mock_device:
+        use_wlan_fallback = request.config.getoption("--wlan_fallback")
+        with Additel("mock", response_file=response_file, ip=device_ip, use_wlan_fallback=use_wlan_fallback) as mock_device:
             yield mock_device
