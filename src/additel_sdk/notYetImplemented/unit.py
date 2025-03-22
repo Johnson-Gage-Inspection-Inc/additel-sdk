@@ -24,7 +24,7 @@ class Unit:
         self.parent = parent
 
     # 1.8.2
-    def setUnitTemp(self, unit: Union[int, str]) -> None:
+    def set_temp_unit(self, unit: Union[int, str]) -> None:
         """Set the temperature unit of the device
 
         Command:
