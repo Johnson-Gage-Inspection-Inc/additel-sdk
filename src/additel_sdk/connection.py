@@ -1,10 +1,10 @@
 # connection/__init__.py
 from .connections.wlan import WLANConnection
 
-# from .connections.usb_connection import USBConnection
-# from .connections.serial_connection import SerialConnection
-# from .connections.bluetooth_connection import BluetoothConnection
-# from .connections.ethernet_connection import EthernetConnection
+from .connections.usb_connection import USBConnection
+from .connections.serial_connection import SerialConnection
+from .connections.bluetooth_connection import BluetoothConnection
+from .connections.ethernet_connection import EthernetConnection
 
 
 class Connection:
@@ -16,21 +16,21 @@ class Connection:
         if connection_type == "wlan":
             self.connection = WLANConnection(self, **kwargs)
 
-        # elif connection_type == 'usb':
-        #     assert 'port' in kwargs, "Port is required for USB connection."
-        #     self.connection = USBConnection(parent, **kwargs)
+        elif connection_type == 'usb':
+            assert 'port' in kwargs, "Port is required for USB connection."
+            self.connection = USBConnection(parent, **kwargs)
 
-        # elif connection_type == 'serial':
-        #     assert 'port' in kwargs, "Port is required for Serial connection."
-        #     self.connection = SerialConnection(parent, **kwargs)
+        elif connection_type == 'serial':
+            assert 'port' in kwargs, "Port is required for Serial connection."
+            self.connection = SerialConnection(parent, **kwargs)
 
-        # elif connection_type == 'bluetooth':
-        #     assert 'port' in kwargs, "Port is required for Bluetooth connection."
-        #     self.connection = BluetoothConnection(parent, **kwargs)
+        elif connection_type == 'bluetooth':
+            assert 'port' in kwargs, "Port is required for Bluetooth connection."
+            self.connection = BluetoothConnection(parent, **kwargs)
 
-        # elif connection_type == 'ethernet':
-        #     assert 'ip' in kwargs, "IP address is required for Ethernet connection."
-        #     self.connection = EthernetConnection(parent, **kwargs)
+        elif connection_type == 'ethernet':
+            assert 'ip' in kwargs, "IP address is required for Ethernet connection."
+            self.connection = EthernetConnection(parent, **kwargs)
 
         else:
             raise ValueError(f"Connection type '{connection_type}' is not supported.")
