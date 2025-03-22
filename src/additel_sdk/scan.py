@@ -101,7 +101,7 @@ class Scan:
         command = f"JSON:SCAN:STARt {json_params}"
         self.parent.cmd(command)
 
-    def get_configuration_json(self) -> DIScanInfo:  # Tested!
+    def get_configuration_json(self) -> DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -125,7 +125,7 @@ class Scan:
             assert dType == "DIScanInfo", f"Unexpected class name: {dType}"
             return DIScanInfo(**raw_data)
 
-    def get_configuration(self) -> DIScanInfo:  # Tested!
+    def get_configuration(self) -> DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -175,7 +175,7 @@ class Scan:
         # FIXME: We're assuming temperature data for now
         return DITemperatureReading.from_str(response)
 
-    def get_data_json(self, count: int = 1) -> DIReading:  # Tested!
+    def get_data_json(self, count: int = 1) -> DIReading:
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of data points.
@@ -197,7 +197,7 @@ class Scan:
 
     def get_intelligent_wiring_data_json(
         self, count: int = 1
-    ) -> List[DIReading]:  # Tested! But the response is an empty list :P
+    ) -> List[DIReading]:  # The response is an empty list :P
         """Acquire scanning data of intelligent wiring (in JSON format).
 
         Args:

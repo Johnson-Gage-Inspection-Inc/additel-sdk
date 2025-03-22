@@ -86,7 +86,7 @@ class Module:
         self.parent = parent
 
     # 1.2.1
-    def info_str(self) -> List[DIModuleInfo]:  # Tested!
+    def info_str(self) -> List[DIModuleInfo]:
         """Acquire module information.
 
         This command retrieves information about the front panel and junction box modules.
@@ -101,7 +101,7 @@ class Module:
         return []
 
     # 1.2.2
-    def info(self) -> List[DIModuleInfo]:  # Tested!
+    def info(self) -> List[DIModuleInfo]:
         """Acquire module information.
 
         This command retrieves information about the front panel and junction box modules.
@@ -149,9 +149,7 @@ class Module:
         self.parent.cmd(command)
 
     # 1.2.4
-    def getConfiguration(
-        self, module_index: int
-    ) -> List[DIFunctionChannelConfig]:  # Tested!
+    def getConfiguration(self, module_index: int) -> List[DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box.
 
         This command retrieves the channel configuration for a specified junction box module.
