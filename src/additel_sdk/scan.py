@@ -102,19 +102,10 @@ class Scan:
             assert response == str(DIScanInfo.from_str(response)), "Unexpected response"
             return DIScanInfo.from_str(response)
 
-    def stop(self):
-        """Stop scanning.
-
-        This command stops any active scanning process on the device.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
+    def stop(self) -> None:
+        """This command stops any active scanning process on the device."""
         logging.warning("This command has not been tested.")
-        self.parent.cmd("SCAN:STOP")
+        self.parent.send_command("SCAN:STOP")
 
     def get_latest_data(self, longformat=True) -> DIReading:
         """Retrieves the latest scanning data for all active channels.
@@ -187,7 +178,7 @@ class DITemperatureReading(DIReading):
     TempDecimals: int = 0  # e.g. usually 4
 
     @classmethod
-    def from_str(cls, input: str):
+    def from_str(cls, input: str) -> "DITemperatureReading":
         dictionaries = []
         # Remove the surrounding quotes, split by ";" and ignore trailing empty element.
         for string in input[1:-1].split(";")[:-1]:
