@@ -39,7 +39,7 @@ class Scan:
     def __init__(self, parent):
         self.parent = parent
 
-    def start(self, scan_info: DIScanInfo):
+    def start(self, scan_info: DIScanInfo) -> None:
         """Set the configuration and start scanning.
 
         This command configures the scanning parameters and starts the scan.
@@ -49,14 +49,11 @@ class Scan:
                 - NPLC (Number of Power Line Cycles)
                 - Sample work frequency cycle (100, 1000, or 4000)
                 - Channel name
-
-        Returns:
-            None
         """
         logging.warning("This command has not been tested.")
         json_params = json.dumps(scan_info.__dict__)
         command = f"JSON:SCAN:STARt {json_params}"
-        self.parent.cmd(command)
+        self.parent.send_command(command)
 
     def get_configuration_json(self) -> DIScanInfo:
         """Acquire the scanning configuration.
