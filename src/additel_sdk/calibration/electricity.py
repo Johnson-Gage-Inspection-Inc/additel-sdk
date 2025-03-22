@@ -57,7 +57,7 @@ class Electricity:
                 - 'data': The original value as a float if the status is available, otherwise None.
         """
 
-        response = self.parent.send_command("CALibration:ElECtricity:SCAN?")
+        response = self.parent.cmd("CALibration:ElECtricity:SCAN?")
         if response:
             parts = response.split(",")
             return {
