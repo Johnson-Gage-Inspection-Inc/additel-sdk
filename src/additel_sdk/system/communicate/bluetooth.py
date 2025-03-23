@@ -9,7 +9,7 @@ class Bluetooth:
         self.parent = parent
 
     # 1.4.43
-    def setstate(self, enable: bool) -> None:
+    def set_state(self, enable: bool) -> None:
         """Set the state of the system's Bluetooth functionality.
 
         Command:

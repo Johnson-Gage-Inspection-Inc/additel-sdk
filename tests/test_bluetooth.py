@@ -2,17 +2,17 @@ import pytest
 from src.additel_sdk.system.communicate.bluetooth import Bluetooth
 
 @pytest.fixture
-def bluetooth_fixture(device):
+def bluetooth_fixture(device) -> Bluetooth:
     return Bluetooth(device)
 
 @pytest.mark.skip(reason="Not yet implemented")
-def test_setstate_enable(bluetooth_fixture):
-    bluetooth_fixture.setstate(True)
+def test_set_state_enable(bluetooth_fixture):
+    bluetooth_fixture.set_state(True)
     assert bluetooth_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 1"
 
 @pytest.mark.skip(reason="Not yet implemented")
-def test_setstate_disable(bluetooth_fixture):
-    bluetooth_fixture.setstate(False)
+def test_set_state_disable(bluetooth_fixture):
+    bluetooth_fixture.set_state(False)
     assert bluetooth_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 0"
 
 def test_get_state_true(bluetooth_fixture):

@@ -9,7 +9,7 @@ class WLAN:
         self.parent = parent
 
     # 1.4.10
-    def setstate(self, enable: bool) -> None:
+    def set_state(self, enable: bool) -> None:
         """Set the state of the system's WiFi functionality.
 
         Command:
