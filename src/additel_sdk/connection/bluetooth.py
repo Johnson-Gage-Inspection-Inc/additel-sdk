@@ -1,15 +1,12 @@
 import asyncio
-from bleak import BleakClient, BleakScanner  # pip install bleak
+from bleak import BleakClient, BleakScanner
 from queue import Queue, Empty
 
 
 class BluetoothConnection:
     """Class to handle Bluetooth connection to the device."""
 
-    raise NotImplementedError("Bluetooth connection is not implemented yet.")
-
     def __init__(self, parent, **kwargs):
-        self.parent = parent
         self.device_name = kwargs.get("device_name")
         self.notification_uuid = kwargs.get("notification_uuid")
         self.write_uuid = kwargs.get("write_uuid")

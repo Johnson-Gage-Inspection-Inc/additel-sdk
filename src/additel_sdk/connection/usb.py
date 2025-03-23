@@ -7,10 +7,7 @@ import logging
 class USBConnection:
     """Class to handle USB connection to the device."""
 
-    raise NotImplementedError("USB connection is not implemented yet.")
-
     def __init__(self, parent, **kwargs):
-        self.parent = parent
         self.vendor_id = kwargs.get("vendor_id")
         self.product_id = kwargs.get("product_id")
         self.backend_path = kwargs.get("backend_path")  # Optional, for custom backend

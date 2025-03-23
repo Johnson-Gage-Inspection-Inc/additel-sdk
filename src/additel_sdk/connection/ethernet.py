@@ -4,10 +4,7 @@ import socket
 class EthernetConnection:
     """Class to handle Ethernet connection to the device."""
 
-    raise NotImplementedError("Ethernet connection is not implemented yet.")
-
     def __init__(self, parent, **kwargs):
-        self.parent = parent
         self.ip_address = kwargs.get("ip")
         self.port = kwargs.get("port", 5025)  # Default port for SCPI devices
         self.timeout = kwargs.get("timeout", 10)  # Default timeout in seconds

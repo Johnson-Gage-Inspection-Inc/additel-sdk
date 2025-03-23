@@ -4,10 +4,7 @@ import serial  # pip install pyserial
 class SerialConnection:
     """Class to handle Serial connection to the device."""
 
-    raise NotImplementedError("Serial connection is not implemented yet.")
-
     def __init__(self, parent, **kwargs):
-        self.parent = parent
         self.port = kwargs.get("port")
         self.baudrate = kwargs.get("baudrate", 9600)
         self.bytesize = kwargs.get("bytesize", serial.EIGHTBITS)
