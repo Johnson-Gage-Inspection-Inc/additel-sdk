@@ -1,11 +1,11 @@
-NO.,Command,Explanation,Parameters,Returning
+NO.,Command,Explanation,Parameters,Returning
 1,"PROGram:RUN
 <progname>[,<parameters>]",Run the appointed program,"1. program name, a quoted string;
-2. Parameter, quoted string;",-
+2. Parameter, quoted string;",-
 2,PROGram:EXIT [<progname>],"Stop the program. without parameters
 means Stop program specified by
-PROGram:RUN","Program name, quoted string",-
+PROGram:RUN","Program name, quoted string",-
 3,PROGram:STATe? [<progname>],"Status of interrogator , without
 parameters means to question the
 program specified by PROGram:RUN","Program name, quoted string","RUNNING
-EXITED"
+EXITED"

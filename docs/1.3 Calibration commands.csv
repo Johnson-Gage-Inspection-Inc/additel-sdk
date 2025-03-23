@@ -1,4 +1,4 @@
-NO.,Command,Explanation,Parameters,Returning
+NO.,Command,Explanation,Parameters,Returning
 1,"CALibration:ElECtricity:SCAN
 <mode>,<function>,<range>",Start scanning of electrical calibration,"4 parameters
 1、 mode：
@@ -35,7 +35,7 @@ PRT
 Thermistor
 0)0--10.0000000 kΩ
 1)10--100.000000 kΩ
-2)0.1--1.00000000 MΩ",None
+2)0.1--1.00000000 MΩ",None
 2,CALibration:ElECtricity:SCAN?,"Read the original data of electrical
 logging",None,"6 values, separated by
 commas:
@@ -48,7 +48,7 @@ available
 Data: the double original
 value when the state is
 available, otherwise it is
-empty"
+empty"
 3,"CALibration:ElECtricity:DATA
 Manufactor|User,<password>,<channel>,
 <function>,<range>,
@@ -115,7 +115,7 @@ with quotation mark, separated by
 commas)
 10.year:year
 11.month:month
-12.day: day",None
+12.day: day",None
 4,"CALibration:ELECtricity:DATA?
 Manufactor|User,<password>,<channel>,
 <function>,<range>",Acquire calibration data,"5 values
@@ -133,14 +133,14 @@ count of calibration points
 list of standard value,N list of
 calibration points,N year
 month
-day"
+day"
 5,"CALibration:ELECtricity:CJCenable
 <enable>","Open and close the cold junction
 calibration, read the original value after
 opening, and read the final value after
 closing","1 value
 1=ON
-0=OFF",None
+0=OFF",None
 6,"CALibration:ELECtricity:DATA:CJC?
 Manufactor|User,<password>,<location>,
 <channel>",Read cold junction calibration data,"4 values, separated by commas
@@ -168,7 +168,7 @@ valid, 0 means invalid
 Calibration value
 year
 month
-day"
+day"
 7,"CALibration:ELECtricity:DATA:CJC
 Manufactor|User,<password>,<location>,
 <channel> ,<offset>,<year>,<month>,<d
@@ -187,4 +187,4 @@ embedded position 01A channel)
 offset value
 year
 month
-day",None
+day",None
