@@ -38,6 +38,13 @@ class Additel:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            from traceback import print_tb
+            # Print the full exception traceback
+            print(f"Exception type: {exc_type}")
+            print(f"Exception value: {exc_value}")
+            print("Traceback:")
+            print_tb(traceback)
         self.connection.disconnect()
 
     def send_command(self, command) -> None:
