@@ -1,0 +1,217 @@
+NO.,Command,Explanation,Parameters,Returning
+1,SYSTem:VERSion? [<module>],"According to parameters, to Query
+version NO. of different modules, to
+overlook this parameter, returning back to
+SCIP version NO followed by system","“APPLication”: Software version No of
+main program
+“ElECtricity:FIRMware”: electric
+measuring board firmware version No.;
+“ElECtricity:HARDware”: electric
+measuring board hardware
+“OS:FIRMware”:system firmware version
+“OS:HARDware”：system hard ware
+version
+""JUNCtion:HARDware"": hardware version
+of all junction box, separated by semicolon;
+""JUNCtion:FIRMware""：firmware version of
+all junction box, separated by semicolon;",version NO.
+2,SYSTem:ERRor[:NEXT]?,"Query the next error item in the error
+queue and delete the item from the
+queue. The error queue can store 50
+error messages. If there are more than
+50, the last one is replaced with -350,
+""Queue overflow"". System power down or
+*CLS instructions can clear the error
+queue.",None,wrong information
+3,"SYSTem:DATE<year>,<month>,<day>",Design the date of system,"year
+month
+day",None
+4,SYSTem:DATE?,Query system date,-,"Year ,month ,day"
+5,"SYSTem:TIME<hour>,<minute>,<second
+>",Design system time,"hour
+minute
+second",None
+6,SYSTem:KLOCk <Boolean>|ON|OFF,"Design local lock-out state of system, only
+to lock out the functional operation of panel","1 ON: system is locked –out
+0 OFF: system is unlock",None
+7,SYSTem:KLOCk?,Query local lock-out state of system,None,"1:lock
+0:unlock"
+8,"SYSTem:BEEPer:ALARm
+<Boolean>|ON|OFF",Design warning tone state,Open or not,None
+9,"SYSTem:BEEPer:TOUCh
+<Boolean>|ON|OFF",Design keypad tone state,Open or not,None
+10,"SYSTem:COMMunicate:SOCKet:WLAN[:
+ST ATe] <Boolean>|ON|OFF","Design WIFI state
+Attention: if the wifi is opened, the serial
+port of controller will be closed.
+During the time of opening wifi and
+connecting wifi, the communication with
+controller is only done through Ethernet","1,ON: open WIFI;
+0,OFF: close WIFI",None
+11,"SYSTem:COMMunicate:SOCKet:WLAN[:
+ST ATe]?",Query wifi state,None,"1: WIFI open ; 0:
+WIFI close"
+12,"SYSTem:COMMunicate:SOCKet:WLAN:A
+D DRess<IP address>","Design the IP address of WIFI
+Before designing the DHCP、IP subset
+mask and gateway of WIFI, please confirm
+that the wifi module has been opened and
+doesn’t connect with any hot spots.","P address: character string without
+quotation, format is
+<NR1>.<NR1>.<NR1>.<NR1>",None
+13,"SYSTem:COMMunicate:SOCKet:WLAN:A
+D DRess?",Query the IP address of WIFI,None,IPaddress
+14,"SYSTem:COMMunicate:SOCKet:WLAN:M
+A SK <IP address>","Design subnet mask of wifi
+Before designing the DHCP、IP subset
+mask and gateway of WIFI, please confirm
+that the wifi module has been opened and
+doesn’t connect with any hot spots.","IP address: character string without
+quotation, format is
+<NR1>.<NR1>.<NR1>.<NR1>",None
+15,"SYSTem:COMMunicate:SOCKet:WLAN:M
+A SK?",Query subnet mask of WIFI,None,IP address
+16,"SYSTem:COMMunicate:SOCKet:WLAN:G
+A Teway <IPaddress>","Design gateway of wifi
+Before designing the DHCP、IP subset
+mask and gateway of WIFI, please confirm
+that the wifi module has been opened and
+doesn’t connect with any hot spots.","IP address: character string without
+quotation, format is
+<NR1>.<NR1>.<NR1>.<NR1>",None
+17,"SYSTem:COMMunicate:SOCKet:WLAN:
+GA Teway?",Query gateway of wifi,None,IP address
+18,"SYSTem:COMMunicate:SOCKet:WLAN:M
+A C?",Query physical address of wifi,None,Physical address
+19,"SYSTem:COMMunicate:SOCKet:WLAN:D
+H CP[:STATe] <Boolean>|OFF|ON","Design WIFIDHCP state
+Before designing the DHCP、IP subset
+mask and gateway of WIFI, please confirm
+that the wifi module has been opened and
+doesn’t connect with any hot spots.","1=ON: open DHCP;
+0=OFF: close DHCP",None
+20,"SYSTem:COMMunicate:SOCKet:WLAN:D
+H CP[:STATe]?",Query WIFIDHCP state,None,"1: DHCP open ;
+0: DHCP close"
+21,"SYSTem:COMMunicate:SOCKet:WLAN:S
+SI D? [ALL]","If the parameter is all, the Query will be
+done and all the Queried SSID names and
+the ways of encryption will be returned. If
+the parameter is overlooked,
+the result will return back to the current
+connected SSID name and the ways of
+encryption, if there is no connections or no
+queried hot spots, please return “",None,{[“ssid: way of encryption”]}
+22,"SYSTem:COMMunicate:SOCKet:WLAN:
+CO NNect <ssid> [,<password>]","Make the wifi connect with the
+appointed hot spot","1)”ssid hot spot name, the character string
+with quotation
+2) Encryption Mode: encryption Mode,
+WEP_OFF, WEP_ON,
+WEP_AUTO,WPA_PSK,WPA_TKIP,
+WPA2_PSK,WPA2_AES,CCKM_TKIP,
+WEP_CKIP,WEP_AUTO_CKIP,
+CCKM_AES,WPA_PSK_AES,WPA_AES,
+WPA2_PSK_TKIP,WPA2_TKIP,
+WAPI_PSK,WAPI_CERT;
+3) password: the character string with
+quotation",None
+23,"SYSTem:COMMunicate:SOCKet:WLAN:C
+O NNect?",Search the connection state of wifi,None,"Successfully,
+Initialization,
+SSIDNotFound
+SSIDNotConfigured,
+JoinFaile
+ScaningConfiguredSSID
+WaitingIPConfiguration
+ModuleJoinedListeningSocke ts"
+24,"SYSTem:COMMunicate:SOCKet:WLAN:D
+IS Connect",Break the wifi connection,None,None
+25,"SYSTem:COMMunicate:SOCKet:WLAN:D
+B M?","Query signal strength and dBm value of
+WIFI",None,"DBM value, unit dBm"
+26,"SYSTem:COMMunicate:SOCKet:ETHern
+et: DHCP?",Acquire DHCP state of Ethernet,None,"1=DHCP,0= static status"
+27,"SYSTem:COMMunicate:SOCKet:ETHern
+et: DHCP <enable>",Design DHCP state of Ethernet,"Open or nor enable,1=ON=open,
+0=OFF=close",None
+28,"SYSTem:COMMunicate:SOCKet:ETHern
+et: ADDRess?",Acquire IP address of Ethernet,None,IPaddress
+29,"SYSTem:COMMunicate:SOCKet:ETHern
+et: ADDRess <ip>","Design the IP address of Ethernet under
+the static state",IP address,None
+30,"SYSTem:COMMunicate:SOCKet:ETHern
+et: MASK?",Acquire subnet mask of Ethernet,None,Subnet mask
+31,"SYSTem:COMMunicate:SOCKet:ETHern
+et: MASK <mask>","Design subnet mask of Ethernet under
+the static state",Subnet mask,None
+32,"SYSTem:COMMunicate:SOCKet:ETHern
+et: GATeway?",Acquire gateway of Ethernet,None,Gate way
+33,"SYSTem:COMMunicate:SOCKet:ETHern
+et: GATeway <gateway>","Design gateway of Ethernet under the
+static state",gateway,None
+34,"SYSTem:COMMunicate:SOCKet:ETHern
+et: PHYSicaladdress?",Read physical Address of Ethernet,None,Physical address
+35,SYSTem:REGistry:INITiate [<Boolean>],initialize registry,,None
+36,"SYSTem:REGistry:DATA<QuoteStr>,<Quot
+eStr>,<QuoteStr>,BINary|DWord|ExpandS
+tring|MultiString|QWord|String","Write the key value to the registry.
+BINary is binary data, and each byte is
+separated by -, for example, binary data
+0x11, 0x22, 0xaa, 0xbb, expressed as ""11-
+22-aa-bb"";
+DWord is a 32-bit integer;
+ExpandString specifies a
+NULL-terminated string containing an
+unexpanded reference to an environment
+variable (such as %PATH%, which
+expands when the value is
+retrieved).MultiString is an array of strings,
+separating each string with -, and a single
+string needs to be enclosed in
+parentheses, for
+example""(abc)-(123er)-(hello,333)""
+QWord is a 64-bit integer
+String is a string","1. Path: quoted string
+2. The name of the key: a quoted string
+3. Key value: quoted string
+4. Value type",None
+37,"SYSTem:REGistry:DATA?
+<QuoteStr>,<QuoteStr>",Read key value from registry,"1. Path: quoted string
+2. The name of the key: a quoted string",key value
+38,"SYSTem:REGistry:DELete<QuoteStr>,<
+Qu oteStr>",Delete key value from registry,"1. Path: quoted string
+2. The name of the key: a quoted string",None
+39,"SYSTem:REGistry:SAVE
+HKEY_LOCAL_MACHINE|HKEY_CLASS
+ES_R
+OOT|HKEY_CURRENT_USER|HKEY_US
+ERS| ALL",Save registry,Key name,None
+40,"SYSTem:PASSword:EDIT
+<oldPassword>,<newPassword>,<newPa
+sswordRepeat>",Editor the user password,"3 values, comma separated, password is
+only consist of figures.
+Old password/super administrative
+New password
+New password repeat",None
+41,SYSTem:PASSword:ENABle:SENSor?,"Query that the protection of sensor bank
+password is opened or not",None,"1 value
+Open or not,1=open,
+0=close"
+42,"SYSTem:PASSword:ENABle:SENSor
+<enable>","Design the protection of sensor bank
+password","1 value
+enable,0=close,1=open",None
+43,"SYSTem:COMMunicate:BLUEtooth[:STATe
+]",Read open and close status of Bluetooth,None,"1 value
+Open or not 1=open,0=close"
+44,"?
+SYSTem:COMMunicate:BLUEtooth[:STATe
+]
+<Boolean>|ON|OFF","Design open and close status of
+Bluetooth","1 value
+Open or not 1=open,0=close",None
+45,SYSTem:COMMunicate:BLUEtooth:NAMe?,Read Bluetooth name,None,"Character string: Bluetooth
+name"
+46,"SYSTem:COMMunicate:BLUEtooth:NAMe
+<UnquoStr>",Design Bluetooth name,Character string: Bluetooth name,None

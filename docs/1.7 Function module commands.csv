@@ -1,0 +1,15 @@
+NO.,Command,Explanation,Parameters,Returning
+
+1,s”>],,"SConn=Smart connection; ""otherParams"",
+extra parameters, smart wiring means only
+test the address of the junction box",
+
+2,"PATTern:SCONn:MATCh
+<paramIndex>[,<” matchStr” >]","Set the matching conditions of the
+intelligent wiring base","2parameters, separated by commas
+parmaIndex, matching the
+corresponding parameter number,
+1 = ChannelInfo1, 2 = ChannelInfo2, 3 =
+ChannelInfo3, other = close match;
+""matchStr"": A matching string with quotes.",None
+

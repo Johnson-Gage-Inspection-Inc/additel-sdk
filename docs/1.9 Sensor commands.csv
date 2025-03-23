@@ -1,0 +1,257 @@
+NO.,Command,Explanation,Parameters,Returning
+1,SENSor:COUNt? <SenorType>,Acquire the quantity of sensor,"1 value
+SenorType:
+RTD=10=customized thermal resistance,
+SPRT=3=standard platinum resistance, CVD=2=CVD
+custom resistance
+NTC=1=the negative temperature coefficient thermistor
+β coefficient calculation formula
+NTC_SH3=13=the negative temperature coefficient
+thermistor Steinhart-Hart calculation formula,
+StandardTC=6=standard thermocouple,
+StandardTCB=60 type B standard thermocouple
+StandardTCS=61 type S standard thermocouple
+StandardTCR=64 type R standard thermocouple
+StandardTCPolynom=62 = polynomial standard
+TC(B，S, R)
+CustomTC=63=custom standard thermocouple
+SensorUUT= All temperature sensor types
+Pressure=110=pressure sensor，
+Humidity=111=humidity sensor，
+CurrentTransmitter=100= current type transmitter，
+VoltageTransmitter=101=voltage type transmitter，
+TransmitterUUT= All transmitter types，
+UUT= all sensor types (excluding
+standard resistance)
+RS=102=standard resistance","1 value
+the quantity of custom sensor"
+2,"SENSor:CATalog:HEAD?
+<SensorType>,<offset>,<count>",Acquire sensor head information,"3 values
+SensorType:
+RTD=10=customized thermal resistance,
+SPRT=3=standard platinum resistance, CVD=2=CVD
+custom resistance
+NTC=1=the negative temperature coefficient thermistor
+β coefficient calculation formula
+NTC_SH3=13=the negative temperature coefficient
+thermistor Steinhart-Hart calculation formula,
+StandardTC=6=standard thermocouple,
+StandardTCB=60 type B standard thermocouple
+StandardTCS=61 type S standard thermocouple
+StandardTCR=64 type R standard thermocouple
+StandardTCPolynom=62 = polynomial standard
+TC(B，S, R)
+CustomTC=63=custom standard thermocouple
+SensorUUT= All temperature sensor types
+Pressure=110=pressure sensor，
+Humidity=111=humidity sensor，
+CurrentTransmitter=100= current type transmitter，
+VoltageTransmitter=101=voltage type transmitter，
+TransmitterUUT= All transmitter types，
+UUT= all sensor types (excluding
+standard resistance)
+RS=102=standard resistance
+offset，
+count","Sensor head information
+Temperature sensor: information
+between groups is separated by”&”,
+information within one group is
+separated by “,”
+Each group contains: ID， Name， SN,
+type of electrical, calibration date,
+calibration interval"
+3,SENSor:TEMPerature:INFormations? <id>,"Acquire the information of single
+temperature sensor","1 value
+Sensor id","2 values：
+Sensor type，
+“info”: Info reference format, refer to
+the second parameter of
+SENSor:TEMPerature:ADD"
+4,"SENSor:TEMPerature:ADD
+<SensorType >,< ""Info"">",Add temperature sensor,"1、SensorType:
+RTD=10=customized thermal resistance,
+SPRT=3=standard platinum resistance, CVD=2=CVD
+custom resistance
+NTC=1=the negative temperature coefficient thermistor
+β coefficient calculation formula
+NTC_SH3=13=the negative temperature coefficient
+thermistor Steinhart-Hart calculation formula,
+StandardTCB=60 type B standard thermocouple
+StandardTCS=61 type S standard thermocouple
+StandardTCPolynom=62 = polynomial standard
+TC(B，S)
+CustomTC=63=custom standard thermocouple
+2、data information“info”
+Common information：
+Name
+SN
+ElectricalUnitId: electrical unit id（refer to：appendix
+1，such as mV = 1243）
+TemperatureUnitId: Temperature Unit id(refer to：
+appendix 1；such as ℃ =1001)
+TMin: minimum temperature range
+TMax: maximum temperature range
+CalibrateDate: ( such as：M/D/Y, 8/31/2020)
+IndateDays: required calibration interval
+Note :
+IsReadOnly: read-only or not
+RTD：
+BaseSensorName:（refer to：appendix 2）
+R0: the resistance value at 0 temperature
+SPRT：
+a_Positive
+b_Positive
+c_Positive
+d_Positive
+a_ Negative
+b_ Negative
+HRType：positive calculation coefficient
+0：""a6,b6,c6,d,W660_323:(0~961.78)℃"",
+1:""a7,b7,c7:(0~660.323)℃"",
+2:""a8,b8:(0~419.527)℃"",
+3:""a9,b9:(0~231.928)℃"", 4:""a10:(0~156.5985)℃
+"", 5:""a11:(0~29.7646)℃""
+LRType：negative calculation coefficient
+0：""a4,b4:(-189.3442~0.01)℃""
+1：""a5,b5:(-38.8344~0)℃""
+2：""None""
+Rtp：the resistance value at 0 temperature
+W660_323: aluminum point
+CVD：
+A
+B
+C
+eMax
+eMin
+R0: the resistance value at 0 temperature
+StandardTCB：standard type B TC
+baseTC base TC type（B）
+data: data to be modified，
+For fix point correction:
+The data corresponds to the mV value of 1100，
+1200,1300,1400,1500℃. If null, it will be filled with
+default value, different data are separated by “&”
+For coefficient correction:
+The data corresponds to the correction value of a0, a1
+and a2. If null, it will be filled with zero, different data
+are separated by “&”
+4: fix point correction
+5. coefficient correction
+StandardTCS：standard type S TC
+baseTC base TC type（S）
+paramType: srandard tc parameter type
+0：A_B_C
+1：Zn_Al_Cu
+2：Zn_Sb_Cu
+Param1：1 st parameter
+Param2：2 nd parameter
+Param3：3 rd parameter
+StandardTCR：standard type R TC
+baseTC base TC type（R）
+paramType: srandard tc parameter type
+5. coefficient correction
+data: data to be modified，corresponds to the
+correction value of a0, a1 and a2. If null, it will be filled
+with zero, different data are separated by “&”
+StandardTCPolynom：standard TC polynomial
+baseTC base TC type（B,S,R）
+TtoE set of temperature to electrical parameter
+EtoT set of electrical to temperature parameter
+Note：the structure of TtoE and EtoT：The two
+parameters can be a set of multiple parameter groups.
+Each group of data is separated by “&”, and the data in
+the group is separated by “|”; if it is null, it should use
+the default parameters corresponding to baseTC.
+Each group of data contains:
+TRangelow: low limit of temperature range,
+TrangeHigh: high limit of temperature range,
+a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
+InversePolynomialEnable
+0: disable. EtoT uses polynomial calculation
+1: enable, EtoT uses inverse polynomial calculation
+CustomTC: custom TC
+baseTC base TC type（T,E,J,K,N）
+paramType：parameter type
+0 offset, 1 polynomial
+offsetOrOrder：
+paramType=0: offset value
+paramType=1: highest power (1,2,3)
+sensorParam: corrected data，can be null
+effective when paramType=1；the quantity of the
+groups is offsetOrOrder+1，separeted by ”&”；
+each group contains standard value and readout
+value，separeted by ”| ” (standard value cannot
+be same)
+NTC：Thermistor
+Rn
+Tn
+β_NTC
+NTC_SH3：negative temperature coefficient
+thermistor
+powerOfPolynomial (3~6)
+PolynomialA: coefficients of the Polynomial,
+separeted by“&”，the quanity of coefficients=
+PowerOfPolynomial+1
+(A0&A1&A2&A3&A4&A5&A6)",
+5,"SENSor: TEMPerature: EDIT <id>,<
+""Info"">","Edit sensor, use detailed
+information","Parameter 1：Id of the sensor needs edited
+Parameter 2：data information“info”
+Refer to the second parameter of
+SENSor:TEMPerature:ADD",
+6,SENSor: TEMPerature:DELete <”ids”>,Delate sensor,"Sensor ids, separated by comma in the quote mark",None
+2,"SENSor:CATalog?
+<SensorType>,<offset>,<count>",Acquire sensor head information,"3 values
+Sensor type: RTD=10=custom thermal
+resistance,
+SPRT=3=standard platinum resistance,
+CVD=2= The Callendar – van Dusen
+coefficients,
+NTC=1= the negative temperature
+coefficient thermistor β coefficient
+calculation formula,
+NTC_SH2=12=the negative temperature
+coefficient thermistor
+Steinhart-Hart calculation formula,
+StandardTC=6=standard thermocouple,
+SensorUUT=All temperature sensor types,
+Pressure=110=pressure transmitter,
+Humidity=111=humidity transmitter,
+CurrentTransmitter=100=current type
+transmitter,
+VoltageTransmitter=101=Voltage
+Transmitter,
+TransmitterUUT=All transmitter types,
+UUT=all sensor types (excluding
+standard resistance) RS=102=standard
+resistance Starting position offset, Count","3values, comma separated
+ClassName,the real thing is
+List<SensorHeader>
+Base64 character data
+CRC16 check code"
+4,SENSor:INFormations? <id>,Acquire the information of single sensor,"One value
+Sensor id","3 values, separated by commas
+ClassName , actually is
+TemperatureSensorInfo or
+TransducerInfoor or
+StandardResInfo
+Base64 character data
+CRC16 check code"
+5,"SENSor:SETSensorinfo:ADD
+<SensorType >,< ""Info"">",Add new sensor,"2values
+Sensor type: RTD=10=custom thermal
+resistance,
+SPRT=3=standard platinum resistance,
+CVD=2= The Callendar – van Dusen
+coefficients
+NTC=1= the negative temperature
+coefficient thermistor β coefficient
+calculation formula,
+NTC_SH2=12=the negative temperature
+coefficient thermistor
+Steinhart-Hart calculation formula,
+StandardTC=6=standard thermocouple,
+Pressure=110=pressure transmitter,
+Humidity=111=humidity transmitter,
+RS=102=standard resistance ""Info"" is
+Base64 character data",None

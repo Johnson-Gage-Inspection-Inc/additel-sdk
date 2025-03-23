@@ -1,0 +1,330 @@
+NO.,Command,Explanation,Parameters,Returning
+1,[MEASure:]MODule:INFormation?,"Acquire the information of front panel and
+junction box",None,"N*7 values,N may be 1,2,3,4,5,
+each message is separated by
+semicolon, each parameter is
+separated by commas.
+Identifier of box :The front
+panel is 0. The embedded
+junction box is 1. Then the
+seris-wound junction boxes
+are in 2, 3, 4
+Box serial number
+Box type, 0=front panel,
+1=temperature box,
+2=process box
+Box hardware version
+Box software version
+Total number of box channel
+Label of box"
+2,JSON:[MEASure:]MODule:INFormation?,"Acquire front panel and junction box
+information, JSon format",None,"Character string which return
+back to JSon serialization, the
+original format is
+List<DIModuleInfo>"
+3,"[MEASure:]MODule:LABel
+<index>,<”label”>",Set junction box label,"2 values, and separated by commas
+Index, junction box identifier.
+Label, quotation mark label",None
+4,"[Measure:]MODule:CONFig?
+<moduleIndex>","Acquire channel configuration of one
+junction box","1 value
+moduleIndex: Junction box identifier. the
+front panel is 0, the embedded junction
+box is 1, then the serial-wound junction
+boxes are in 2.3.4","N channel information,
+separated by semicolon.
+8+M value, separated by
+commas.
+Channel name.
+Enable or not
+Label
+Function type
+Range index
+Channel delay
+Automatic range or not
+Filter
+M parmeters, M is based on
+electrical logging
+type;( voltage ,M=1: high
+impedence or not;
+current,M=0: None
+resistances,M=2: wires,
+whether to open positive or
+negative current;
+RTD / SPRT/ custom RTD,
+M=6 : wires , sensor name,
+sensor serial number, sensor
+Id, whether to open 1.4 times
+current, compensation interval;
+thermistors,M=4: wires ,
+sensor name, sensor serial
+number, sensor Id;TC /
+standard TC. M=7: Whether the
+break detection, sensor name,
+sensor serial number, sensor
+Id, cold junction type, cold
+junction fixed value, custom
+cold junction channel name;
+current / voltage
+transmitters,M=4: wires, sensor
+name, sensor serial number,
+sensor Id;)"
+5,"JSON:[Measure:]MODule:CONFig?
+<moduleIndex>","Acquire channel configuration of one
+junction box, in JSon format","1 value
+moduleIndex: Junction box identifier. the
+front panel is 0, the embedded junction
+box is 1, then the serial-wound junction
+boxes are in 2.3.4","Character string which return
+back to JSon serialization, the
+original format is
+List<DIFunctionChannelConfi
+g>"
+6,"[MEASure:]MODule:CONFig
+<moduleIndex>,<”params”>","Set the channel configuration of one
+junction box","2 value, separated by commas
+moduleIndex: Junction box identifier.
+the front panel is 0, the embedded
+junction box is 1, then the serial-wound
+junction boxes are in 2.3.4 “params”： N
+channel information, separated by
+semicolon, the parameters of each
+information are separated by commas.
+Common parameters:
+Channel name
+Enable or not
+label
+Function type,0=voltage, 1=current,
+2=resistance,3= RTD, 4=thermister,
+100=TC, 101=switch, 102=SPRT,
+103=voltage transmitter, 104=current
+transmitter, 105=standard TC,
+106=customRTD, 110=standard
+resistance
+Range index
+Channel delay
+Automatical range or not
+Filter
+Extra parameter: Current
+parameter:none
+Voltage parameter: high impedence or
+not
+Resistance parameter: wires, positive
+and negative current
+RTD / SPRT / custom RTD parameters:
+sensor name, wires, compensation
+interval, whether 1.4 times current
+Thermistor parameters: sensor name,
+wires,
+TC / standard TC parameters: sensor
+name, whether the break couple
+detection, cold junction type, cold
+junction fixed value, custom cold
+junction channel name
+Switch parameters: switch type
+Current/voltage transmitter: wires,
+sensor name;",None
+7,"JSON:[MEASure:]MODule:CONFig
+<moduleIndex>,<”params”>","Set channel configuration of junction
+box, in JSon format","two parameters, separated by
+semicolon.
+moduleIndex: Junction box identifier. the
+front panel is 0, the embedded junction box
+is 1, then the serial-wound junction boxes
+are in 2.3.4 “params”：JSON character
+string after serialization and the original
+format is List<DIFunctionChannelConfig >",None
+8,[MEASure:]SCAN:STARt <”params”>,Set the configuration and start scanning,"One value
+“params”： two parameters, separated by
+commas.
+NPLC, sample work
+Frequency cycle(100,1000,4000)
+Channel name",None
+9,JSON:[MEASure:]SCAN:STARt <”params”>,"Set the configuration and start scanning in
+JSON format","One value
+“params”, the JSON character string after
+serialization, the original format is
+DIScanInfo",None
+10,[MEASure:]SCAN:STARt?,Acquire scanning configuration,None,"Two values, separated by
+commas
+NPLC
+Name of current scanning
+channel"
+11,JSON:[MEASure:]SCAN:STARt?,"Acquire scanning configuration in JSon
+format",None,"Serializable character string,
+the original type is DIScanInfo"
+12,[MEASure:]SCAN:STOP,Stop scanning,None,None
+13,[MEASure:]SCAN:DATA:Last? [<time>],Acquire scanning data,"One parameter, optional
+time,1=yyyy:MM:dd HH:mm:ss fff
+format
+2=longformat","The latest data:N specific data,
+according to N scanning
+channels, separated by
+semicolons in quotation marks
+Each channel data, separated
+by comma according to the
+difference length of different
+data types.
+Electrical measurement data:
+Channel name
+Electrical unit Id
+Number of electrical
+measurement data 1
+One electrical measurement
+data
+electrical measurement data
+after filter
+Temperature data:
+Channel name
+Electrical unit Id
+Number of electrical
+measurement data 1
+electrical measurement data
+electrical measurement data
+after filter
+Indication unit Id
+Number of indication data 1
+the indication data
+TC data:
+Channel name
+Electrical unit Id
+Number of electrical
+measurement data 1 electrical
+measurement data
+electrical measurement
+data after filter Indication
+unit Id
+Number of indication data 1
+the indication data
+Cold junction electrical unit Id
+Cold junction electrical
+measurement data number
+1
+cold junction electrical test
+data
+Cold junction temperature
+unit Id
+Cold junction temperature
+data number 1
+cold junction temperature
+data
+Switch data:
+Based on the TC or RTD data,
+there is an additional status
+data for the full switch channel
+in the box.
+Voltage/Current Transmitter
+Data
+Channel name
+Electrical unit Id
+Number of electrical
+measurement data 1
+electrical measurement data
+of electrical measurement data
+after filter
+Input signal unit Id Input
+signal unit name
+Number of input signals 1
+input signal data"
+14,JSON:[MEASure:]SCAN:DATA? <count>,"Acquire scanning data, JSon format","One parameter
+the number of scanning data","One value
+Serialiable JSon character
+string, the format is
+List<DIReading>"
+15,"[MEASure:]CHANnel:CONFig?
+<”channelName”>",Acquire channel configuration,"One value
+channelName”,channel name, only one","8+m values, separated by
+commas
+Channel name
+Enable or not
+Label Function
+type Range
+Index, Channel
+delay
+Automatical range or not
+Number of filter
+m parameters, m depends on
+the type of electrical
+measurement:, (voltage, m=1:
+high impedance or not; Current,
+m=0: none; resistance,m=2:
+wires, open positive and
+negative current or not;
+RTD / SPRT / custom RTD,
+m=6: wires, sensor name,
+sensor serial number, sensor
+Id, whether to open 1.4 times
+current, compensation interval;
+thermistors,m=4: wires, sensor
+name, sensor serial number,
+sensor Id;TC /
+standard TC. m=7: Whether the
+break detection, sensor name,
+sensor serial number, sensor
+Id, cold end type, cold end
+fixed value, external cold end
+channel name; current / voltage
+transmitters,m=4: wires, sensor
+name, sensor serial number,
+sensor Id;)"
+16,"[MEASure:]CHANnel:CONFig:JSON?
+<”chNames”>","Acquire channel configuration, format data
+of JSon","One value
+“chNames”,channel name, supports one
+or more, separated by commas","One value
+Serialiable JSon character
+string, the original format is
+List<DIFunctionChannelConfi
+g>"
+17,"[MEASure:]CHANnel:CONFig
+<”chName”>,<enable>,<”label”>,<elecT
+ype>,<range>,<delay>,<autoRange>,<f
+ilter>,<”otherParam”>",Set channel configuration,"9 values, separated by commas ""chName"",
+channel name, only supports one
+Enable or not
+Label Function
+type Range
+Channel delay,
+Automatical Range or not1=Yes, 0=No
+the number of filters
+""otherParam"", electrical configuration
+parameters m, m depends on the
+function type, comma
+separated:( voltage,m=1: high
+impedance or not;Current m=0;
+resistance: wires, whether to open
+positive and negative current;
+RTD / SPRT / custom RTD, m=6: wires,
+sensor name, sensor serial number,
+sensor Id, whether to open 1.4 times
+current, compensation interval;
+thermistors,m=4: wires, sensor name,
+sensor serial number, sensor Id;
+TC / standard TC, m=7: whether the
+break couple detection, sensor name,
+sensor serial number, sensor Id,
+cold junction type (0 internal 1 external 2
+custom), cold end fixed value, external cold
+junction channel name;
+Switch: switch type
+current / voltage transmitters,m=4:
+wires, sensor name, sensor serial
+number, sensor Id;)",None
+18,"JSON:[MEASure:]CHANnel:CONFig
+<”jsonStr”>",Set channel configuration,"One value
+“jsonStr”,channel configuration is inJson
+character string, the original
+format is List<
+DIFunctionChannelConfig>",None
+19,"JSON:[MEASure:]SCAN:SCONnection:DAT
+A
+? <count>","Acquire scanning data of intelligent
+wiring, JSon format","one value
+the number of reading data",None
+20,[MEASure:]CHANnel:ZERo <enable>,"Set zero clearing for channel, only single
+channel current or voltage measurement is
+valid","one value
+enable zero clearing or cancel ,
+1=ON,0=Off",None
+21,,,,

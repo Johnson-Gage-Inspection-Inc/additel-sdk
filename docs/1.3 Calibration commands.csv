@@ -1,0 +1,190 @@
+NO.,Command,Explanation,Parameters,Returning
+1,"CALibration:ElECtricity:SCAN
+<mode>,<function>,<range>",Start scanning of electrical calibration,"4 parameters
+1、 mode：
+0 = active calibration
+2、 function：(only for 0 mode)：
+0 - voltage
+1- current
+2- resistance
+3- PRT
+4- thermister
+3、 range：(only for 0 mode)
+voltage：
+0)100.00000 mV
+1)1.0000000 V
+2)10.000000 V
+3)50.000000 V
+current：
+0)100.00000 μA
+1)1.0000000 mA
+2)10.000000 mA
+3)100.000000 mA
+resistance：
+0)100.00000 Ω
+1)1.0000000 kΩ
+2)10.000000 kΩ
+3)100.00000 kΩ
+4)1.0000000 MΩ
+5)10.000000 MΩ
+6)100.00000 MΩ
+PRT
+0)100.000000 Ω
+1)400.000000 Ω
+2)4.00000000 kΩ
+Thermistor
+0)0--10.0000000 kΩ
+1)10--100.000000 kΩ
+2)0.1--1.00000000 MΩ",None
+2,CALibration:ElECtricity:SCAN?,"Read the original data of electrical
+logging",None,"6 values, separated by
+commas:
+Exception code (4 bytes)
+Mode (no response when
+ADC calibration) Function
+Range
+Status: 1 indicates data is
+available
+Data: the double original
+value when the state is
+available, otherwise it is
+empty"
+3,"CALibration:ElECtricity:DATA
+Manufactor|User,<password>,<channel>,
+<function>,<range>,
+<unitID>,<count>,<points>,<values>,<y
+ear>,<month>,<day>",write in calibration data,"12 values,
+1. Manufactor: factory
+calibration ;User: user calibration;
+2. password, corresponding to the
+manufacturer password or user
+password
+3. channel: channel number
+01~02 means REF1 and REF2;
+101~110 means the inner box 01A~10A
+channel,
+111~120 means the inner box 01B~10B
+channel (only one box);
+201~210 means external 1 box 01A~10A
+channel
+,211~220 means external 1 box
+01B~10B channel (only one box);
+The external 2 boxes and the external 3
+boxes are similar to the external one box;
+4. function:
+0 - voltage;
+1- current;
+2- resistance;
+3- Prt;
+4- Thermistor
+5- Cjc
+)
+5. Range
+voltage：
+0)100.00000 mV
+1)1.0000000 V
+2)10.000000 V
+3)50.000000 V
+current：
+0)100.00000 μA
+1)1.0000000 mA
+2)10.000000 mA
+3)100.000000 mA
+resistance：
+0)100.00000 Ω
+1)1.0000000 kΩ
+2)10.000000 kΩ
+3)100.00000 kΩ
+4)1.0000000 MΩ
+5)10.000000 MΩ
+6)100.00000 MΩ
+PRT
+0)100.000000 Ω
+1)400.000000 Ω
+2)4.00000000 kΩ
+Thermistor
+0)0--10.0000000 kΩ
+1)10--100.0000000 kΩ
+2)0.1--1.00000000 MΩ
+6.unitI:ID
+7.count:the number of points;8.points:
+Calibration points(character string with
+quotation mark, separated by commas)
+9.values:standard value(character string
+with quotation mark, separated by
+commas)
+10.year:year
+11.month:month
+12.day: day",None
+4,"CALibration:ELECtricity:DATA?
+Manufactor|User,<password>,<channel>,
+<function>,<range>",Acquire calibration data,"5 values
+1. Manufactor: factory calibration;
+User:user calibration;
+2. password, corresponding to the
+manufacturer password or user
+password
+3. channel number
+4. function item
+5. range,","N*2+5 values, separated by
+commas:
+Unit Id
+count of calibration points
+list of standard value,N list of
+calibration points,N year
+month
+day"
+5,"CALibration:ELECtricity:CJCenable
+<enable>","Open and close the cold junction
+calibration, read the original value after
+opening, and read the final value after
+closing","1 value
+1=ON
+0=OFF",None
+6,"CALibration:ELECtricity:DATA:CJC?
+Manufactor|User,<password>,<location>,
+<channel>",Read cold junction calibration data,"4 values, separated by commas
+Manufactor:factory calibration;User:user
+calibration;
+password,corresponding to the
+manufacturer password or user
+password
+location,reading corresponding to location
+infromation,1=embedded , 0=external
+connection channel,channel
+number(101means embedded
+loaction01A channel)","8 values, separated by
+commas
+The channel is located in the
+junction box number (1~10
+means A, 11~20 means B)
+Internal wiring or external
+wiring, 0 means external, 1
+means internal
+Data type, 0 means user, 1
+means manufacturer Whether
+the data is valid, 1 means
+valid, 0 means invalid
+Calibration value
+year
+month
+day"
+7,"CALibration:ELECtricity:DATA:CJC
+Manufactor|User,<password>,<location>,
+<channel> ,<offset>,<year>,<month>,<d
+ay>",Write in cold junction calibration data,"8 values, separated by commas
+Manufactor: factory calibration; User:
+user calibration;
+Password, corresponding to the
+manufacturer password or user
+password
+Location, write the corresponding
+location data, 1 = internal wiring, 0 =
+external wiring
+Channel,
+channel number (101 indicates the
+embedded position 01A channel)
+offset value
+year
+month
+day",None

@@ -1,0 +1,33 @@
+NO.,Command,Explanation,Parameters,Returning
+1.,"DISPlay:BRIGhtness <type>,<level>",Design brightness,"2 values, separated by comma
+type:Percentage,Value Level：",
+2.,DISPlay:BRIGhtness? <type>,Query brightness,"One value
+type:Percentage,Value",
+3.,DISPlay:LANGuage?,Acquire languages,None,"One value
+LCID"
+4.,"DIAGnostic:LANGuage <lcid>[,<reboot>]",Set language,"two values
+lcid
+reboot or not",None
+5.,"DISPlay:MESSagebox < ""Message "">",Display dialog box,"one value
+Message",None
+6.,DISPlay:HOME?,Query whether in main interface,None,"0 not in main interface,1 in main
+interface"
+7.,DISPlay:HOME,"Return to the main interface from the
+current interface(Only support the
+system settings interface to return)",None,None
+8.,DISPlay:THEMe?,Acuqire current theme pattern,None,"One value
+topic name"
+9.,DISPlay:THEMe:ALLNames?,"Acquire names of all current supported
+themes",None,"Several values, separated by
+commas
+Theme name 1,
+theme name 2,….."
+10.,"DISPlay:THEMe <themeName>
+PATTern:MAIN:PATTerns
+Dual|SCMM|SConn[,<”otherParam","Set system theme( work after restarting)
+Switch main interface function","One value
+Support theme name
+2 values, separated by commas Function:
+Dual=Thermometry bridge
+SCMM=Multichannel Thermometer,","None
+None"

@@ -1,0 +1,11 @@
+NO.,Command,Explanation,Parameters,Returning
+2,"UNIT:TEMPerature
+<unit_ID>|<unit_name>","Design temperature unit of current
+system","Unit: unit name or unit ID
+unit_name is the character string with
+quotation
+unit_ID is digit",None
+3,UNIT:TEMPerature?,"Acquire temperature unit of current
+system",None,"2values, comma separated.
+Name of temperature unit,
+temperature unit id"

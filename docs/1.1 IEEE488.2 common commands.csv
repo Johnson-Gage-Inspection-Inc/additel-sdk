@@ -1,0 +1,13 @@
+NO.,Command,Explanation,Parameters,Returning
+1,*CLS,"This command eliminates the
+following registers; Standard
+event register Querying event
+register Operating event register
+Status byte register
+Error queue",-,-
+2,*IDN?,"To Query instrument identifies, the
+returned data is divided into 2 parts
+a. product sequence number
+b. software version number",-,"Product sequence number
+and software version number"
+3,*RST,Main software reset,-,-
