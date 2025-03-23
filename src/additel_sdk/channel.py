@@ -25,7 +25,8 @@ class DIFunctionChannelConfig:
         """Serialize the channel configuration to a string.
 
         Args:
-            self (Type[&quot;DIFunctionChannelConfig&quot;]): The channel configuration object.
+            self (Type[&quot;DIFunctionChannelConfig&quot;]): The channel configuration
+            object.
 
         Returns:
             str: The serialized channel configuration.

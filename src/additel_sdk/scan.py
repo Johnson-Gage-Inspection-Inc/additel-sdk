@@ -104,8 +104,7 @@ class DITemperatureReading(DIReading):
             DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
             ValueDecimals=int(dictionaries[0]["ValueDecimals"]),
             TempUnit=int(dictionaries[0]["TempUnit"]),
-            # Here we assume TempDecimals is fixed at 4 (or you could derive it from elsewhere)
-            TempDecimals=4,
+            TempDecimals=4,  # FIXME: Here we assume TempDecimals is fixed at 4
             TempValues=[d["TempValues"] for d in dictionaries],
         )
         return instance

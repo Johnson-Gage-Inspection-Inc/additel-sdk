@@ -10,7 +10,7 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
     using a provided type mapping.
 
     Args:
-        adt (dict or str): The dictionary containing the Additel-formatted data to coerce.
+        adt (dict or str): The Additel-formatted data to coerce
         map (dict): A mapping of type strings to Python types/classes.
         date_format (str): Optional format string for parsing datetime objects.
 
@@ -34,7 +34,7 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
 
     if typeStr := adt.pop("$type", None):
         ClassName = adt.pop("ClassName", None)  # noqa: F841
-        listIndicator = r"System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)"
+        listIndicator = r"System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)"  # noqa: E501
         if match := re.match(listIndicator, typeStr):
             typ = List[map[match.group(1)]]
             adt = adt["$values"]

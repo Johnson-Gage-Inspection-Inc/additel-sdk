@@ -15,7 +15,9 @@ import logging
 
 
 class Additel:
-    """Base class for interacting with an Additel device using different connection types."""
+    """Base class for interacting with an Additel device using different connection
+    types.
+    """
 
     def __init__(self, connection_type="wlan", **kwargs):
         self.connection_type = connection_type
@@ -32,6 +34,8 @@ class Additel:
         # self.Diagnostic = Diagnostic(self)
         # self.Pattern = Pattern(self)
         self.Unit = Unit(self)
+
+        self.commands = []
 
     def __enter__(self):
         self.connection.connect()
@@ -52,6 +56,7 @@ class Additel:
         try:
             if hasattr(self.connection.connection, "send_command"):
                 self.connection.connection.send_command(command)
+                self.commands.append(command)
             else:
                 raise NotImplementedError(
                     "The current connection type does not support sending commands."
@@ -98,12 +103,14 @@ class Additel:
     def identify(self) -> str:
         """Query the device identification.
 
-        This command queries the instrument's identification details. The returned data is divided into two parts:
+        This command queries the instrument's identification details. The returned data
+        is divided into two parts:
         - Product sequence number
         - Software version number
 
         Returns:
-            str: A string containing the product sequence number and software version number.
+            str: A string containing the product sequence number and software version
+            number.
         """
         return self.cmd("*IDN?")
 

@@ -1,5 +1,6 @@
 # module.py - Additel Module class
-# Description: Contains the Additel Module class with methods for acquiring module information and configuring junction box modules.
+# Description: Contains the Additel Module class with methods for acquiring module
+#   information and configuring junction box modules.
 
 # Section 1.2 - Measurement and configuration commands
 
@@ -33,7 +34,8 @@ class DIModuleInfo:
     Label of box
     """
 
-    Index: int  # Identifier of box (e.g., 0: front panel, 1: embedded junction box, 2-4: serial-wound junction boxes).
+    Index: int  # Identifier of box
+    #   (0: front panel, 1: embedded junction box, 2-4: serial-wound junction boxes)
     Category: int  # Module Category type.
     SN: str  # Box serial number
     HwVersion: str  # Hardware version of the module.
@@ -63,8 +65,8 @@ class DIModuleInfo:
             )
         return modules
 
-    def __str__(self):
-        return f"{self.Index},{self.Category},{self.SN},{self.HwVersion},{self.SwVersion},{self.TotalChannelCount},{self.Label};"
+    def __str__(s):
+        return f"{s.Index},{s.Category},{s.SN},{s.HwVersion},{s.SwVersion},{s.TotalChannelCount},{s.Label};"  # noqa: E501
 
 
 class Module:
@@ -75,7 +77,7 @@ class Module:
     def info_str(self) -> List[DIModuleInfo]:
         """Acquire module information.
 
-        This command retrieves information about the front panel and junction box modules.
+        This command retrieves info about the front panel and junction box modules.
 
         Returns:
             List[DIModuleInfo]: A list of parsed module information objects.
@@ -90,7 +92,7 @@ class Module:
     def info(self) -> List[DIModuleInfo]:
         """Acquire module information.
 
-        This command retrieves information about the front panel and junction box modules.
+        This command retrieves info about the front panel and junction box modules.
 
         Returns:
             List[DIModuleInfo]: A list of parsed module information objects.
@@ -123,7 +125,7 @@ class Module:
                 - 0: Front panel
                 - 1: Embedded junction box
                 - 2, 3, 4: Serial-wound junction boxes
-            label (str): The label to assign to the module (enclosed in quotation marks).
+            label (str): The label to assign to the module (enclosed in quotation marks)
         """
         raise NotImplementedError("This method is not yet implemented.")
         if index not in range(5):
@@ -135,13 +137,18 @@ class Module:
     def getConfiguration(self, module_index: int) -> List[DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box.
 
-        This command retrieves the channel configuration for a specified junction box module.
+        This command retrieves the channel configuration for a specified junction box
+        module.
 
         Args:
-            module_index (int): The module id (0: Front panel, 1: Embedded junction box, 2, 3, 4: Serial-wound junction boxes)
+            module_index (int): The module id
+            - 0: Front panel
+            - 1: Embedded junction box
+            - 2, 3, 4: Serial-wound junction boxes
 
         Returns:
-            List[DIFunctionChannelConfig]: A list of channel configurations for the specified module.
+            List[DIFunctionChannelConfig]: A list of channel configurations for the
+            specified module.
         """
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
@@ -152,19 +159,25 @@ class Module:
     def getConfiguration_json(self, module_index: int) -> List[DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box, in JSON format.
 
-        This command retrieves the channel configuration for a specified junction box module.
+        This command retrieves the channel configuration for a specified junction box
+        module.
 
         Args:
-            module_index (int): The module id (0: Front panel, 1: Embedded junction box, 2, 3, 4: Serial-wound junction boxes)
+            module_index (int): The module id
+            - 0: Front panel
+            - 1: Embedded junction box
+            - 2, 3, 4: Serial-wound junction boxes
 
         Returns:
-            List[type.DIFunctionChannelConfig]: A list of channel configurations for the specified module.
+            List[type.DIFunctionChannelConfig]: A list of channel configurations for the
+            specified module.
         """
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         if module_index != 0:
             raise ValueError(
-                "Only the front panel module can be queried in JSON format. Use the getConfiguration method instead."
+                "Only the front panel module can be queried in JSON format. "
+                "Use the getConfiguration method instead."
             )
         if response := self.parent.cmd(f"JSON:MODule:CONFig? {module_index}"):
             return coerce(response)
@@ -182,7 +195,8 @@ class Module:
                 - 0: Front panel
                 - 1: Embedded junction box
                 - 2, 3, 4: Serial-wound junction boxes
-            params (List[DIFunctionChannelConfig]): A list of channel configurations for the specified module.
+            params (List[DIFunctionChannelConfig]): A list of channel configurations for
+              the specified module.
 
         Returns:
             dict: The JSON response from the device confirming the configuration.
@@ -196,7 +210,8 @@ class Module:
         for param in params:
             if not isinstance(param, DIFunctionChannelConfig):
                 raise TypeError(
-                    f"Invalid parameter type: List[{type(param)}]. List[Expected DIFunctionChannelConfig]."
+                    f"Invalid parameter type: List[{type(param)}]. "
+                    "List[Expected DIFunctionChannelConfig]."
                 )
 
         # Send the command

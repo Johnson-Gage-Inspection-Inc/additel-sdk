@@ -17,7 +17,7 @@ class USBConnection:
 
         if not self.vendor_id or not self.product_id:
             raise ValueError(
-                "Both 'vendor_id' and 'product_id' must be specified for USB connection."
+                "Both 'vendor_id' and 'product_id' required for USB connection."
             )
 
         self.backend = (
@@ -34,7 +34,7 @@ class USBConnection:
             )
             if self.device is None:
                 raise ConnectionError(
-                    "USB device not found. Ensure the device is connected and IDs are correct."
+                    "USB device not found. Ensure it's connected and IDs are correct."
                 )
 
             self.device.set_configuration()
