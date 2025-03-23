@@ -2,6 +2,7 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
+import logging
 
 
 class WLAN:
@@ -197,7 +198,7 @@ class WLAN:
         raise ValueError("No SSID information returned.")
 
     # 1.4.22
-    def connect(self, ssid: str, password: str) -> None:
+    def connect(self, ssid: str, password: str = None) -> None:
         """Connect to a WiFi network.
 
         Command:
@@ -205,11 +206,24 @@ class WLAN:
 
         Args:
             ssid (str): hot spot name, the character string with quotation
-            encryptionMode, WEP_OFF, WEP_ON, WEP_AUTO, WPA_PSK, WPA_TKIP, WPA2_PSK, WPA2_AES,CCKM_TKIP, WEP_CKIP, WEP_AUTO_CKIP, CCKM_AES, WPA_PSK_AES, WPA_AES, WPA2_PSK_TKIP, WPA2_TKIP, WAPI_PSK, WAPI_CERT
-            password (str): The password for the WiFi network, the character string with quotation
+            password (str, optional): password of the hot spot, the character string with quotation
+        
+        Returns:
+            Successfully,
+            Initialization,
+            SSIDNotFound
+            SSIDNotConfigured,
+            JoinFaile
+            ScaningConfiguredSSID
+            WaitingIPConfiguration
+            ModuleJoinedListeningSocke ts
         """
-        command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
-        self.parent.send_command(command)
+        if password is None:
+            command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid}"
+        else:
+            command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
+        if response := self.parent.cmd(command):
+            logging.info(response.strip())
 
     # 1.4.23
     def get_connection(self) -> str:
