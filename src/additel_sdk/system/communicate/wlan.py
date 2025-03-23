@@ -22,7 +22,7 @@ class WLAN:
         self.parent.send_command(command)
 
     # 1.4.11
-    def getstate(self) -> bool:
+    def get_state(self) -> bool:
         """Query the state of the system's WiFi functionality.
 
         Command:
@@ -115,7 +115,7 @@ class WLAN:
         raise ValueError("No gateway information returned.")
 
     # 1.4.17
-    def getGateway(self) -> str:
+    def get_gateway(self) -> str:
         """Query the gateway for the system's WiFi functionality.
 
         Command:
@@ -129,7 +129,7 @@ class WLAN:
         raise ValueError("No gateway information returned.")
 
     # 1.4.18
-    def getMAC(self) -> str:
+    def get_mac(self) -> str:
         """Query the MAC address for the system's WiFi functionality.
 
         Command:
@@ -156,7 +156,7 @@ class WLAN:
         self.parent.send_command(command)
 
     # 1.4.20
-    def getDHCP(self) -> bool:
+    def get_dhcp(self) -> bool:
         """Query the DHCP state for the system's WiFi functionality.
 
         Command:
@@ -171,7 +171,7 @@ class WLAN:
         raise ValueError("No DHCP state information returned.")
 
     # 1.4.21
-    def setSSID(self, ssid: str):
+    def set_ssid(self, ssid: str):
         """Set the SSID for the system's WiFi functionality.
 
         If the parameter is all, the Query will be
@@ -212,7 +212,7 @@ class WLAN:
         self.parent.send_command(command)
 
     # 1.4.23
-    def getConnection(self) -> str:
+    def get_connection(self) -> str:
         """Query the connection status of the system's WiFi functionality.
 
         Command:
@@ -235,7 +235,7 @@ class WLAN:
         self.parent.send_command("SYSTem:COMMunicate:SOCKet:WLAN:DISConnect")
 
     # 1.4.25
-    def getDBM(self):
+    def get_dbm(self):
         """Query signal strength and dBm value of WIFI
 
         Command:

@@ -15,25 +15,25 @@ def test_setstate_disable(bluetooth_fixture):
     bluetooth_fixture.setstate(False)
     assert bluetooth_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 0"
 
-def test_getstate_true(bluetooth_fixture):
-    state = bluetooth_fixture.getstate()
+def test_get_state_true(bluetooth_fixture):
+    state = bluetooth_fixture.get_state()
     assert state in ["ON", "OFF"], "Expected 'ON' or 'OFF' but got something else."
 
-def test_getstate_no_response(bluetooth_fixture, monkeypatch):
+def test_get_state_no_response(bluetooth_fixture, monkeypatch):
     # Simulate no response from the parent's cmd method.
     monkeypatch.setattr(bluetooth_fixture.parent, "cmd", lambda command: "")
     with pytest.raises(ValueError, match="No Bluetooth state information returned."):
-        bluetooth_fixture.getstate()
+        bluetooth_fixture.get_state()
 
-def test_getName(bluetooth_fixture):
-    name = bluetooth_fixture.getName()
+def test_get_name(bluetooth_fixture):
+    name = bluetooth_fixture.get_name()
     assert name == "Compact"
 
-def test_getName_no_response(bluetooth_fixture, monkeypatch):
+def test_get_name_no_response(bluetooth_fixture, monkeypatch):
     # Simulate no response for the name query.
     monkeypatch.setattr(bluetooth_fixture.parent, "cmd", lambda command: "")
     with pytest.raises(ValueError, match="No Bluetooth name information returned."):
-        bluetooth_fixture.getName()
+        bluetooth_fixture.get_name()
 
 @pytest.mark.skip(reason="Not yet implemented")
 def test_setName(bluetooth_fixture):

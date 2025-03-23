@@ -22,7 +22,7 @@ class Bluetooth:
         self.parent.send_command(command)
 
     # 1.4.44
-    def getstate(self) -> bool:
+    def get_state(self) -> bool:
         """Query the state of the system's Bluetooth functionality.
 
         Command:
@@ -36,7 +36,7 @@ class Bluetooth:
         raise ValueError("No Bluetooth state information returned.")
 
     # 1.4.45
-    def getName(self) -> str:
+    def get_name(self) -> str:
         """Query the name of the Bluetooth device.
 
         Command:
@@ -50,7 +50,7 @@ class Bluetooth:
         raise ValueError("No Bluetooth name information returned.")
 
     # 1.4.46 (SYSTem:COMMunicate:BLUEtooth:NAMe<UnquoStr>))
-    def setName(self, name: str) -> None:
+    def set_name(self, name: str) -> None:
         """Set the name of the Bluetooth device.
 
         Command:

@@ -9,7 +9,7 @@ class Ethernet:
         self.parent = parent
 
     # 1.4.26
-    def getDHCP(self) -> bool:
+    def get_dhcp(self) -> bool:
         """Query the DHCP state for the system's Ethernet functionality.
 
         Command:
@@ -23,7 +23,7 @@ class Ethernet:
         raise ValueError("No DHCP state information returned.")
 
     # 1.4.27
-    def setDHCP(self, enable: bool) -> None:
+    def set_dhcp(self, enable: bool) -> None:
         """Set the DHCP state for the system's Ethernet functionality.
 
         Command:
@@ -36,7 +36,7 @@ class Ethernet:
         self.parent.send_command(command)
 
     # 1.4.28
-    def getIP(self) -> str:
+    def get_ip(self) -> str:
         """Query the IP address for the system's Ethernet functionality.
 
         Command:
@@ -64,7 +64,7 @@ class Ethernet:
         )
 
     # 1.4.30
-    def getMASK(self) -> str:
+    def get_mask(self) -> str:
         """Query the subnet mask for the system's Ethernet functionality.
 
         Command:
@@ -78,7 +78,7 @@ class Ethernet:
         raise ValueError("No subnet mask information returned.")
 
     # 1.4.31
-    def setMASK(self, subnet_mask: str) -> None:
+    def set_mask(self, subnet_mask: str) -> None:
         """Set the subnet mask for the system's Ethernet functionality.
 
         Command:
@@ -94,7 +94,7 @@ class Ethernet:
         raise ValueError("No subnet mask information returned.")
 
     # 1.4.32
-    def getGATEway(self) -> str:
+    def get_gateway(self) -> str:
         """Query the gateway for the system's Ethernet functionality.
 
         Command:
