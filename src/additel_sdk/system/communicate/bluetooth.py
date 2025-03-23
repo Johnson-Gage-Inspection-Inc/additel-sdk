@@ -32,7 +32,7 @@ class Bluetooth:
         """
         response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:BLUetooth:STATe?")
         if response:
-            return bool(response.strip())
+            return bool(int(response.strip()))
         raise ValueError("No Bluetooth state information returned.")
 
     # 1.4.45
