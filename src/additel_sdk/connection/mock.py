@@ -11,7 +11,9 @@ class MockConnection:
     """
 
     def __init__(
-        self, parent, response_file="tests/mockADT286.json", ip=None, use_wlan_fallback=False, **kwargs
+        self,
+        parent,
+        response_file="tests/mockADT286.json", ip=None, use_wlan_fallback=False
     ):
         self.parent = parent
         self.response_file = response_file

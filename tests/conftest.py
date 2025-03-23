@@ -84,7 +84,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def device(request, device_ip):
+def device(request: pytest.FixtureRequest, device_ip):
     """Fixture that provides an Additel device - either real or mock based on the --real flag."""
     
     if request.config.getoption("--real"):
