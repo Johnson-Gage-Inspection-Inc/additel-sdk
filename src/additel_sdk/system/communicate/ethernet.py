@@ -58,7 +58,7 @@ class Ethernet:
         Args:
             ip_address (str): The IP address to set.
         """
-        self.parent.validate_ip(ip_address)
+        self.parent.System.Communicate.validate_ip(ip_address)
         self.parent.send_command(
             f"SYSTem:COMMunicate:SOCKet:ETHernet:ADDRess {ip_address}"
         )

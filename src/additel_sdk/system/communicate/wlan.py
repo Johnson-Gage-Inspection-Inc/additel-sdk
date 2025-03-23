@@ -52,7 +52,8 @@ class WLAN:
         Args:
             ip_address (str): The IP address to set.
         """
-        self.parent.validate_ip(ip_address)
+        
+        self.parent.System.Communicate.validate_ip(ip_address)
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:ADDRess {ip_address}"
         self.parent.send_command(command)
 

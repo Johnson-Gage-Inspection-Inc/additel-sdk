@@ -5,7 +5,7 @@ from .channel import Channel
 from .connection import Connection
 
 # from .calibration import Calibration
-# from .system import System
+from .system import System
 # from .program import Program
 # from .display import Display, Diagnostic
 # from .pattern import Pattern
@@ -28,7 +28,7 @@ class Additel:
         self.Scan = Scan(self)
         self.Channel = Channel(self)
         # self.Calibration = Calibration(self)
-        # self.System = System(self)
+        self.System = System(self)
         # self.Program = Program(self)
         # self.Display = Display(self)
         # self.Diagnostic = Diagnostic(self)
