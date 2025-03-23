@@ -11,7 +11,7 @@ class Unit:
     parent: "Additel"
     unit_lookup = {}
     with open(
-        os.path.join(appendices.__path__[0], "Appendix 1 - SCPI unit id list.csv"),
+        os.path.join(appendices.__path__[0], "Table 1 - SCPI unit id list.csv"),
         mode="r",
         newline="",
         encoding="utf-8",
