@@ -27,7 +27,7 @@ class MockConnection:
             with open(self.response_file) as f:
                 self._responses = json.load(f)
             self.connected = True
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             raise FileNotFoundError(
                 f"Mock responses file not found: {self.response_file}"
             ) from e
