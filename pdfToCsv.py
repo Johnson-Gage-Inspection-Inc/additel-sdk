@@ -25,7 +25,6 @@ with pdfplumber.open(pdf_path) as pdf:
                         continue
 
                     if not index:
-                        # This is a continuation of the previous row, so we need to append it to the last row in new_tables[i]
                         if new_tables[i]:
                             last_row = new_tables[i][-1]
                             for k in range(len(row))[1:]:
