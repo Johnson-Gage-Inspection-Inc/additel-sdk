@@ -1,13 +1,12 @@
 # system\communicate\bluetooth.py
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.additel_sdk.system.communicate import Communicate
+    from src.additel_sdk import Additel
 
 
 class Bluetooth:
-    def __init__(self, parent: "Communicate"):
+    def __init__(self, parent: "Additel"):
         self.parent = parent
-        self.root = parent.parent.parent
 
     # 1.4.43
     def setstate(self, enable: bool) -> None:
@@ -20,7 +19,7 @@ class Bluetooth:
             enable (bool): Set to True to enable Bluetooth (ON) or False to disable it (OFF).
         """
         command = f"SYSTem:COMMunicate:SOCKet:BLUetooth:STATe {int(enable)}"
-        self.root.send_command(command)
+        self.parent.send_command(command)
 
     # 1.4.44
     def getstate(self) -> bool:
@@ -31,7 +30,7 @@ class Bluetooth:
         Returns:
             bool: True if Bluetooth is enabled (ON), False if disabled (OFF).
         """
-        response = self.root.cmd("SYSTem:COMMunicate:SOCKet:BLUetooth:STATe?")
+        response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:BLUetooth:STATe?")
         if response:
             return bool(response.strip())
         raise ValueError("No Bluetooth state information returned.")
@@ -46,7 +45,7 @@ class Bluetooth:
         Returns:
             str: The name of the Bluetooth device.
         """
-        if response := self.root.cmd("SYSTem:COMMunicate:BLUEtooth:NAMe?"):
+        if response := self.parent.cmd("SYSTem:COMMunicate:BLUEtooth:NAMe?"):
             return response.strip()
         raise ValueError("No Bluetooth name information returned.")
 
@@ -60,4 +59,4 @@ class Bluetooth:
         Args:
             name (str): The name to set.
         """
-        self.root.send_command(f"SYSTem:COMMunicate:BLUEtooth:NAMe {name}")
+        self.parent.send_command(f"SYSTem:COMMunicate:BLUEtooth:NAMe {name}")
