@@ -33,7 +33,7 @@ class WLAN:
         """
         response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:WLAN:STATe?")
         if response:
-            return bool(response.strip())
+            return bool(int(response.strip()))
         raise ValueError("No WiFi state information returned.")
 
     # 1.4.12
