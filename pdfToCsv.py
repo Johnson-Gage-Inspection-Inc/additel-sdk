@@ -9,7 +9,7 @@ with pdfplumber.open(pdf_path) as pdf:
         page_num = page_index + 1
         tables = page.extract_tables()
         if tables:
-            for j, table in enumerate(tables):
+            for table in tables:
                 for row in table:
                     
                     index = row[0].replace('.', '').strip() if row[0] else None
