@@ -1,9 +1,12 @@
 from typing import List
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
 class Electricity:
 
-    def __init__(self, parent):
+    def __init__(self, parent: "Additel"):
         self.parent = parent
 
     def start_scan(self, function: int, range_: int, mode: int = 0) -> None:
