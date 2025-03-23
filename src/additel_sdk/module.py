@@ -9,6 +9,9 @@ import logging
 from .channel import DIFunctionChannelConfig
 from .coerce import coerce
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
 @dataclass
@@ -65,7 +68,7 @@ class DIModuleInfo:
 
 
 class Module:
-    def __init__(self, parent):
+    def __init__(self, parent: "Additel"):
         self.parent = parent
 
     # 1.2.1

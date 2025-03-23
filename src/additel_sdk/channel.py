@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field, fields, MISSING
 from typing import List, Optional, Type, Union
 from .coerce import coerce
-from typing import get_origin, get_args
+from typing import get_origin, get_args, TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
 @dataclass(kw_only=True)
@@ -252,7 +254,7 @@ class Channel:
         "CH1-09A","CH1-09B","CH1-10A","CH1-10B",
     ]
 
-    def __init__(cls, parent):
+    def __init__(cls, parent: "Additel"):
         cls.parent = parent
 
     def _validate_name(cls, name):

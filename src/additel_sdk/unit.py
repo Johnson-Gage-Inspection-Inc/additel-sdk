@@ -1,11 +1,14 @@
 import os
 import csv
-from typing import List, Union
+from typing import List, Union, TYPE_CHECKING
 import src.additel_sdk.appendices as appendices
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
 # Section 1.8 - Unit commands
 class Unit:
+    parent: "Additel"
     unit_lookup = {}
     with open(
         os.path.join(appendices.__path__[0], "unit_lookup.csv"),
@@ -20,7 +23,7 @@ class Unit:
             unit_value = row["Unit"].strip()
             unit_lookup[unit_id] = unit_value
 
-    def __init__(self, parent):
+    def __init__(self, parent: "Additel"):
         self.parent = parent
 
     # 1.8.2

@@ -7,6 +7,9 @@ from .coerce import coerce
 import logging
 from datetime import datetime, timedelta
 from math import inf
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
 def count_decimals(value: float) -> int:
@@ -144,7 +147,7 @@ class DITCReading(DIReading):
 
 
 class Scan:
-    def __init__(self, parent):
+    def __init__(self, parent: "Additel"):
         self.parent = parent
 
     def start(self, scan_info: DIScanInfo) -> None:
