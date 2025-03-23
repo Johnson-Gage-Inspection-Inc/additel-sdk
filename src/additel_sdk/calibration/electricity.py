@@ -65,7 +65,7 @@ class Electricity:
                 "status": parts[4],
                 "data": float(parts[5]) if parts[4] == "1" else None,
             }
-        return {}
+        raise ValueError("No scan data returned.")
 
     def write_calibration_data(
         self,
@@ -75,7 +75,6 @@ class Electricity:
         function: int,
         range_: int,
         unit_id: int,
-        count: int,
         points: List[float],
         values: List[float],
         year: int,
@@ -112,7 +111,6 @@ class Electricity:
                 - PRT: 0 (100Ω), 1 (400Ω), 2 (4kΩ)
                 - Thermistor: 0 (0–10kΩ), 1 (10–100kΩ), 2 (0.1–1MΩ)
             unit_id (int): Unit identifier for the calibration.
-            count (int): Number of calibration points.
             points (List[float]): Calibration points as a list of floats.
             values (List[float]): Standard values corresponding to calibration points.
             year (int): Calibration year.
@@ -120,10 +118,20 @@ class Electricity:
             day (int): Calibration day.
 
         Raises:
-            ValueError: If the number of `points` and `values` does not match `count`.
+            ValueError: If the number of `points` and `values` do not match.
         """
-        if len(points) != count or len(values) != count:
-            raise ValueError("Number of points and values must match the count")
+        if len(points) != len(values):
+            raise ValueError("The number of points and values must be the same.")
+        assert function in [0, 1, 2, 3, 4, 5], "Invalid function type"
+        range_map = {
+            0: [0, 1, 2, 3],
+            1: [0, 1, 2, 3],
+            2: [0, 1, 2, 3, 4, 5, 6],
+            3: [0, 1, 2],
+            4: [0, 1, 2],
+        }
+        assert range_ in range_map.get(function, []), "Invalid range for the function type"
+        count = len(points)
 
         points_str = ",".join(map(str, points))
         values_str = ",".join(map(str, values))

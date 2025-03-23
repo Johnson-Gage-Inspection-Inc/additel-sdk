@@ -1,4 +1,4 @@
-from src.additel_sdk.notYetImplemented.unit import Unit
+from src.additel_sdk.unit import Unit
 
 
 def test_get_unit_temp_success(device):
