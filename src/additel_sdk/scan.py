@@ -79,7 +79,7 @@ class DITemperatureReading(DIReading):
                 "TempValues",
             ]
             dictionary = dict(zip(keys, array))
-            # Compute the number of decimals from the raw value string; this is ValueDecimals.
+            # Compute the number of decimals from the raw value string.
             dictionary["ValueDecimals"] = len(str(array[4]).split(".")[1])
             dictionaries.append(dictionary)
 
@@ -221,7 +221,8 @@ class Scan:
     def get_data_json(self, count: int = 1) -> DIReading:
         """Acquire scanning data in JSON format.
 
-        This command retrieves scanning data in JSON format for the specified number of data points.
+        This command retrieves scanning data in JSON format for the specified number of
+        data points.
 
         Args:
             count (int): The number of scanning data points to retrieve.
