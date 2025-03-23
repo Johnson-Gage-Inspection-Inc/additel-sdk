@@ -21,11 +21,11 @@ class DIFunctionChannelConfig:
     ChannelInfo2: Optional[str] = None
     ChannelInfo3: Optional[str] = None
 
-    def __str__(cls: Type["DIFunctionChannelConfig"]) -> str:
+    def __str__(self: Type["DIFunctionChannelConfig"]) -> str:
         """Serialize the channel configuration to a string.
 
         Args:
-            cls (Type[&quot;DIFunctionChannelConfig&quot;]): The channel configuration object.
+            self (Type[&quot;DIFunctionChannelConfig&quot;]): The channel configuration object.
 
         Returns:
             str: The serialized channel configuration.
@@ -40,10 +40,10 @@ class DIFunctionChannelConfig:
 
         required_fields = [
             f
-            for f in fields(cls)
+            for f in fields(self)
             if f.default is MISSING and f.default_factory is MISSING
         ]
-        return ",".join(serialize(getattr(cls, f.name)) for f in required_fields)
+        return ",".join(serialize(getattr(self, f.name)) for f in required_fields)
 
     @classmethod
     def from_str(cls, data: str) -> "DIFunctionChannelConfig":
@@ -254,28 +254,29 @@ class Channel:
         "CH1-09A","CH1-09B","CH1-10A","CH1-10B",
     ]
 
-    def __init__(cls, parent: "Additel"):
-        cls.parent = parent
+    def __init__(self, parent: "Additel"):
+        self.parent = parent
 
+    @classmethod
     def _validate_name(cls, name):
         if name not in cls.valid_names:
             raise ValueError(f"Invalid channel name: {name}")
 
     def get_configuration_json(
-        cls, channel_names: List[str]
+        self, channel_names: List[str]
     ) -> List[DIFunctionChannelConfig]:
         for name in channel_names:
-            cls._validate_name(name)
+            self._validate_name(name)
         names_str = ",".join(channel_names)
-        if response := cls.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
+        if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
-    def get_configuration(cls, channel_name: str) -> List[DIFunctionChannelConfig]:
-        cls._validate_name(channel_name)
-        if response := cls.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
+    def get_configuration(self, channel_name: str) -> List[DIFunctionChannelConfig]:
+        self._validate_name(channel_name)
+        if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 
-    def configure(cls, config: DIFunctionChannelConfig) -> None:
+    def configure(self, config: DIFunctionChannelConfig) -> None:
         """Set channel configuration.
 
         Args:
@@ -283,9 +284,9 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:CONFig {config};"
-        cls.parent.send_command(command)
+        self.parent.send_command(command)
 
-    def set_zero(cls, enable: bool) -> None:
+    def set_zero(self, enable: bool) -> None:
         """Enable or disable zero clearing for a single channel.
 
         This command sets or cancels zero clearing for a specific channel.
@@ -295,4 +296,4 @@ class Channel:
         """
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:ZERo {int(enable)}"
-        cls.parent.send_command(command)
+        self.parent.send_command(command)
