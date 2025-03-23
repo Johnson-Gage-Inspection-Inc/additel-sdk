@@ -22,7 +22,7 @@ class EthernetConnection:
         except socket.error as e:
             raise ConnectionError(
                 f"Failed to connect to {self.ip_address}:{self.port} - {e}"
-            )
+            ) from e
 
     def disconnect(self):
         """Close the socket connection."""
@@ -31,7 +31,7 @@ class EthernetConnection:
                 self.socket.close()
                 self.socket = None
             except socket.error as e:
-                raise ConnectionError(f"Failed to close connection - {e}")
+                raise ConnectionError(f"Failed to close connection - {e}") from e
 
     def send_command(self, command):
         """Send a command to the device over the socket connection."""
@@ -41,7 +41,7 @@ class EthernetConnection:
         try:
             self.socket.sendall(f"{command}\n".encode())
         except socket.error as e:
-            raise IOError(f"Failed to send command '{command}' - {e}")
+            raise IOError(f"Failed to send command '{command}' - {e}") from e
 
     def read_response(self):
         """Read a response from the device."""
@@ -52,4 +52,4 @@ class EthernetConnection:
             response = self.socket.recv(4096).decode().strip()
             return response
         except socket.error as e:
-            raise IOError(f"Failed to read response - {e}")
+            raise IOError(f"Failed to read response - {e}") from e

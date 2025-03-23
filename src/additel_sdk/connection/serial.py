@@ -28,7 +28,7 @@ class SerialConnection:
                 timeout=self.timeout,
             )
         except serial.SerialException as e:
-            raise ConnectionError(f"Failed to open serial port {self.port} - {e}")
+            raise ConnectionError(f"Failed to open serial port {self.port} - {e}") from e
 
     def disconnect(self):
         """Close the serial connection."""
@@ -37,7 +37,7 @@ class SerialConnection:
                 self.serial_port.close()
                 self.serial_port = None
             except serial.SerialException as e:
-                raise ConnectionError(f"Failed to close serial port {self.port} - {e}")
+                raise ConnectionError(f"Failed to close serial port {self.port} - {e}") from e
 
     def send_command(self, command):
         """Send a command to the device over the serial connection."""
@@ -47,7 +47,7 @@ class SerialConnection:
         try:
             self.serial_port.write(f"{command}\r\n".encode())
         except serial.SerialException as e:
-            raise IOError(f"Failed to send command '{command}' - {e}")
+            raise IOError(f"Failed to send command '{command}' - {e}") from e
 
     def read_response(self):
         """Read a response from the device over the serial connection."""
@@ -58,4 +58,4 @@ class SerialConnection:
             response = self.serial_port.read(1024).decode().strip()
             return response
         except serial.SerialException as e:
-            raise IOError(f"Failed to read response - {e}")
+            raise IOError(f"Failed to read response - {e}") from e

@@ -30,7 +30,7 @@ class MockConnection:
         except FileNotFoundError:
             raise FileNotFoundError(
                 f"Mock responses file not found: {self.response_file}"
-            )
+            ) from e
 
         # If IP is provided, initialize WLAN connection for fallback
         if self.ip and self.use_wlan_fallback:

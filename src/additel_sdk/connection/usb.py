@@ -58,7 +58,7 @@ class USBConnection:
                 )
 
         except usb.core.USBError as e:
-            raise ConnectionError(f"Failed to establish USB connection: {e}")
+            raise ConnectionError(f"Failed to establish USB connection: {e}") from e
 
     def disconnect(self):
         """Release the USB device."""
@@ -68,7 +68,7 @@ class USBConnection:
                 self.device = None
         except usb.core.USBError as e:
             logging.error(f"Failed to release USB device: {e}")
-            raise ConnectionError(f"Failed to disconnect USB device: {e}")
+            raise ConnectionError(f"Failed to disconnect USB device: {e}") from e
 
     def send_command(self, command):
         """Send a command to the USB device."""
@@ -80,7 +80,7 @@ class USBConnection:
         try:
             self.endpoint_out.write(command)
         except usb.core.USBError as e:
-            raise IOError(f"Failed to send command '{command}': {e}")
+            raise IOError(f"Failed to send command '{command}': {e}") from e
 
     def read_response(self, timeout=5000):
         """Read response from the USB device."""
@@ -97,7 +97,7 @@ class USBConnection:
             )
             return response.tobytes().decode("utf-8").strip()
         except usb.core.USBError as e:
-            raise IOError(f"Failed to read response: {e}")
+            raise IOError(f"Failed to read response: {e}") from e
 
     def list_available_devices():
         """Utility method to list all connected USB devices."""
