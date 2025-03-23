@@ -225,11 +225,11 @@ class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
 
 def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
     return {
-        0: DIFunctionVoltageChannelConfig,
-        1: DIFunctionCurrentChannelConfig,
-        2: DIFunctionResistanceChannelConfig,
-        3: DIFunctionRTDChannelConfig,
-        4: DIFunctionThermistorChannelConfig,
+        0:   DIFunctionVoltageChannelConfig,
+        1:   DIFunctionCurrentChannelConfig,
+        2:   DIFunctionResistanceChannelConfig,
+        3:   DIFunctionRTDChannelConfig,
+        4:   DIFunctionThermistorChannelConfig,
         100: DIFunctionTCChannelConfig,
         101: DIFunctionSwitchChannelConfig,
         102: DIFunctionSPRTChannelConfig,
