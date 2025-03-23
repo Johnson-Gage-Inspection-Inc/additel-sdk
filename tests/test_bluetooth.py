@@ -5,12 +5,12 @@ from src.additel_sdk.system.communicate.bluetooth import Bluetooth
 def bluetooth_fixture(device) -> Bluetooth:
     return Bluetooth(device)
 
-@pytest.mark.skip(reason="Not yet implemented")
+@pytest.mark.skip(reason="Would change device state")
 def test_set_state_enable(bluetooth_fixture):
     bluetooth_fixture.set_state(True)
     assert bluetooth_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 1"
 
-@pytest.mark.skip(reason="Not yet implemented")
+@pytest.mark.skip(reason="Would change device state")
 def test_set_state_disable(bluetooth_fixture):
     bluetooth_fixture.set_state(False)
     assert bluetooth_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 0"
