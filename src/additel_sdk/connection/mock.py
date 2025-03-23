@@ -56,6 +56,9 @@ class MockConnection:
 
     def read_response(self) -> str:
         """Returns the pre-defined or fallback response for the last command."""
+        if self.last_command == "SYSTem:DATE?":
+            from datetime import date
+            return date.today().strftime("%Y,%m,%d")
         response = self._responses.get(self.last_command)
         self.last_command = None
         if response is None and self.wlan_connection and self.use_wlan_fallback:
