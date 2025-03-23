@@ -36,7 +36,7 @@ def test_get_name_no_response(bluetooth_fixture, monkeypatch):
         bluetooth_fixture.get_name()
 
 @pytest.mark.skip(reason="Not yet implemented")
-def test_setName(bluetooth_fixture):
+def test_set_name(bluetooth_fixture):
     new_name = "NewName"
-    bluetooth_fixture.setName(new_name)
+    bluetooth_fixture.set_name(new_name)
     assert bluetooth_fixture.parent.commands[-1] == f"SYSTem:COMMunicate:BLUEtooth:NAMe {new_name}"
