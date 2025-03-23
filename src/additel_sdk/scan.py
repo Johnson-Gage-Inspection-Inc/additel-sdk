@@ -56,6 +56,20 @@ class DIScanInfo:
 
 @dataclass
 class DITemperatureReading(DIReading):
+    """
+
+    Args:
+        DIReading (_type_): _description_
+
+    Attributes:
+        TempValues (list[float]): List of temperature values.
+        TempUnit (int): Temperature unit identifier.
+        TempDecimals (int): Number of decimal places for temperature values.
+        ValueDecimals (int): the number of decimals from the raw value string
+
+    Returns:
+        _type_: _description_
+    """
     TempValues: list[float] = field(default_factory=list)
     TempUnit: int = 0
     TempDecimals: int = 0  # e.g. usually 4

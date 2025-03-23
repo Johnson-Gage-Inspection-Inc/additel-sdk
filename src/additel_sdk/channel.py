@@ -8,6 +8,19 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class DIFunctionChannelConfig:
+    """Base class for function channel configuration.
+
+    Attributes:
+        Name (str): The name of the channel.
+        Enabled (bool): Whether the channel is enabled.
+        Label (str): The label of the channel.
+        ElectricalFunctionType (int): The type of electrical function.
+        Range (int): The range of the channel.
+        Delay (int): The delay for the channel.
+        IsAutoRange (bool): Whether auto-ranging is enabled.
+        FilteringCount (int): The filtering count.
+        IsCurrentCommutation (Optional[bool]): Whether current commutation is enabled.
+    """
     Name: str
     Enabled: bool = field(metadata={"cast": int})
     Label: str
@@ -111,7 +124,12 @@ class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
-    """func_type 2: Resistance – extra parameters: wires, positive and negative current"""
+    """func_type 2: Resistance
+    
+    extra parameters:
+        wires,
+        positive and negative current
+    """
 
     Wire: int
     IsOpenDetect: bool = field(metadata={"cast": int})
@@ -119,7 +137,14 @@ class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
-    """func_type 3: RTD – extra parameters: Sensor Name, wires, compensation interval, whether 1.4 times current"""
+    """func_type 3: RTD – 
+    
+    extra parameters:
+        Sensor Name,
+        wires,
+        compensation interval,
+        whether 1.4 times current
+    """
 
     Wire: int
     SensorName: str
@@ -162,7 +187,16 @@ class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
-    """func_type 102: SPRT – extra: Sensor Name, Wires, compensation interval, whether 1.4 times current"""
+    """func_type 102: SPRT
+
+    Attributes:
+        Wire (int): wires
+        SensorName (str): Sensor Name
+        SensorSN (str): Sensor Serial Number
+        Id (str): Sensor ID
+        IsSquareRooting2Current (bool): Whether to open 1.4 times current
+        CompensateInterval (int): Compensation interval
+    """
 
     Wire: int
     SensorName: str
