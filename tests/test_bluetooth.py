@@ -17,7 +17,7 @@ def test_set_state_disable(bluetooth_fixture):
 
 def test_get_state_true(bluetooth_fixture):
     state = bluetooth_fixture.get_state()
-    assert state in ["ON", "OFF"], "Expected 'ON' or 'OFF' but got something else."
+    assert state in [True, False], f"Expected True or False, got {state}"
 
 def test_get_state_no_response(bluetooth_fixture, monkeypatch):
     # Simulate no response from the parent's cmd method.
