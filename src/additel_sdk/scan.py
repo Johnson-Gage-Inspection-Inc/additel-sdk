@@ -1,13 +1,12 @@
 # scan.py - This file contains the class for the Scan commands.
 
 from dataclasses import dataclass, field
-from typing import List
 import json
 from .coerce import coerce
 from .time import TimeTick
 import logging
 from math import inf
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, List
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -19,12 +18,19 @@ def count_decimals(value: float) -> int:
 
 @dataclass
 class DIReading:
-    ChannelName: str = ""
-    Unit: int = 0
+    ChannelName: str
+    Unit: int
+    ValuesCount: int = 0
+    DateTimeTicks: List[datetime] = field(default_factory=list)
     Values: List[float] = field(default_factory=list)
     ValuesFiltered: List[float] = field(default_factory=list)
-    DateTimeTicks : List[TimeTick] = field(default_factory=list)
-    ValueDecimals: int = 0
+    ValueDecimals: Optional[int] = None
+
+
+    def __post_init__(self):
+        self.ValuesCount = len(self.Values)
+        if self.ValueDecimals is None:
+            self.ValueDecimals = count_decimals(self.Values[0])
 
 
 @dataclass
@@ -47,9 +53,31 @@ class DITCReading(DIReading):
 
 @dataclass
 class DITemperatureReading(DIReading):
-    TempValues: List[float] = field(default_factory=list)
+    """
+
+    Args:
+        DIReading (_type_): _description_
+
+    Attributes:
+        TempValues (list[float]): List of temperature values.
+        TempUnit (int): Temperature unit identifier.
+        TempDecimals (int): Number of decimal places for temperature values.
+        ValueDecimals (int): the number of decimals from the raw value string
+
+    Returns:
+        _type_: _description_
+    """
+    ChannelName: str
+    Unit: int
+    ValuesCount: int = 0
+    DateTimeTicks: List[datetime] = field(default_factory=list)
+    Values: List[float] = field(default_factory=list)
+    ValuesFiltered: List[float] = field(default_factory=list)
     TempUnit: int = 0
-    TempDecimals: int = 0
+    TempValuesCount: int = 0
+    TempValues: list[float] = field(default_factory=list)
+    TempDecimals: Optional[int] = 4  # e.g. usually 4
+    ValueDecimals: Optional[int] = None
 
     @classmethod
     def from_str(cls, input: str) -> "DITemperatureReading":
@@ -61,7 +89,6 @@ class DITemperatureReading(DIReading):
                 "Values", "ValuesFiltered", "TempUnit", "TempValuesCount", "TempValues"
             ]
             dictionary = dict(zip(keys, array))
-            dictionary["ValueDecimals"] = len(str(array[4]).split(".")[1])
             dictionaries.append(dictionary)
 
         ChannelName = dictionaries[0]["ChannelName"]
@@ -78,7 +105,7 @@ class DITemperatureReading(DIReading):
             Unit=int(dictionaries[0]["Unit"]),
             Values=[d["Values"] for d in dictionaries],
             ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
-            DateTimeTicks =[d["DateTimeTicks "] for d in dictionaries],
+            DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
             ValueDecimals=int(dictionaries[0]["ValueDecimals"]),
             TempUnit=int(dictionaries[0]["TempUnit"]),
             TempDecimals=4,
@@ -94,8 +121,8 @@ class DITemperatureReading(DIReading):
             dt_ticks = round(self.DateTimeTicks[i].to_ticks(), -3)
             parts.append(
                 f"{self.ChannelName},{self.Unit},1,{dt_ticks},"
-                f"{fmt(self.Values[i], self.ValueDecimals)},"
-                f"{fmt(self.ValuesFiltered[i], self.ValueDecimals)},"
+                f"{fmt(self.Values[i], values_decimals)},"
+                f"{fmt(self.ValuesFiltered[i], values_decimals)},"
                 f"{self.TempUnit},1,"
                 f"{fmt(self.TempValues[i], self.TempDecimals)};"
             )
