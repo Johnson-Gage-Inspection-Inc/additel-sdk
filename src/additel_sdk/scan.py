@@ -26,7 +26,6 @@ class DIReading:
     ValuesFiltered: List[float] = field(default_factory=list)
     ValueDecimals: Optional[int] = None
 
-
     def __post_init__(self):
         self.ValuesCount = len(self.Values)
         if self.ValueDecimals is None:
@@ -67,17 +66,10 @@ class DITemperatureReading(DIReading):
     Returns:
         _type_: _description_
     """
-    ChannelName: str
-    Unit: int
-    ValuesCount: int = 0
-    DateTimeTicks: List[TimeTick] = field(default_factory=list)
-    Values: List[float] = field(default_factory=list)
-    ValuesFiltered: List[float] = field(default_factory=list)
     TempUnit: int = 0
     TempValuesCount: int = 0
     TempValues: list[float] = field(default_factory=list)
     TempDecimals: Optional[int] = 4  # e.g. usually 4
-    ValueDecimals: Optional[int] = None
 
     def __post_init__(self):
         self.ValuesCount = len(self.Values)
