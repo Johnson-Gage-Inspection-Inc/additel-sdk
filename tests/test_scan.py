@@ -35,6 +35,13 @@ def test_get_latest_data(device):
     print(data)
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
+def test_get_latest_data_ticks(device):
+    """Test retrieval of latest scan data."""
+    scan = Scan(device)
+    data = scan.get_latest_data(longformat=False)
+    print(data)
+    assert isinstance(data, DIReading), "Data must be a DIReading object"
+
 
 def test_scan_consistency(device):
     """Test consistency between scan data retrieval methods."""
