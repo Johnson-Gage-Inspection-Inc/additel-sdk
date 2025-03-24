@@ -4,7 +4,7 @@ from .coerce import coerce
 from .channel import Channel
 from .time import TimeTick
 from dataclasses import dataclass, field, fields
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
 import json
 import logging
 if TYPE_CHECKING:
@@ -79,29 +79,33 @@ class DITemperatureReading(DIReading):
     TempDecimals: Optional[int] = 4  # e.g. usually 4
     ValueDecimals: Optional[int] = None
 
+    def __post_init__(self):
+        self.ValuesCount = len(self.Values)
+        if self.ValueDecimals is None:
+            self.ValueDecimals = count_decimals(self.Values[0])
+        self.TempValuesCount = len(self.TempValues)
+        if self.TempDecimals is None:
+            self.TempDecimals = count_decimals(self.TempValues[0])
+        assert self.ChannelName in Channel.valid_names, "Invalid channel name"
+
     @classmethod
     def from_str(cls, input: str) -> "DITemperatureReading":
-        dictionaries = []
-        for string in input[1:-1].split(";")[:-1]:
-            array = string.split(",")
-            keys = [f.name for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
-            d = dict(zip(keys, array))
-            assert d["ChannelName"] in Channel.valid_names, "Invalid channel name"
-            d["DateTimeTicks"] = TimeTick(d["DateTimeTicks"])
-            d["TempValues"] = float(d["TempValues"].replace("------", '-inf'))
-            dictionaries.append(d)
-
-        return cls(
-            ChannelName=dictionaries[0]["ChannelName"],
-            Unit=int(dictionaries[0]["Unit"]),
-            Values=[float(d["Values"]) for d in dictionaries],
-            ValuesFiltered=[float(d["ValuesFiltered"]) for d in dictionaries],
-            DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
-            ValueDecimals=count_decimals(dictionaries[0]["Values"]),
-            TempUnit=int(dictionaries[0]["TempUnit"]),
-            TempDecimals=4,
-            TempValues=[float(d["TempValues"]) for d in dictionaries]
-        )
+        treated_input = input[1:-2].replace("------", '-inf')
+        array = [reading.split(",") for reading in treated_input.split(";")]
+        transposed = list(map(list, zip(*array)))
+        fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
+        values = {}
+        for i, f in enumerate(fs):
+            if get_origin(f.type) is list:
+                (type_,) = get_args(f.type)
+                values[f.name] = [type_(v) for v in transposed[i]]
+            else:
+                first_value = f.type(transposed[i][0])
+                if values.get(f.name) is None:
+                    values[f.name] = first_value if transposed[i] else None
+                else:
+                    assert values[f.name] == first_value, "Unexpected type"
+        return cls(**values)
 
     def __str__(self):
         def fmt(val, dec):
