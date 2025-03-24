@@ -2,7 +2,7 @@
 
 from .coerce import coerce
 from .time import TimeTick
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional, List
 import json
@@ -84,10 +84,7 @@ class DITemperatureReading(DIReading):
         dictionaries = []
         for string in input[1:-1].split(";")[:-1]:
             array = string.split(",")
-            keys = [
-                "ChannelName", "Unit", "ValuesCount", "DateTimeTicks",
-                "Values", "ValuesFiltered", "TempUnit", "TempValuesCount", "TempValues"
-            ]
+            keys = [f.name for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
             dictionary = dict(zip(keys, array))
             dictionaries.append(dictionary)
 
