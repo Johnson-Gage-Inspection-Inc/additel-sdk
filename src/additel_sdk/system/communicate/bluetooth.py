@@ -30,8 +30,8 @@ class Bluetooth:
         Returns:
             bool: True if Bluetooth is enabled (ON), False if disabled (OFF).
         """
-        response = self.parent.cmd("SYSTem:COMMunicate:SOCKet:BLUetooth:STATe?")
-        if response:
+        
+        if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:BLUEtooth?"):
             return bool(int(response.strip()))
         raise ValueError("No Bluetooth state information returned.")
 
