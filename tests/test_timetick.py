@@ -1,5 +1,6 @@
 from datetime import datetime
 from src.additel_sdk.coerce import coerce
+from src.additel_sdk.time import TimeTick
 
 
 def test_timetick():
@@ -8,5 +9,5 @@ def test_timetick():
         "TickTime": "2025-03-22 14:05:12 123456",
     }
     result = coerce(data)
-    assert isinstance(result, datetime)
-    assert result == datetime(2025, 3, 22, 14, 5, 12, 123456)
+    assert isinstance(result, TimeTick)
+    assert result.time == datetime(2025, 3, 22, 14, 5, 12, 123456)

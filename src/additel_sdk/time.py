@@ -1,32 +1,23 @@
-from dataclasses import dataclass
-from datetime import datetime, timedelta
+from dataclasses import dataclass, field
+from datetime import datetime as dt, timedelta as tΔ
 
 
 @dataclass
 class TimeTick:
-    TickTime: int
-    time: datetime = None
-
-    DOTNET_EPOCH = datetime(1, 1, 1)
+    TickTime: str
+    time: dt = field(init=False)
 
     def __post_init__(self):
-        self.time = datetime.strptime(self.TickTime, "%Y-%m-%d %H:%M:%S %f")
-
-    @classmethod
-    def from_iso_string(cls, s: str) -> "TimeTick":
-        return cls(datetime.strptime(s, "%Y-%m-%d %H:%M:%S %f"), s)
-
-    @classmethod
-    def from_short_format(cls, s: str) -> "TimeTick":
-        return cls(datetime.strptime(s, "%Y:%m:%d %H:%M:%S %f"), s)
-
-    @classmethod
-    def from_ticks(cls, ticks: int) -> "TimeTick":
-        dt = cls.DOTNET_EPOCH + timedelta(microseconds=ticks // 10)
-        return cls(dt, str(ticks))
+        if '-' in self.TickTime:
+            self.time = dt.strptime(self.TickTime, "%Y-%m-%d %H:%M:%S %f")
+        elif ':' in self.TickTime:
+            self.time = dt.strptime(self.TickTime, "%Y:%m:%d %H:%M:%S %f")
+        else:
+            self.time = dt(1, 1, 1) + tΔ(seconds=int(self.TickTime) / 1e7)
 
     def to_ticks(self) -> int:
-        return int((self.time - self.DOTNET_EPOCH).total_seconds() * 10_000_000)
+        "long timestamp format (ticks since 1/1/0001)"
+        return round((self.time - dt(1, 1, 1)).total_seconds() * 1e7)
 
     def to_short_format(self) -> str:
         return self.time.strftime("%Y:%m:%d %H:%M:%S %f")[:-3]
