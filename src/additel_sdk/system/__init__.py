@@ -44,7 +44,7 @@ class System:
         return {}
 
     # 1.4.2
-    def get_next_error(self) -> dict:
+    def get_next_error(self, next=False) -> dict:
         """Retrieve the next error in the system error queue.
 
         Command:
@@ -58,8 +58,8 @@ class System:
         Raises:
             ValueError: If no error information is returned.
         """
-        response = self.parent.cmd("SYSTem:ERRor:NEXT?")
-        if response:
+        command = f"SYSTem:ERRor{':NEXT' if next else ''}?"
+        if response := self.parent.cmd(command):
             parts = response.split(",")
             return {"error_code": int(parts[0]), "error_message": parts[1].strip()}
         raise ValueError("No error information returned.")
