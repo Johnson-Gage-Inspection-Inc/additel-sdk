@@ -87,7 +87,7 @@ class DITemperatureReading(DIReading):
             keys = [f.name for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
             d = dict(zip(keys, array))
             assert d["ChannelName"] in Channel.valid_names, "Invalid channel name"
-            d["DateTimeTicks"] = TimeTick.from_ticks(d["DateTimeTicks"])
+            d["DateTimeTicks"] = TimeTick(d["DateTimeTicks"])
             d["TempValues"] = float(d["TempValues"].replace("------", '-inf'))
             dictionaries.append(d)
 
