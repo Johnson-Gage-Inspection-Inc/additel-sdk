@@ -24,3 +24,8 @@ class TimeTick:
 
     def __getattr__(self, attr):
         return getattr(self.time, attr)
+
+    def __eq__(self, other):
+        if isinstance(other, TimeTick):
+            return self.time == other.time
+        return False
