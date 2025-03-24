@@ -1,12 +1,12 @@
 # scan.py - This file contains the class for the Scan commands.
 
-from dataclasses import dataclass, field
-import json
 from .coerce import coerce
 from .time import TimeTick
-import logging
-from math import inf
+from dataclasses import dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional, List
+import json
+import logging
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -21,7 +21,7 @@ class DIReading:
     ChannelName: str
     Unit: int
     ValuesCount: int = 0
-    DateTimeTicks: List[datetime] = field(default_factory=list)
+    DateTimeTicks: List[TimeTick] = field(default_factory=list)
     Values: List[float] = field(default_factory=list)
     ValuesFiltered: List[float] = field(default_factory=list)
     ValueDecimals: Optional[int] = None
@@ -93,10 +93,10 @@ class DITemperatureReading(DIReading):
 
         ChannelName = dictionaries[0]["ChannelName"]
         for d in dictionaries:
-            d["DateTimeTicks "] = TimeTick.from_ticks(int(d["DateTimeTicks"]))
+            d["DateTimeTicks"] = TimeTick.from_ticks(int(d["DateTimeTicks"]))
             d["Values"] = float(d["Values"])
             d["ValuesFiltered"] = float(d["ValuesFiltered"])
-            d["TempValues"] = -inf if d["TempValues"] == "------" else float(d["TempValues"])
+            d["TempValues"] = float(d["TempValues"].replace("------", '-inf'))
 
         assert all(d["ChannelName"] == ChannelName for d in dictionaries), "Mismatched ChannelNames"
 
@@ -106,7 +106,7 @@ class DITemperatureReading(DIReading):
             Values=[d["Values"] for d in dictionaries],
             ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
             DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
-            ValueDecimals=int(dictionaries[0]["ValueDecimals"]),
+            ValueDecimals=count_decimals(float(dictionaries[0]["Values"])),
             TempUnit=int(dictionaries[0]["TempUnit"]),
             TempDecimals=4,
             TempValues=[d["TempValues"] for d in dictionaries]
@@ -118,11 +118,11 @@ class DITemperatureReading(DIReading):
 
         parts = []
         for i in range(len(self.Values)):
-            dt_ticks = round(self.DateTimeTicks[i].to_ticks(), -3)
+            ticks = self.DateTimeTicks[i].to_ticks()
             parts.append(
-                f"{self.ChannelName},{self.Unit},1,{dt_ticks},"
-                f"{fmt(self.Values[i], values_decimals)},"
-                f"{fmt(self.ValuesFiltered[i], values_decimals)},"
+                f"{self.ChannelName},{self.Unit},1,{ticks},"
+                f"{fmt(self.Values[i], self.ValueDecimals)},"
+                f"{fmt(self.ValuesFiltered[i], self.ValueDecimals)},"
                 f"{self.TempUnit},1,"
                 f"{fmt(self.TempValues[i], self.TempDecimals)};"
             )

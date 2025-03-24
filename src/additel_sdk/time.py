@@ -23,7 +23,6 @@ class TimeTick:
         dt = datetime(1, 1, 1) + timedelta(microseconds=ticks // 10)
         return cls(dt.strftime("%Y-%m-%d %H:%M:%S %f"))
 
-    @classmethod
     def to_ticks(self) -> int:
         return int((self.time - datetime(1, 1, 1)).total_seconds() * 1e7)
 
