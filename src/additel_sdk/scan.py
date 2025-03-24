@@ -1,9 +1,9 @@
 # scan.py - This file contains the class for the Scan commands.
 
 from .coerce import coerce
+from .channel import Channel
 from .time import TimeTick
 from dataclasses import dataclass, field, fields
-from datetime import datetime
 from typing import TYPE_CHECKING, Optional, List
 import json
 import logging
@@ -70,7 +70,7 @@ class DITemperatureReading(DIReading):
     ChannelName: str
     Unit: int
     ValuesCount: int = 0
-    DateTimeTicks: List[datetime] = field(default_factory=list)
+    DateTimeTicks: List[TimeTick] = field(default_factory=list)
     Values: List[float] = field(default_factory=list)
     ValuesFiltered: List[float] = field(default_factory=list)
     TempUnit: int = 0
@@ -85,28 +85,22 @@ class DITemperatureReading(DIReading):
         for string in input[1:-1].split(";")[:-1]:
             array = string.split(",")
             keys = [f.name for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
-            dictionary = dict(zip(keys, array))
-            dictionaries.append(dictionary)
-
-        ChannelName = dictionaries[0]["ChannelName"]
-        for d in dictionaries:
+            d = dict(zip(keys, array))
+            assert d["ChannelName"] in Channel.valid_names, "Invalid channel name"
             d["DateTimeTicks"] = TimeTick.from_ticks(int(d["DateTimeTicks"]))
-            d["Values"] = float(d["Values"])
-            d["ValuesFiltered"] = float(d["ValuesFiltered"])
             d["TempValues"] = float(d["TempValues"].replace("------", '-inf'))
-
-        assert all(d["ChannelName"] == ChannelName for d in dictionaries), "Mismatched ChannelNames"
+            dictionaries.append(d)
 
         return cls(
-            ChannelName=ChannelName,
+            ChannelName=dictionaries[0]["ChannelName"],
             Unit=int(dictionaries[0]["Unit"]),
-            Values=[d["Values"] for d in dictionaries],
-            ValuesFiltered=[d["ValuesFiltered"] for d in dictionaries],
+            Values=[float(d["Values"]) for d in dictionaries],
+            ValuesFiltered=[float(d["ValuesFiltered"]) for d in dictionaries],
             DateTimeTicks=[d["DateTimeTicks"] for d in dictionaries],
-            ValueDecimals=count_decimals(float(dictionaries[0]["Values"])),
+            ValueDecimals=count_decimals(dictionaries[0]["Values"]),
             TempUnit=int(dictionaries[0]["TempUnit"]),
             TempDecimals=4,
-            TempValues=[d["TempValues"] for d in dictionaries]
+            TempValues=[float(d["TempValues"]) for d in dictionaries]
         )
 
     def __str__(self):
