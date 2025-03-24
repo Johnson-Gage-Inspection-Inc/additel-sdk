@@ -3,9 +3,10 @@
 import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 from datetime import datetime
+from deepdiff import DeepDiff
 
 
-def test_scan_config(device, scan_config: DIScanInfo, scan_config_json: DIScanInfo):
+def test_scan_config(scan_config: DIScanInfo, scan_config_json: DIScanInfo):
     """Test scan configuration consistency."""
     assert isinstance(
         scan_config, DIScanInfo
@@ -32,16 +33,11 @@ def test_get_latest_data(device):
     """Test retrieval of latest scan data."""
     scan = Scan(device)
     data = scan.get_latest_data()
-    print(data)
+    data2 = scan.get_latest_data(longformat=False)
+    diff = DeepDiff(data.__dict__, data2.__dict__)
     assert isinstance(data, DIReading), "Data must be a DIReading object"
-
-def test_get_latest_data_ticks(device):
-    """Test retrieval of latest scan data."""
-    scan = Scan(device)
-    data = scan.get_latest_data(longformat=False)
-    print(data)
-    assert isinstance(data, DIReading), "Data must be a DIReading object"
-
+    assert isinstance(data2, DIReading), "Data must be a DIReading object"
+    assert not diff, f"Data objects should be the same, but found differences: {diff}"
 
 def test_scan_consistency(device):
     """Test consistency between scan data retrieval methods."""
