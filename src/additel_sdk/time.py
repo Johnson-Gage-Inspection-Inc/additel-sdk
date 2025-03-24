@@ -20,7 +20,7 @@ class TimeTick:
 
     @classmethod
     def from_ticks(cls, ticks: int) -> "TimeTick":
-        dt = datetime(1, 1, 1) + timedelta(microseconds=ticks // 10)
+        dt = datetime(1, 1, 1) + timedelta(microseconds=int(ticks) // 10)
         return cls(dt.strftime("%Y-%m-%d %H:%M:%S %f"))
 
     def to_ticks(self) -> int:
