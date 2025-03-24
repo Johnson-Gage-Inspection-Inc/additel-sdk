@@ -17,7 +17,7 @@ class TimeTick:
 
     def to_ticks(self) -> int:
         "long timestamp format (ticks since 1/1/0001)"
-        return int((self.time - dt(1, 1, 1)).total_seconds() * 1e7)
+        return round((self.time - dt(1, 1, 1)).total_seconds() * 1e7)
 
     def to_short_format(self) -> str:
         return self.time.strftime("%Y:%m:%d %H:%M:%S %f")[:-3]
