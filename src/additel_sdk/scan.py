@@ -27,9 +27,13 @@ class DIReading:
     ValueDecimals: Optional[int] = None
 
     def __post_init__(self):
+        self._post_init_common()
+
+    def _post_init_common(self):
         self.ValuesCount = len(self.Values)
         if self.ValueDecimals is None:
             self.ValueDecimals = count_decimals(self.Values[0])
+        assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
 
 @dataclass
@@ -72,13 +76,10 @@ class DITemperatureReading(DIReading):
     TempDecimals: Optional[int] = 4  # e.g. usually 4
 
     def __post_init__(self):
-        self.ValuesCount = len(self.Values)
-        if self.ValueDecimals is None:
-            self.ValueDecimals = count_decimals(self.Values[0])
+        super()._post_init_common()
         self.TempValuesCount = len(self.TempValues)
-        if self.TempDecimals is None:
+        if self.TempDecimals is None and self.TempValues:
             self.TempDecimals = count_decimals(self.TempValues[0])
-        assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
     @classmethod
     def from_str(cls, input: str) -> "DITemperatureReading":
