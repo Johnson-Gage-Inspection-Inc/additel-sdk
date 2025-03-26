@@ -4,6 +4,9 @@ import json
 import logging
 from ..base import Connection
 import os
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 class MockConnection(Connection):
     """A mock connection class for testing purposes.
@@ -16,7 +19,7 @@ class MockConnection(Connection):
     response_file = "mockADT286.json"
     responses = {}
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent: "Additel", **kwargs):
         self.parent = parent
         self.connected = False
         self.ip = kwargs.pop("ip", None)
