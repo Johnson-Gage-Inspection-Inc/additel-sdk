@@ -334,16 +334,3 @@ class Channel:
         raise NotImplementedError("This function is not implemented yet.")
         command = f"CHANnel:ZERo {int(enable)}"
         self.parent.send_command(command)
-
-    def start_multi_channel_scan(
-        self, sampling_rate: int, channel_list: List[str]
-    ) -> None:
-        """Start scanning for multiple channels.
-
-        Args:
-            sampling_rate (int): The sampling rate (e.g., 1000).
-            channel_list (List[str]): List of channel names.
-        """
-        channels = ",".join(channel_list)
-        command = f'SCAN:MULT:STARt {sampling_rate},"{channels}"'
-        self.parent.send_command(command)
