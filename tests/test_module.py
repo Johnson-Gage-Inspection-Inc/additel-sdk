@@ -2,7 +2,7 @@
 
 import pytest
 from src.additel_sdk.module import DIModuleInfo, Module
-from src.additel_sdk.module.channel import DIFunctionChannelConfig, DIFunctionTCChannelConfig
+from src.additel_sdk.module.channel.DI import DIFunctionChannelConfig, DIFunctionTCChannelConfig
 from conftest import compare_keys
 
 
