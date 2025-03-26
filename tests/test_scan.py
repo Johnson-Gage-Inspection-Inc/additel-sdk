@@ -2,10 +2,19 @@
 
 import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
+from typing import List, TYPE_CHECKING
 from datetime import datetime
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
-def test_scan_config(device, scan_config: DIScanInfo, scan_config_json: DIScanInfo):
+@pytest.fixture
+def scan_fixture(device: "Additel") -> Scan:
+    """Fixture for Scan tests."""
+    return Scan(device)
+
+
+def test_scan_config(scan_config: DIScanInfo, scan_config_json: DIScanInfo):
     """Test scan configuration consistency."""
     assert isinstance(
         scan_config, DIScanInfo
@@ -20,28 +29,25 @@ def test_scan_config(device, scan_config: DIScanInfo, scan_config_json: DIScanIn
 
 
 @pytest.mark.parametrize("count", [1, 2])
-def test_get_scan_data_json(device, count):
+def test_get_scan_data_json(scan_fixture, count):
     """Test retrieval of scan data in JSON format."""
-    scan = Scan(device)
-    data = scan.get_data_json(count)
+    data = scan_fixture.get_data_json(count)
     assert len(data.Values) == count, f"Should return {count} data points"
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
-def test_get_latest_data(device):
+def test_get_latest_data(scan_fixture: Scan):
     """Test retrieval of latest scan data."""
-    scan = Scan(device)
-    data = scan.get_latest_data()
+    data = scan_fixture.get_latest_data()
     print(data)
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
-def test_scan_consistency(device):
+def test_scan_consistency(scan_fixture: Scan):
     """Test consistency between scan data retrieval methods."""
     # Get data using both methods
-    scan = Scan(device)
-    data_json = scan.get_data_json(1)
-    data_latest = scan.get_latest_data()
+    data_json = scan_fixture.get_data_json(1)
+    data_latest = scan_fixture.get_latest_data()
 
     # Compare the two data objects
     assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
@@ -73,8 +79,7 @@ def test_scan_consistency(device):
         raise ValueError(f"Key {k} values do not match between data objects")
 
 
-def test_intelligent_wire(device):
+def test_intelligent_wire(scan_fixture: Scan):
     """Test intelligent wiring data retrieval."""
-    scan = Scan(device)
-    intel_wire = scan.get_intelligent_wiring_data_json()
+    intel_wire = scan_fixture.get_intelligent_wiring_data_json()
     assert isinstance(intel_wire, list), "Should return a list"
