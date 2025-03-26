@@ -4,69 +4,14 @@
 
 # Section 1.2 - Measurement and configuration commands
 
-from typing import List, Optional
+from typing import List
 import json
-import logging
-from .channel import DIFunctionChannelConfig
+from .channel import DI
 from .coerce import coerce
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
-
-@dataclass
-class DIModuleInfo:
-    """Data structure for module information.
-
-    Identifier of box :The front
-    panel is 0. The embedded
-    junction box is 1. Then the
-    seris-wound junction boxes
-    are in 2, 3, 4
-
-    Box type, 0=front panel,
-    1=temperature box,
-    2=process box
-    Box hardware version
-    Box software version
-    Total number of box channel
-    Label of box
-    """
-
-    Index: int  # Identifier of box
-    #   (0: front panel, 1: embedded junction box, 2-4: serial-wound junction boxes)
-    Category: int  # Module Category type.
-    SN: str  # Box serial number
-    HwVersion: str  # Hardware version of the module.
-    SwVersion: str  # Software version of the module.
-    TotalChannelCount: int  # (int): Total number of channels in the module.
-    Label: Optional[str] = None  # Optional label for the module.
-
-    @classmethod
-    def from_str(cls, string: str) -> List["DIModuleInfo"]:
-        # FIXME:  These mappings are not confirmed.
-        logging.warning("The mappings for DIModuleInfo.from_str are not confirmed.")
-        modules = []
-        for mod in string.split(";"):
-            if not mod:
-                continue
-            parts = mod.split(",")
-            modules.append(
-                cls(
-                    Index=int(parts[0]),
-                    Category=int(parts[2]),
-                    SN=parts[1],
-                    HwVersion=parts[3],
-                    SwVersion=parts[4],
-                    TotalChannelCount=int(parts[5]),
-                    Label=parts[6] if len(parts) > 6 else None,
-                )
-            )
-        return modules
-
-    def __str__(s):
-        return f"{s.Index},{s.Category},{s.SN},{s.HwVersion},{s.SwVersion},{s.TotalChannelCount},{s.Label};"  # noqa: E501
 
 
 class Module:
@@ -74,28 +19,28 @@ class Module:
         self.parent = parent
 
     # 1.2.1
-    def info_str(self) -> List[DIModuleInfo]:
+    def info_str(self) -> List[DI.DIModuleInfo]:
         """Acquire module information.
 
         This command retrieves info about the front panel and junction box modules.
 
         Returns:
-            List[DIModuleInfo]: A list of parsed module information objects.
+            List[DI.DIModuleInfo]: A list of parsed module information objects.
         """
         if response := self.parent.cmd("MODule:INFormation?"):
-            return DIModuleInfo.from_str(
+            return DI.DIModuleInfo.from_str(
                 response
             )  # NOTE: Can't coerce here, because the response doesn't indicate the type
         return []
 
     # 1.2.2
-    def info(self) -> List[DIModuleInfo]:
+    def info(self) -> List[DI.DIModuleInfo]:
         """Acquire module information.
 
         This command retrieves info about the front panel and junction box modules.
 
         Returns:
-            List[DIModuleInfo]: A list of parsed module information objects.
+            List[DI.DIModuleInfo]: A list of parsed module information objects.
         """
         if response := self.parent.cmd("JSON:MODule:INFormation?"):
             raw_data = json.loads(response)
@@ -134,7 +79,7 @@ class Module:
         self.parent.cmd(command)
 
     # 1.2.4
-    def getConfiguration(self, module_index: int) -> List[DIFunctionChannelConfig]:
+    def getConfiguration(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box.
 
         This command retrieves the channel configuration for a specified junction box
@@ -147,16 +92,16 @@ class Module:
             - 2, 3, 4: Serial-wound junction boxes
 
         Returns:
-            List[DIFunctionChannelConfig]: A list of channel configurations for the
+            List[DI.DIFunctionChannelConfig]: A list of channel configurations for the
             specified module.
         """
         if module_index not in range(5):
             raise ValueError("Module index must be between 0 and 4 inclusive.")
         if response := self.parent.cmd(f"MODule:CONFig? {module_index}"):
-            return DIFunctionChannelConfig.from_str(response)
+            return DI.DIFunctionChannelConfig.from_str(response)
 
     # 1.2.5
-    def getConfiguration_json(self, module_index: int) -> List[DIFunctionChannelConfig]:
+    def getConfiguration_json(self, module_index: int) -> List[DI.DIFunctionChannelConfig]:
         """Acquire channel configuration of a specified junction box, in JSON format.
 
         This command retrieves the channel configuration for a specified junction box
@@ -169,7 +114,7 @@ class Module:
             - 2, 3, 4: Serial-wound junction boxes
 
         Returns:
-            List[type.DIFunctionChannelConfig]: A list of channel configurations for the
+            List[type.DI.DIFunctionChannelConfig]: A list of channel configurations for the
             specified module.
         """
         if module_index not in range(5):
@@ -184,7 +129,7 @@ class Module:
         raise ValueError("No channel configuration received")
 
     def configure(
-        self, module_index: int, params: List[DIFunctionChannelConfig]
+        self, module_index: int, params: List[DI.DIFunctionChannelConfig]
     ):  # Not yet implemented
         """Set the channel configuration of a specified junction box in JSON format.
 
@@ -195,7 +140,7 @@ class Module:
                 - 0: Front panel
                 - 1: Embedded junction box
                 - 2, 3, 4: Serial-wound junction boxes
-            params (List[DIFunctionChannelConfig]): A list of channel configurations for
+            params (List[DI.DIFunctionChannelConfig]): A list of channel configurations for
               the specified module.
 
         Returns:
@@ -208,10 +153,10 @@ class Module:
         if not isinstance(params, List):
             raise TypeError(f"Invalid parameter type: {type(params)}. Expected List.")
         for param in params:
-            if not isinstance(param, DIFunctionChannelConfig):
+            if not isinstance(param, DI.DIFunctionChannelConfig):
                 raise TypeError(
                     f"Invalid parameter type: List[{type(param)}]. "
-                    "List[Expected DIFunctionChannelConfig]."
+                    "List[Expected DI.DIFunctionChannelConfig]."
                 )
 
         # Send the command

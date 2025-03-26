@@ -1,4 +1,4 @@
-from .time import TimeTick
+from .channel.DI.time import TimeTick
 from typing import List, Union
 import re
 import logging
@@ -82,9 +82,7 @@ def json(obj) -> dict:
 
 
 def load_mapping():
-    from . import DIModuleInfo
     from .channel import DI
-    from . import scan
 
     return {
         "System.Double": float,
@@ -103,10 +101,10 @@ def load_mapping():
         "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig": DI.DIFunctionStandardResistanceChannelConfig,  # - 110: Standard Resistance
         "TAU.Module.Channels.DI.DIFunctionChannelConfig": DI.DIFunctionChannelConfig,
         "TAU.Module.Channels.DI.DIScanInfo": DI.DIScanInfo,
-        "TAU.Module.Channels.DI.DIModuleInfo": DIModuleInfo,
-        "TAU.Module.Channels.DI.DIReading": scan.DIReading,
-        "TAU.Module.Channels.DI.DITemperatureReading": scan.DITemperatureReading,
-        "TAU.Module.Channels.DI.DIElectricalReading": scan.DIElectricalReading,
-        "TAU.Module.Channels.DI.DITCReading": scan.DITCReading,
-        "TAU.Module.Channels.DI.TimeTick": TimeTick,
+        "TAU.Module.Channels.DI.DIModuleInfo": DI.DIModuleInfo,
+        "TAU.Module.Channels.DI.DIReading": DI.DIReading,
+        "TAU.Module.Channels.DI.DITemperatureReading": DI.DITemperatureReading,
+        "TAU.Module.Channels.DI.DIElectricalReading": DI.DIElectricalReading,
+        "TAU.Module.Channels.DI.DITCReading": DI.DITCReading,
+        "TAU.Module.Channels.DI.TimeTick": DI.TimeTick,
     }

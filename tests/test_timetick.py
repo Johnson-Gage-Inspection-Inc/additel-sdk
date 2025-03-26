@@ -1,6 +1,6 @@
 from datetime import datetime
 from src.additel_sdk.module.coerce import coerce
-from src.additel_sdk.module.time import TimeTick
+from src.additel_sdk.module.channel.DI import TimeTick
 
 
 def test_timetick():

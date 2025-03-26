@@ -1,47 +1,47 @@
 """Tests for the Additel SDK Module functionality."""
 
 import pytest
-from src.additel_sdk.module import DIModuleInfo, Module
-from src.additel_sdk.module.channel.DI import DIFunctionChannelConfig, DIFunctionTCChannelConfig
+from src.additel_sdk.module import Module
+from src.additel_sdk.module.channel import DI
 from conftest import compare_keys
 
+@pytest.fixture
+def module_fixture(device):
+    return Module(device)
 
-def test_module_info(device):
+def test_module_info(module_fixture):
     """Test retrieval of module information."""
-    mod = Module(device)
-    info = mod.info()
+    info = module_fixture.info()
     assert isinstance(info, list), "Module info must be a list"
     assert all(
-        isinstance(i, DIModuleInfo) for i in info
+        isinstance(i, DI.DIModuleInfo) for i in info
     ), "Module info must be a DIModuleInfo object"
 
-    info_str = mod.info_str()
+    info_str = module_fixture.info_str()
     assert all(
-        isinstance(x, DIModuleInfo) for x in info_str
+        isinstance(x, DI.DIModuleInfo) for x in info_str
     ), "Module info must be a DIModuleInfo object"
     compare_keys(info, info_str)
 
 
 @pytest.mark.parametrize("module_index", [0, 1])
-def test_query_channel_config(device, module_index):
+def test_query_channel_config(module_fixture, module_index):
     """Test querying channel configuration."""
-    mod = Module(device)
-    config = mod.getConfiguration(module_index=module_index)
+    config = module_fixture.getConfiguration(module_index=module_index)
     assert isinstance(config, list), "Channel config must be a list"
     for c in config:
         assert isinstance(
-            c, DIFunctionChannelConfig
+            c, DI.DIFunctionChannelConfig
         ), "Channel config must be a DIFunctionChannelConfig object"
 
 
-def test_query_channel_config_json(device):
+def test_query_channel_config_json(module_fixture):
     """Test querying channel configuration in JSON format."""
-    mod = Module(device)
-    config = mod.getConfiguration_json(module_index=0)
+    config = module_fixture.getConfiguration_json(module_index=0)
     assert isinstance(config, list), "Channel config must be a list"
     for c in config:
         assert isinstance(
-            c, DIFunctionChannelConfig
+            c, DI.DIFunctionChannelConfig
         ), "Channel config must be a DIFunctionChannelConfig object"
 
 
@@ -63,7 +63,7 @@ def test_module_config(module_config, module_config_json):
     ],
 )
 def test_coerce_ChannelConfig(response, expected):
-    configs = DIFunctionChannelConfig.from_str(response)
+    configs = DI.DIFunctionChannelConfig.from_str(response)
     for conf, exp in zip(configs, expected):
         assert str(conf) == exp
 
@@ -106,6 +106,6 @@ def expected_tc_channel_config():
     ],
 )
 def test_coerce_ChannelConfig_TC(response, expected_tc_channel_config):
-    actual = DIFunctionChannelConfig.from_str(response)
+    actual = DI.DIFunctionChannelConfig.from_str(response)
     for a, e in zip(actual, expected_tc_channel_config):
-        assert a == DIFunctionTCChannelConfig(**e)
+        assert a == DI.DIFunctionTCChannelConfig(**e)

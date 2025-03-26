@@ -19,7 +19,7 @@ class Channel:
         self.parent = parent
 
     @classmethod
-    def _validate_name(cls, name):
+    def validate_name(cls, name):
         if name not in cls.valid_names:
             raise ValueError(f"Invalid channel name: {name}")
 
@@ -27,13 +27,13 @@ class Channel:
         self, channel_names: List[str]
     ) -> List[DIFunctionChannelConfig]:
         for name in channel_names:
-            self._validate_name(name)
+            self.validate_name(name)
         names_str = ",".join(channel_names)
         if response := self.parent.cmd(f'CHANnel:CONFig:JSON? "{names_str}"'):
             return coerce(response)
 
     def get_configuration(self, channel_name: str) -> List[DIFunctionChannelConfig]:
-        self._validate_name(channel_name)
+        self.validate_name(channel_name)
         if response := self.parent.cmd(f'CHANnel:CONFig? "{channel_name}"'):
             return DIFunctionChannelConfig.from_str(response)
 

@@ -1,7 +1,7 @@
 """Tests for the device SDK Scan functionality."""
 
 import pytest
-from src.additel_sdk.module.scan import DI, DIReading, Scan
+from src.additel_sdk.module.scan import DI, Scan
 from datetime import datetime
 
 
@@ -25,7 +25,7 @@ def test_get_scan_data_json(device, count):
     scan = Scan(device)
     data = scan.get_data_json(count)
     assert len(data.Values) == count, f"Should return {count} data points"
-    assert isinstance(data, DIReading), "Data must be a DIReading object"
+    assert isinstance(data, DI.DIReading), "Data must be a DIReading object"
 
 
 def test_get_latest_data(device):
@@ -33,7 +33,7 @@ def test_get_latest_data(device):
     scan = Scan(device)
     data = scan.get_latest_data()
     print(data)
-    assert isinstance(data, DIReading), "Data must be a DIReading object"
+    assert isinstance(data, DI.DIReading), "Data must be a DIReading object"
 
 
 def test_scan_consistency(device):
@@ -44,8 +44,8 @@ def test_scan_consistency(device):
     data_latest = scan.get_latest_data()
 
     # Compare the two data objects
-    assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
-    assert isinstance(data_json, DIReading), "JSON data must be a DIReading object"
+    assert isinstance(data_latest, DI.DIReading), "Latest data must be a DIReading object"
+    assert isinstance(data_json, DI.DIReading), "JSON data must be a DIReading object"
     for k in data_latest.__dict__.keys():
         if getattr(data_latest, k) == getattr(data_json, k):
             continue

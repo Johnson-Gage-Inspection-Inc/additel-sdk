@@ -17,6 +17,15 @@ from .DIFunctionChannelConfig import DIFunctionVoltageTransmitterChannelConfig
 
 from .DIScanInfo import DIScanInfo
 
+from .DIReading import DIReading
+from .DIReading import DIElectricalReading
+from .DIReading import DITCReading
+from .DIReading import DITemperatureReading
+
+from .DIModuleInfo import DIModuleInfo
+
+from .time import TimeTick
+
 __all__ = [
     "DIFunctionChannelConfig",
     "DIFunctionCurrentChannelConfig",
@@ -33,4 +42,10 @@ __all__ = [
     "DIFunctionVoltageChannelConfig",
     "DIFunctionVoltageTransmitterChannelConfig",
     "DIScanInfo",
+    "DIReading",
+    "DIElectricalReading",
+    "DITCReading",
+    "DITemperatureReading",
+    "DIModuleInfo",
+    "TimeTick",
 ]
