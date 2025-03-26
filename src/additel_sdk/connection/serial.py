@@ -4,6 +4,7 @@ from . import Connection
 
 class SerialConnection(Connection):
     """Class to handle Serial connection to the device."""
+
     type = "serial"
 
     def __init__(self, parent, **kwargs):

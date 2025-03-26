@@ -2,6 +2,7 @@ from dataclasses import dataclass, field, fields, MISSING
 from typing import List, Optional, Type, Union
 from .coerce import coerce
 from typing import get_origin, get_args, TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -21,6 +22,7 @@ class DIFunctionChannelConfig:
         FilteringCount (int): The filtering count.
         IsCurrentCommutation (Optional[bool]): Whether current commutation is enabled.
     """
+
     Name: str
     Enabled: bool = field(metadata={"cast": int})
     Label: str
@@ -125,7 +127,7 @@ class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
 @dataclass
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     """func_type 2: Resistance
-    
+
     extra parameters:
         wires,
         positive and negative current
@@ -137,8 +139,8 @@ class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
 
 @dataclass
 class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
-    """func_type 3: RTD – 
-    
+    """func_type 3: RTD –
+
     extra parameters:
         Sensor Name,
         wires,
@@ -260,11 +262,11 @@ class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
 
 def getSubclass(key: int) -> Type[DIFunctionChannelConfig]:
     return {
-        0:   DIFunctionVoltageChannelConfig,
-        1:   DIFunctionCurrentChannelConfig,
-        2:   DIFunctionResistanceChannelConfig,
-        3:   DIFunctionRTDChannelConfig,
-        4:   DIFunctionThermistorChannelConfig,
+        0: DIFunctionVoltageChannelConfig,
+        1: DIFunctionCurrentChannelConfig,
+        2: DIFunctionResistanceChannelConfig,
+        3: DIFunctionRTDChannelConfig,
+        4: DIFunctionThermistorChannelConfig,
         100: DIFunctionTCChannelConfig,
         101: DIFunctionSwitchChannelConfig,
         102: DIFunctionSPRTChannelConfig,
@@ -333,9 +335,11 @@ class Channel:
         command = f"CHANnel:ZERo {int(enable)}"
         self.parent.send_command(command)
 
-    def start_multi_channel_scan(self, sampling_rate: int, channel_list: List[str]) -> None:
+    def start_multi_channel_scan(
+        self, sampling_rate: int, channel_list: List[str]
+    ) -> None:
         """Start scanning for multiple channels.
-        
+
         Args:
             sampling_rate (int): The sampling rate (e.g., 1000).
             channel_list (List[str]): List of channel names.

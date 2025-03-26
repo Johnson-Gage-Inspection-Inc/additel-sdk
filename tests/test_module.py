@@ -89,6 +89,8 @@ def expected_tc_channel_config():
             "CjcType": None,
             "CJCFixedValue": None,
             "CjcChannelName": "0",
+        }
+        for name, sensor, iod in [
         } for name, sensor, iod in [
             ('CH1-01A', 'K', 0), ('CH1-01B', 'J', 1), ('CH1-02A', 'T', 1), ('CH1-02B', 'N', 1),
             ('CH1-03A', 'N', 1), ('CH1-03B', 'B', 1), ('CH1-04A', 'N', 1), ('CH1-04B', 'J', 1),

@@ -1,5 +1,6 @@
 # system\communicate\wlan.py
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 import logging
@@ -52,7 +53,7 @@ class WLAN:
         Args:
             ip_address (str): The IP address to set.
         """
-        
+
         self.parent.System.Communicate.validate_ip(ip_address)
         command = f"SYSTem:COMMunicate:SOCKet:WLAN:ADDRess {ip_address}"
         self.parent.send_command(command)
@@ -208,7 +209,7 @@ class WLAN:
         Args:
             ssid (str): hot spot name, the character string with quotation
             password (str, optional): password of the hot spot, the character string with quotation
-        
+
         Returns:
             Successfully,
             Initialization,

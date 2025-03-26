@@ -7,6 +7,7 @@ from . import Connection
 
 class USBConnection(Connection):
     """Class to handle USB connection to the device."""
+
     type = "usb"
 
     def __init__(self, parent, **kwargs):

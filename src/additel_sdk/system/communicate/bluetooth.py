@@ -1,5 +1,6 @@
 # system\communicate\bluetooth.py
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -30,7 +31,7 @@ class Bluetooth:
         Returns:
             bool: True if Bluetooth is enabled (ON), False if disabled (OFF).
         """
-        
+
         if response := self.parent.cmd("SYSTem:COMMunicate:SOCKet:BLUEtooth?"):
             return bool(int(response.strip()))
         raise ValueError("No Bluetooth state information returned.")

@@ -6,6 +6,7 @@ from . import Connection
 
 class BluetoothConnection(Connection):
     """Class to handle Bluetooth connection to the device."""
+
     type = "bluetooth"
 
     def __init__(self, parent, **kwargs):
@@ -46,9 +47,7 @@ class BluetoothConnection(Connection):
                 await self.client.__exit__()
                 self.client = None
             except Exception as e:
-                raise ConnectionError(
-                    f"Failed to __exit__ from Bluetooth device - {e}"
-                )
+                raise ConnectionError(f"Failed to __exit__ from Bluetooth device - {e}")
 
     def send_command(self, command):
         """Send a command to the Bluetooth device."""

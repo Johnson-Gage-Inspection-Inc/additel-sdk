@@ -7,14 +7,17 @@ from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
 import json
 import logging
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 from time import sleep
+
 
 def count_decimals(value: float) -> int:
     """Return the number of decimals for a float value."""
     s = str(value)
     return len(s.split(".")[1]) if "." in s else 0
+
 
 @dataclass
 class DIReading:
@@ -70,6 +73,7 @@ class DITemperatureReading(DIReading):
     Returns:
         _type_: _description_
     """
+
     TempUnit: int = 0
     TempValuesCount: int = 0
     TempValues: list[float] = field(default_factory=list)
@@ -83,7 +87,7 @@ class DITemperatureReading(DIReading):
 
     @classmethod
     def from_str(cls, input: str) -> "DITemperatureReading":
-        treated_input = input[1:-2].replace("------", '-inf')
+        treated_input = input[1:-2].replace("------", "-inf")
         array = [reading.split(",") for reading in treated_input.split(";")]
         transposed = list(map(list, zip(*array)))
         fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
@@ -134,6 +138,7 @@ class DIScanInfo:
     def __str__(self) -> str:
         """Convert the DIScanInfo object to a string representation."""
         return f"{self.NPLC},{self.ChannelName}"
+
 
 class Scan:
     def __init__(self, parent: "Additel"):
@@ -248,13 +253,11 @@ class Scan:
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
 
-    def start_multi_channel_scan(self,
-                                 channel_list: List[str],
-                                 sampling_rate: int = 1000,
-                                 measure: bool = False
-                                 ) -> None:
+    def start_multi_channel_scan(
+        self, channel_list: List[str], sampling_rate: int = 1000, measure: bool = False
+    ) -> None:
         """Start scanning for multiple channels.
-        
+
         Args:
             sampling_rate (int): The sampling rate (e.g., 1000).
             channel_list (List[str]): List of channel names.
@@ -264,9 +267,8 @@ class Scan:
         command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
         self.parent.send_command(command)
 
-    
     def get_readings(self, desired_channels: List[str]) -> List["DIReading"]:
-        """Start a multi-channel scan and return the last reading from each channel 
+        """Start a multi-channel scan and return the last reading from each channel
         in Channel.valid_names[1:n].
 
         Args:
@@ -277,7 +279,7 @@ class Scan:
         """
         self.start_multi_channel_scan(desired_channels)
         # Allow some time for the device to perform the scan
-        sleep(0.2) 
+        sleep(0.2)
         self.stop()
         # Retrieve the latest scanning data.
         # FIXME

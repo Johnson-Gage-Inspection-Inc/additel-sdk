@@ -6,6 +6,7 @@ from .connection import Connection
 
 # from .calibration import Calibration
 from .system import System
+
 # from .program import Program
 # from .display import Display, Diagnostic
 # from .pattern import Pattern
@@ -20,7 +21,7 @@ class Additel:
     """
 
     def __init__(self, connection_type="wlan", **kwargs):
-        self.connection = Connection(self, connection_type = connection_type, **kwargs)
+        self.connection = Connection(self, connection_type=connection_type, **kwargs)
 
         # Initialize the submodules
         self.Module = Module(self)

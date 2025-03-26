@@ -4,6 +4,7 @@ from . import Connection
 
 class EthernetConnection(Connection):
     """Class to handle Ethernet connection to the device."""
+
     type = "ethernet"
 
     def __init__(self, parent, **kwargs):

@@ -5,6 +5,7 @@ from .ethernet import Ethernet
 from .bluetooth import Bluetooth
 from re import compile
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk.system import System
 

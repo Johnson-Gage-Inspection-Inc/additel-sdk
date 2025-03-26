@@ -2,6 +2,7 @@ import os
 import csv
 from typing import List, Union, TYPE_CHECKING
 import src.additel_sdk.appendices as appendices
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 

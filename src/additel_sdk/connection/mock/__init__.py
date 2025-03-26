@@ -5,8 +5,10 @@ import logging
 from ..base import Connection
 import os
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
+
 
 class MockConnection(Connection):
     """A mock connection class for testing purposes.
@@ -14,6 +16,7 @@ class MockConnection(Connection):
     This connection type uses pre-defined responses from a JSON file to simulate
     device behavior without requiring an actual physical connection.
     """
+
     type = "mock"
     response_file = "mockADT286.json"
     responses = {}
@@ -45,10 +48,11 @@ class MockConnection(Connection):
 
     def read_response(self) -> str:
         """Returns the pre-defined or fallback response for the last command."""
-        
+
         last_command = self.parent.commands[-1]
         if last_command == "SYSTem:DATE?":
             from datetime import date
+
             return date.today().strftime("%Y,%m,%d")
 
         if response := self.responses.get(last_command, None):
@@ -57,6 +61,7 @@ class MockConnection(Connection):
         if self.use_wlan_fallback:
             try:
                 from ..wlan import WLANConnection
+
                 with WLANConnection(self.parent, ip=self.ip) as wlan_connection:
                     if response := wlan_connection.cmd(last_command):
                         self.responses[last_command] = response

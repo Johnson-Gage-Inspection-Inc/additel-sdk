@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional, TYPE_CHECKING
 from .communicate import Communicate
 from .password import Password
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 

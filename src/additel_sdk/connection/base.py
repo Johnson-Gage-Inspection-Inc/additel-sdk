@@ -1,5 +1,6 @@
 # connection/base.py
 
+
 class Connection:
     registry = {}
 
@@ -35,7 +36,7 @@ class Connection:
 
     def send_command(self, command):
         raise NotImplementedError
-    
+
     def read_response(self):
         raise NotImplementedError
 

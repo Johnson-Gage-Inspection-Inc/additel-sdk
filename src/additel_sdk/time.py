@@ -3,9 +3,9 @@ from datetime import datetime as dt, timedelta as tΔ
 
 class TimeTick(dt):
     def __new__(cls, TickTime):
-        if '-' in TickTime:
+        if "-" in TickTime:
             t = dt.strptime(TickTime, "%Y-%m-%d %H:%M:%S %f")
-        elif ':' in TickTime:
+        elif ":" in TickTime:
             t = dt.strptime(TickTime, "%Y:%m:%d %H:%M:%S %f")
         else:
             t = dt(1, 1, 1) + tΔ(seconds=int(TickTime) / 1e7)

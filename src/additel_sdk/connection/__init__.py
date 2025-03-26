@@ -1,4 +1,4 @@
-from .base import Connection  
+from .base import Connection
 from .bluetooth import BluetoothConnection
 from .ethernet import EthernetConnection
 from .mock import MockConnection

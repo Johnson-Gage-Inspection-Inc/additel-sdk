@@ -1,5 +1,6 @@
 # system\communicate\ethernet.py
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -146,7 +147,9 @@ class Ethernet:
         Args:
             enable (bool): Set to True to initialize the Ethernet registry.
         """
-        self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:ETHernet:INITialize {int(enable)}")
+        self.parent.send_command(
+            f"SYSTem:COMMunicate:SOCKet:ETHernet:INITialize {int(enable)}"
+        )
 
     # 1.4.36
     def setKey(self, path: str, name: str, keyValue: str, valueType) -> None:
@@ -177,7 +180,9 @@ class Ethernet:
             keyValue (str): The value of the key: a quoted string
             valueType (_type_): Value type
         """
-        self.parent.send_command(f"SYSTem:REGistry:DATA{path},{name},{keyValue},{valueType}")
+        self.parent.send_command(
+            f"SYSTem:REGistry:DATA{path},{name},{keyValue},{valueType}"
+        )
 
     # 1.4.37
     def getKey(self, path: str, name: str) -> str:

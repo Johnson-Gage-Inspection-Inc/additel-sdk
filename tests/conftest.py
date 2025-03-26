@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 # Define device connection details
 
+
 @pytest.fixture
 def device_ip():
     """Get device IP from environment or use default."""
@@ -83,10 +84,10 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def device(request: pytest.FixtureRequest, device_ip):
-    """Fixture that provides an Additel device - 
+    """Fixture that provides an Additel device -
     either real or mock based on the --real flag.
     """
-    
+
     if request.config.getoption("--real"):
         # Use real connection
         with Additel("wlan", ip=device_ip) as real_device:
@@ -94,8 +95,7 @@ def device(request: pytest.FixtureRequest, device_ip):
     else:
         # Use mock connection
         use_wlan_fallback = request.config.getoption("--wlan_fallback")
-        with Additel("mock",
-                     ip=device_ip,
-                     use_wlan_fallback=use_wlan_fallback
-                     ) as mock_device:
+        with Additel(
+            "mock", ip=device_ip, use_wlan_fallback=use_wlan_fallback
+        ) as mock_device:
             yield mock_device
