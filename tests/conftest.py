@@ -13,13 +13,11 @@ from typing import List
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 # Define device connection details
-DEFAULT_IP = "192.168.1.223"
-
 
 @pytest.fixture
 def device_ip():
     """Get device IP from environment or use default."""
-    return os.environ.get("ADDITEL_IP", DEFAULT_IP)
+    return os.environ.get("ADDITEL_IP")
 
 
 @pytest.fixture
