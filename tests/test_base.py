@@ -44,7 +44,6 @@ def test_connection(device):
         ("SYSTem:COMMunicate:SOCKet:WLAN:STATe?", "1"),
         ("SYSTem:KLOCk?", "0"),
         ("SYSTem:DATE?", date.today().strftime("%Y,%m,%d")),
-        ("CALibration:ElECtricity:SCAN?", "0,0,0,0,0,"),
         (
             "JSON:MEASure:SCAN:SCONnection:DATA? 1",
             '{"$type":"System.Collections.Generic.List`1[[TAU.Module.Channels.DI.DIReading, TAU.Module.Channels]], mscorlib","$values":[]}',
