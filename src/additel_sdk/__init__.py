@@ -20,8 +20,7 @@ class Additel:
     """
 
     def __init__(self, connection_type="wlan", **kwargs):
-        self.connection_type = connection_type
-        self.connection = Connection(self, connection_type = self.connection_type, **kwargs)
+        self.connection = Connection(self, connection_type = connection_type, **kwargs)
 
         # Initialize the submodules
         self.Module = Module(self)
