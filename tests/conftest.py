@@ -4,7 +4,7 @@ import os
 import sys
 import pytest
 from src.additel_sdk import Additel
-from src.additel_sdk.channel import Channel, DIFunctionChannelConfig
+from src.additel_sdk.module.channel import Channel, DIFunctionChannelConfig
 from src.additel_sdk.module import Module
 from src.additel_sdk.scan import Scan, DIScanInfo
 from typing import List

@@ -82,7 +82,8 @@ def json(obj) -> dict:
 
 
 def load_mapping():
-    from . import channel, module, scan
+    from . import channel, DIModuleInfo
+    from .. import scan
 
     return {
         "System.Double": float,
@@ -101,7 +102,7 @@ def load_mapping():
         "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig": channel.DIFunctionStandardResistanceChannelConfig,  # - 110: Standard Resistance
         "TAU.Module.Channels.DI.DIFunctionChannelConfig": channel.DIFunctionChannelConfig,
         "TAU.Module.Channels.DI.DIScanInfo": scan.DIScanInfo,
-        "TAU.Module.Channels.DI.DIModuleInfo": module.DIModuleInfo,
+        "TAU.Module.Channels.DI.DIModuleInfo": DIModuleInfo,
         "TAU.Module.Channels.DI.DIReading": scan.DIReading,
         "TAU.Module.Channels.DI.DITemperatureReading": scan.DITemperatureReading,
         "TAU.Module.Channels.DI.DIElectricalReading": scan.DIElectricalReading,

@@ -1,8 +1,8 @@
 """Tests for the Additel SDK Channel functionality."""
 
 import pytest
-from src.additel_sdk.channel import Channel, DIFunctionChannelConfig
-from src.additel_sdk.coerce import coerce
+from src.additel_sdk.module.channel import Channel, DIFunctionChannelConfig
+from src.additel_sdk.module.coerce import coerce
 
 
 def test_get_channel_config(device):
