@@ -1,18 +1,18 @@
 """Tests for the device SDK Scan functionality."""
 
 import pytest
-from src.additel_sdk.module.scan import DIScanInfo, DIReading, Scan
+from src.additel_sdk.module.scan import DI, DIReading, Scan
 from datetime import datetime
 
 
-def test_scan_config(device, scan_config: DIScanInfo, scan_config_json: DIScanInfo):
+def test_scan_config(device, scan_config: DI.DIScanInfo, scan_config_json: DI.DIScanInfo):
     """Test scan configuration consistency."""
     assert isinstance(
-        scan_config, DIScanInfo
-    ), "Scan config must be a DIScanInfo object"
+        scan_config, DI.DIScanInfo
+    ), "Scan config must be a DI.DIScanInfo object"
     assert isinstance(
-        scan_config_json, DIScanInfo
-    ), "JSON scan config must be a DIScanInfo object"
+        scan_config_json, DI.DIScanInfo
+    ), "JSON scan config must be a DI.DIScanInfo object"
     assert str(scan_config_json) == str(
         scan_config
     ), "Configs should convert to same string"

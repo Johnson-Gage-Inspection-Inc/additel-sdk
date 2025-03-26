@@ -4,9 +4,9 @@ import os
 import sys
 import pytest
 from src.additel_sdk import Additel
-from src.additel_sdk.module.channel import Channel, DIFunctionChannelConfig
+from src.additel_sdk.module.channel import Channel, DIFunctionChannelConfig, DI
 from src.additel_sdk.module import Module
-from src.additel_sdk.module.scan import Scan, DIScanInfo
+from src.additel_sdk.module.scan import Scan
 from typing import List
 
 # Add the project root directory to Python path
@@ -35,7 +35,7 @@ def module_config_json(device, module_index=0) -> List[DIFunctionChannelConfig]:
 
 
 @pytest.fixture
-def scan_config(device) -> DIScanInfo:
+def scan_config(device) -> DI.DIScanInfo:
     """Fixture to provide scan configuration."""
     scan = Scan(device)
     return scan.get_configuration()

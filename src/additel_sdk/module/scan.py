@@ -1,7 +1,7 @@
 # scan.py - This file contains the class for the Scan commands.
 
 from .coerce import coerce
-from .channel import Channel
+from .channel import Channel, DI
 from .time import TimeTick
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
@@ -117,26 +117,11 @@ class DITemperatureReading(DIReading):
         return '"' + "".join(parts) + '"'
 
 
-@dataclass
-class DIScanInfo:
-    NPLC: int
-    ChannelName: str
-
-    @classmethod
-    def from_str(cls, data: str) -> "DIScanInfo":
-        """Parse the scanning information from a string."""
-        NPLC, ChannelName = data.split(",")
-        return cls(NPLC=int(NPLC), ChannelName=ChannelName)
-
-    def __str__(self) -> str:
-        """Convert the DIScanInfo object to a string representation."""
-        return f"{self.NPLC},{self.ChannelName}"
-
 class Scan:
     def __init__(self, parent: "Additel"):
         self.parent = parent
 
-    def start(self, scan_info: DIScanInfo) -> None:
+    def start(self, scan_info: DI.DIScanInfo) -> None:
         """Set the configuration and start scanning.
 
         This command configures the scanning parameters and starts the scan.
@@ -152,7 +137,7 @@ class Scan:
         command = f"JSON:SCAN:STARt {json_params}"
         self.parent.send_command(command)
 
-    def get_configuration_json(self) -> DIScanInfo:
+    def get_configuration_json(self) -> DI.DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -167,7 +152,7 @@ class Scan:
         if response := self.parent.cmd("JSON:SCAN:STARt?"):
             return coerce(response)
 
-    def get_configuration(self) -> DIScanInfo:
+    def get_configuration(self) -> DI.DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -178,11 +163,11 @@ class Scan:
             str: A comma-separated string containing the scanning configuration:
                 - NPLC value
                 - Channel name
-        """
-        response = self.parent.cmd("SCAN:STARt?")
-        if response:
-            assert response == str(DIScanInfo.from_str(response)), "Unexpected response"
-            return DIScanInfo.from_str(response)
+        """        
+        if response := self.parent.cmd("SCAN:STARt?"):
+            configuration_info = DI.DIScanInfo.from_str(response)
+            assert response == str(configuration_info), "Unexpected response"
+            return configuration_info
 
     def stop(self) -> None:
         """This command stops any active scanning process on the device."""

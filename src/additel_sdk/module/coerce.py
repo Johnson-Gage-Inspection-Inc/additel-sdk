@@ -102,7 +102,7 @@ def load_mapping():
         "TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig": DI.DIFunctionCustomRTDChannelConfig,  # - 106: Custom RTD
         "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig": DI.DIFunctionStandardResistanceChannelConfig,  # - 110: Standard Resistance
         "TAU.Module.Channels.DI.DIFunctionChannelConfig": DI.DIFunctionChannelConfig,
-        "TAU.Module.Channels.DI.DIScanInfo": scan.DIScanInfo,
+        "TAU.Module.Channels.DI.DIScanInfo": DI.DIScanInfo,
         "TAU.Module.Channels.DI.DIModuleInfo": DIModuleInfo,
         "TAU.Module.Channels.DI.DIReading": scan.DIReading,
         "TAU.Module.Channels.DI.DITemperatureReading": scan.DITemperatureReading,

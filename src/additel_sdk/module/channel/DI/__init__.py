@@ -15,6 +15,7 @@ from .DIFunctionChannelConfig import DIFunctionThermistorChannelConfig
 from .DIFunctionChannelConfig import DIFunctionVoltageChannelConfig
 from .DIFunctionChannelConfig import DIFunctionVoltageTransmitterChannelConfig
 
+from .DIScanInfo import DIScanInfo
 
 __all__ = [
     "DIFunctionChannelConfig",
@@ -31,4 +32,5 @@ __all__ = [
     "DIFunctionThermistorChannelConfig",
     "DIFunctionVoltageChannelConfig",
     "DIFunctionVoltageTransmitterChannelConfig",
+    "DIScanInfo",
 ]
