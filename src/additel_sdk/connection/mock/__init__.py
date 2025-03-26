@@ -1,7 +1,9 @@
+# connection/mock/__init__.py
+
 import json
 import logging
-from . import Connection
-
+from ..base import Connection
+import os
 
 class MockConnection(Connection):
     """A mock connection class for testing purposes.
@@ -10,10 +12,12 @@ class MockConnection(Connection):
     device behavior without requiring an actual physical connection.
     """
     type = "mock"
+    # A shared cache keyed by response file path.
+    response_file = "mockADT286.json"
+    _responses = {}
 
     def __init__(self, parent, **kwargs):
         self.parent = parent
-        self.response_file = kwargs.pop("response_file")
         self.connected = False
         self._responses = {}
         self.ip = kwargs.pop("ip", None)
@@ -21,17 +25,22 @@ class MockConnection(Connection):
 
     def __enter__(self):
         """Simulates connecting to the device."""
-        try:
-            with open(self.response_file) as f:
-                self._responses = json.load(f)
-            self.connected = True
-        except FileNotFoundError as e:
-            raise FileNotFoundError(
-                f"Mock responses file not found: {self.response_file}"
-            ) from e
+        # If this file hasn't been loaded before, load it and cache it.
+        if not MockConnection._responses:
+            try:
+                filepath = os.path.join(os.path.dirname(__file__), self.response_file)
+                with open(filepath) as f:
+                    MockConnection._responses[self.response_file] = json.load(f)
+            except FileNotFoundError as e:
+                raise FileNotFoundError(
+                    f"Mock responses file not found: {self.response_file}"
+                ) from e
+        # Point this instance’s _responses to the shared cache.
+        self._responses = MockConnection._responses[self.response_file]
+        self.connected = True
+        return self
 
-
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         """Simulates disconnecting from the device."""
         self.connected = False
 
@@ -50,7 +59,7 @@ class MockConnection(Connection):
         self.last_command = None
         if response is None and self.use_wlan_fallback:
             try:
-                from .wlan import WLANConnection
+                from ..wlan import WLANConnection
                 with WLANConnection(self.parent, ip=self.ip) as wlan_connection:
                     response = wlan_connection.cmd(self.last_command)
                     if response:  # Save only non-trivial responses
@@ -59,9 +68,7 @@ class MockConnection(Connection):
             except Exception as e:
                 logging.warning(f"WLAN fallback failed: {e}")
                 return None
-
         return response
-
 
     def _save_response(self, command, response):
         """Saves the command and response to the JSON file."""
@@ -69,9 +76,9 @@ class MockConnection(Connection):
             with open(self.response_file, "r+") as f:
                 data = json.load(f)
                 data[command] = response
-                f.seek(0)  # Go back to the beginning of the file
+                f.seek(0)
                 json.dump(data, f, indent=4)
-                f.truncate()  # Remove any remaining part of the old file
+                f.truncate()
         except FileNotFoundError:
             print(f"Warning: Response file not found: {self.response_file}")
         except Exception as e:
