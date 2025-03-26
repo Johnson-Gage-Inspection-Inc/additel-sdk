@@ -23,6 +23,7 @@ class WLANConnection(Connection):
             self.connection = socket.create_connection(
                 (self.ip, self.port), timeout=self.timeout
             )
+            return self
         except Exception as e:
             logging.error(f"Error connecting to Additel device: {e}")
             raise e
