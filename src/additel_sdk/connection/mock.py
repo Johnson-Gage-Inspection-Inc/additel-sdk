@@ -10,11 +10,7 @@ class MockConnection:
     device behavior without requiring an actual physical connection.
     """
 
-    def __init__(
-        self,
-        parent,
-        response_file="tests/mockADT286.json", ip=None, use_wlan_fallback=False
-    ):
+    def __init__(self, parent, response_file, ip=None, use_wlan_fallback=False):
         self.parent = parent
         self.response_file = response_file
         self.connected = False

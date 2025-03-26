@@ -93,11 +93,11 @@ def device(request: pytest.FixtureRequest, device_ip):
             yield real_device
     else:
         # Use mock connection
-        response_file = os.path.join(os.path.dirname(__file__), 'mockADT286.json')
+        rfile = os.path.join(os.path.dirname(__file__), 'testdata', 'mockADT286.json')
         # Pass the device_ip to MockConnection
         use_wlan_fallback = request.config.getoption("--wlan_fallback")
         with Additel("mock",
-                     response_file=response_file,
+                     response_file=rfile,
                      ip=device_ip,
                      use_wlan_fallback=use_wlan_fallback
                      ) as mock_device:
