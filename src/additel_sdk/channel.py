@@ -175,6 +175,8 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
 
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
+    SensorSN: str
+    Id: str
     CjcType: int
     CJCFixedValue: float
     CjcChannelName: str
