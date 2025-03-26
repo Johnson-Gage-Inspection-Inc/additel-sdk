@@ -1,7 +1,7 @@
 import os
 import csv
 from typing import List, Union, TYPE_CHECKING
-import src.additel_sdk.appendices as appendices
+import docs.appendices as appendices
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
@@ -19,7 +19,6 @@ class Unit:
     ) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            # Adjust the keys below to match your CSV headers
             unit_id = row["Unit_Id"].strip()
             unit_value = row["Unit"].strip()
             unit_lookup[unit_id] = unit_value
