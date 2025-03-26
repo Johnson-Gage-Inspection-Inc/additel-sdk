@@ -103,4 +103,6 @@ def test_connection(device):
 def test_cmd(device, command, expected):
     """Test command execution functionality."""
     response = device.cmd(command)
-    assert response == expected, f"Response should be '{expected}'"
+    diff = DeepDiff(expected, response)
+    assert not diff, f"Response does not match expected: {diff}"
+    assert response == expected, "Response must match expected"
