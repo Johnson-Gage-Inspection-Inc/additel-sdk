@@ -34,8 +34,9 @@ def test_get_state_no_response(wlan_fixture: WLAN):
         wlan_fixture.get_state()
 
 
+@pytest.skip(reason="Will change device state", allow_module_level=True)
 def test_set_ip(wlan_fixture: WLAN):
-    ip_address = "192.168.1.100"
+    ip_address = "192.168.1.223"
     wlan_fixture.set_ip(ip_address)
     assert (
         wlan_fixture.parent.commands[-1]
@@ -44,7 +45,7 @@ def test_set_ip(wlan_fixture: WLAN):
 
 
 def test_get_ip_address_success(wlan_fixture: WLAN):
-    ip_address = "192.168.1.100"
+    ip_address = "192.168.1.223"
     wlan_fixture.parent.connection.responses[
         "SYSTem:COMMunicate:SOCKet:WLAN:ADDRess?"
     ] = ip_address

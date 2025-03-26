@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 from time import sleep
 
 
-def count_decimals(value: float) -> int:
-    """Return the number of decimals for a float value."""
-    s = str(value)
-    return len(s.split(".")[1]) if "." in s else 0
+def count_decimals_str(value: str) -> int:
+    if '.' in value:
+        return len(value.split('.')[1].rstrip('\n').rstrip())
+    return 0
 
 
 @dataclass
@@ -27,15 +27,13 @@ class DIReading:
     DateTimeTicks: List[TimeTick] = field(default_factory=list)
     Values: List[float] = field(default_factory=list)
     ValuesFiltered: List[float] = field(default_factory=list)
-    ValueDecimals: Optional[int] = None
+    ValueDecimals: Optional[int] = 6
 
     def __post_init__(self):
         self._post_init_common()
 
     def _post_init_common(self):
         self.ValuesCount = len(self.Values)
-        if self.ValueDecimals is None:
-            self.ValueDecimals = count_decimals(self.Values[0])
         assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
 
@@ -82,16 +80,22 @@ class DITemperatureReading(DIReading):
     def __post_init__(self):
         super()._post_init_common()
         self.TempValuesCount = len(self.TempValues)
-        if self.TempDecimals is None and self.TempValues:
-            self.TempDecimals = count_decimals(self.TempValues[0])
 
     @classmethod
     def from_str(cls, input: str) -> "DITemperatureReading":
         treated_input = input[1:-2].replace("------", "-inf")
         array = [reading.split(",") for reading in treated_input.split(";")]
         transposed = list(map(list, zip(*array)))
-        fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
+
+        # Prepare initial mapping
         values = {}
+
+        # Use these to find decimals from raw values
+        raw_value_strs = transposed[4]  # Values
+        raw_temp_strs = transposed[8]  # TempValues
+
+        # Parse all the fields like before
+        fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
         for i, f in enumerate(fs):
             if get_origin(f.type) is list:
                 (type_,) = get_args(f.type)
@@ -102,6 +106,11 @@ class DITemperatureReading(DIReading):
                     values[f.name] = first_value if transposed[i] else None
                 else:
                     assert values[f.name] == first_value, "Unexpected type"
+
+        # Extract decimal counts from raw strings
+        values["ValueDecimals"] = count_decimals_str(raw_value_strs[0])
+        values["TempDecimals"] = count_decimals_str(raw_temp_strs[0])
+
         return cls(**values)
 
     def __str__(self):

@@ -2,6 +2,7 @@
 import logging
 import socket
 import os
+from traceback import print_tb
 from . import Connection
 
 
@@ -26,8 +27,12 @@ class WLANConnection(Connection):
             logging.error(f"Error connecting to Additel device: {e}")
             raise e
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         """Close the connection to the Additel device."""
+        if exc_type is not None:
+            print(f"Exception type: {exc_type}")
+            print(f"Exception value: {exc_value}")
+            print_tb(traceback)
         if self.connection:
             self.connection.close()
             self.connection = None
