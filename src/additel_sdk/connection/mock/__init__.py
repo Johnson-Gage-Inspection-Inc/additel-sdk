@@ -60,9 +60,10 @@ class MockConnection(Connection):
 
         if self.use_wlan_fallback:
             try:
-                from ..wlan import WLANConnection
-
-                with WLANConnection(self.parent, ip=self.ip) as wlan_connection:
+                with Connection(self.parent,
+                                connection_type="wlan",
+                                ip=self.ip
+                                ) as wlan_connection:
                     if response := wlan_connection.cmd(last_command):
                         self.responses[last_command] = response
                         self.save_response(last_command, response)
