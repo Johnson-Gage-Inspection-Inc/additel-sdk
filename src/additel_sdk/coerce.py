@@ -1,7 +1,7 @@
 from .time import TimeTick
 from typing import List, Union
 import re
-import logging
+from json import loads
 
 
 def coerce(adt: Union[dict, str, list], map: dict = None):
@@ -24,28 +24,30 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
     def coerce_list(adt: list, map: dict):
         return [coerce(v, map) if isinstance(v, dict) else v for v in adt]
 
-    if isinstance(adt, list):
-        return coerce_list(adt, map)
-
-    adt = json(adt)  # Ensure it's a dictionary
-
     if not map:
         map = load_mapping()
 
-    if typeStr := adt.pop("$type", None):
-        ClassName = adt.pop("ClassName", None)  # noqa: F841
-        listIndicator = r"System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)"  # noqa: E501
-        if match := re.match(listIndicator, typeStr):
-            typ = List[map[match.group(1)]]
-            adt = adt["$values"]
-            return coerce_list(adt, map)
+    if isinstance(adt, list):
+        return coerce_list(adt, map)
 
-        typeStr = typeStr.split(",")[0]
-        typ = map.get(typeStr, None)
-        if typ is None:
-            raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
+    if isinstance(adt, str):
+        adt = loads(adt)
 
-        # Recursively coerce nested dictionaries:
+    typeStr = adt.pop("$type", None)
+    if not typeStr:
+        # Prevent an infinite loop by returning the dictionary if no type is specified
+        return adt
+
+    ClassName = adt.pop("ClassName", None)  # noqa: F841
+    listIndicator = r"System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)"  # noqa: E501
+    if match := re.match(listIndicator, typeStr):
+        typ = List[map[match.group(1)]]
+        adt = adt["$values"]
+        return coerce_list(adt, map)
+
+    typeStr0 = typeStr.split(",")[0]
+
+    if typ := map.get(typeStr0, None):
         for key, value in adt.items():
             if isinstance(value, dict):
                 adt[key] = coerce(value, map)
@@ -53,32 +55,7 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
                 adt[key] = [coerce(v, map) for v in value]
 
         return typ(**adt)  # Instantiate the type with the coerced dictionary
-
-    # If you made it this far, the dictionary was already coerced
-    # Prevent an infinite loop by returning the dictionary if no type is specified
-    return adt  # Return the already coerced dictionary
-
-
-def json(obj) -> dict:
-    """Coerce an object to a dictionary.
-
-    Args:
-        obj: A dictionary or JSON string.
-
-    Returns:
-        dict: The dictionary representation of the object.
-    """
-    if isinstance(obj, str):
-        from json import loads
-
-        try:
-            obj = loads(obj)
-        except ValueError:
-            logging.warning(f"Failed to parse JSON string: {obj}")
-            return obj
-    if isinstance(obj, dict):
-        return obj
-    raise NotImplementedError(f"Unsupported type for dictionary coercion: {type(obj)}")
+    raise TypeError(f"Type not found in mapping: {typeStr0}")
 
 
 def load_mapping():
