@@ -7,8 +7,8 @@
 from typing import List, Optional
 import json
 import logging
-from .channel import DIFunctionChannelConfig
-from .coerce import coerce
+from ..channel import DIFunctionChannelConfig
+from ..coerce import coerce
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
