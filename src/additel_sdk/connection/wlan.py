@@ -14,7 +14,6 @@ class WLANConnection(Connection):
         self.port = kwargs.pop("port", 8000)
         self.timeout = kwargs.pop("timeout", 1)
         self.connection = None
-        self.__enter__()
 
     def __enter__(self):
         """Establish a connection to the Additel device."""
