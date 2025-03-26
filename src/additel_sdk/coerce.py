@@ -63,20 +63,34 @@ def load_mapping():
 
     return {
         "System.Double": float,
-        "TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig": channel.DIFunctionVoltageChannelConfig,  # - 0: Voltage
-        "TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig": channel.DIFunctionCurrentChannelConfig,  # - 1: Current
-        "TAU.Module.Channels.DI.DIFunctionResistanceChannelConfig": channel.DIFunctionResistanceChannelConfig,  # - 2: Resistance
-        "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig": channel.DIFunctionRTDChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionThermistorChannelConfig": channel.DIFunctionThermistorChannelConfig,  # - 4: Thermistor
-        "TAU.Module.Channels.DI.DIFunctionTCChannelConfig": channel.DIFunctionTCChannelConfig,  # - 100: Thermocouple (TC)
-        "TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig": channel.DIFunctionSwitchChannelConfig,  # - 101: Switch
-        "TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig": channel.DIFunctionSPRTChannelConfig,  # - 102: SPRT
-        "TAU.Module.Channels.DI.DIFunctionVoltageTransmitterChannelConfig": channel.DIFunctionVoltageTransmitterChannelConfig,  # - 103: Voltage Transmitter
-        "TAU.Module.Channels.DI.DIFunctionCurrentTransmitterChannelConfig": channel.DIFunctionCurrentTransmitterChannelConfig,  # - 104: Current Transmitter
-        "TAU.Module.Channels.DI.DIFunctionStandardTCChannelConfig": channel.DIFunctionStandardTCChannelConfig,  # - 105: Standard TC
-        "TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig": channel.DIFunctionCustomRTDChannelConfig,  # - 106: Custom RTD
-        "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig": channel.DIFunctionStandardResistanceChannelConfig,  # - 110: Standard Resistance
-        "TAU.Module.Channels.DI.DIFunctionChannelConfig": channel.DIFunctionChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig":
+            channel.DIFunctionVoltageChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig":
+            channel.DIFunctionCurrentChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionResistanceChannelConfig":
+            channel.DIFunctionResistanceChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig":
+            channel.DIFunctionRTDChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionThermistorChannelConfig":
+            channel.DIFunctionThermistorChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionTCChannelConfig":
+            channel.DIFunctionTCChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig":
+            channel.DIFunctionSwitchChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig":
+            channel.DIFunctionSPRTChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionVoltageTransmitterChannelConfig":
+            channel.DIFunctionVoltageTransmitterChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionCurrentTransmitterChannelConfig":
+            channel.DIFunctionCurrentTransmitterChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionStandardTCChannelConfig":
+            channel.DIFunctionStandardTCChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig":
+            channel.DIFunctionCustomRTDChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig":
+            channel.DIFunctionStandardResistanceChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionChannelConfig":
+            channel.DIFunctionChannelConfig,
         "TAU.Module.Channels.DI.DIScanInfo": scan.DIScanInfo,
         "TAU.Module.Channels.DI.DIModuleInfo": module.DIModuleInfo,
         "TAU.Module.Channels.DI.DIReading": scan.DIReading,
