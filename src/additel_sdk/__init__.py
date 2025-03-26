@@ -53,30 +53,12 @@ class Additel:
 
     def send_command(self, command) -> None:
         """Send a command to the connected device and return the response."""
-        try:
-            if hasattr(self.connection, "send_command"):
-                self.connection.send_command(command)
-                self.commands.append(command)
-            else:
-                raise NotImplementedError(
-                    "The current connection type does not support sending commands."
-                )
-        except Exception as e:
-            logging.error(f"Error sending command '{command}': {e}")
-            raise
+        self.connection.send_command(command)
+        self.commands.append(command)
 
     def read_response(self) -> str:
         """Read the response from the connected device."""
-        try:
-            if hasattr(self.connection, "read_response"):
-                return self.connection.read_response()
-            else:
-                raise NotImplementedError(
-                    "The current connection type does not support reading responses."
-                )
-        except Exception as e:
-            logging.error(f"Error reading response: {e}")
-            raise
+        return self.connection.read_response()
 
     def cmd(self, command) -> str:
         self.send_command(command)
