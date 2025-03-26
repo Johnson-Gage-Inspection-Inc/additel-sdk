@@ -49,12 +49,3 @@ class WLANConnection(Connection):
         except Exception as e:
             logging.error(f"Error reading response: {e}")
             raise e
-
-    def cmd(self, command: str) -> str:
-        """Send a command to the connected device and return the response."""
-        try:
-            self.send_command(command)
-            return self.read_response()
-        except Exception as e:
-            logging.error(f"Error sending command '{command}': {e}")
-            raise e

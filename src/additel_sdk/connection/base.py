@@ -33,6 +33,16 @@ class Connection:
     def disconnect(self):
         raise NotImplementedError
 
+    def send_command(self, command):
+        raise NotImplementedError
+    
+    def read_response(self):
+        raise NotImplementedError
+
+    def cmd(self, command):
+        self.send_command(command)
+        return self.read_response()
+
     @classmethod
     def available_types(cls):
         return list(cls.registry.keys())

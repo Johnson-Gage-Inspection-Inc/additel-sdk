@@ -71,9 +71,6 @@ class MockConnection(Connection):
 
         return response
 
-    def cmd(self, command):
-        self.send_command(command)
-        return self.read_response()
 
     def _save_response(self, command, response):
         """Saves the command and response to the JSON file."""
