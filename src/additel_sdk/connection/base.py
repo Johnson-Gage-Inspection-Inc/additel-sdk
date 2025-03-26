@@ -27,10 +27,10 @@ class Connection:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def connect(self):
+    def __enter__(self):
         raise NotImplementedError
 
-    def disconnect(self):
+    def __exit__(self):
         raise NotImplementedError
 
     def send_command(self, command):

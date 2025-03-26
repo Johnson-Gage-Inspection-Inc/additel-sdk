@@ -18,7 +18,7 @@ class SerialConnection(Connection):
         if not self.port:
             raise ValueError("Serial port must be specified.")
 
-    def connect(self):
+    def __enter__(self):
         """Establish a serial connection to the device."""
         try:
             self.serial_port = serial.Serial(
@@ -33,7 +33,7 @@ class SerialConnection(Connection):
             msg = f"Failed to open serial port {self.port} - {e}"
             raise ConnectionError(msg) from e
 
-    def disconnect(self):
+    def __exit__(self):
         """Close the serial connection."""
         if self.serial_port and self.serial_port.is_open:
             try:

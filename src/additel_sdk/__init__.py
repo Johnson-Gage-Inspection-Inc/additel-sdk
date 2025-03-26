@@ -11,7 +11,7 @@ from .system import System
 # from .pattern import Pattern
 from .unit import Unit
 
-import logging
+from traceback import print_tb
 
 
 class Additel:
@@ -38,18 +38,15 @@ class Additel:
         self.commands = []
 
     def __enter__(self):
-        self.connection.connect()
+        self.connection.__enter__()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:
-            from traceback import print_tb
-            # Print the full exception traceback
             print(f"Exception type: {exc_type}")
             print(f"Exception value: {exc_value}")
-            print("Traceback:")
             print_tb(traceback)
-        self.connection.disconnect()
+        self.connection.__exit__()
 
     def send_command(self, command) -> None:
         """Send a command to the connected device and return the response."""

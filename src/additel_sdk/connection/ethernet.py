@@ -15,7 +15,7 @@ class EthernetConnection(Connection):
         if not self.ip_address:
             raise ValueError("IP address is required for Ethernet connection.")
 
-    def connect(self):
+    def __enter__(self):
         """Establish a socket connection to the device."""
         try:
             self.socket = socket.create_connection(
@@ -23,10 +23,10 @@ class EthernetConnection(Connection):
             )
         except socket.error as e:
             raise ConnectionError(
-                f"Failed to connect to {self.ip_address}:{self.port} - {e}"
+                f"Failed to __enter__ to {self.ip_address}:{self.port} - {e}"
             ) from e
 
-    def disconnect(self):
+    def __exit__(self):
         """Close the socket connection."""
         if self.socket:
             try:

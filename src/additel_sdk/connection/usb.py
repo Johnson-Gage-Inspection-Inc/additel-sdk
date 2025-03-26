@@ -28,7 +28,7 @@ class USBConnection(Connection):
             else None
         )
 
-    def connect(self):
+    def __enter__(self):
         """Establish connection to the USB device."""
         try:
             self.device = usb.core.find(
@@ -62,7 +62,7 @@ class USBConnection(Connection):
         except usb.core.USBError as e:
             raise ConnectionError(f"Failed to establish USB connection: {e}") from e
 
-    def disconnect(self):
+    def __exit__(self):
         """Release the USB device."""
         try:
             if self.device:

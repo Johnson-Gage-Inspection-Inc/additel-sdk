@@ -14,9 +14,9 @@ class WLANConnection(Connection):
         self.port = kwargs.pop("port", 8000)
         self.timeout = kwargs.pop("timeout", 1)
         self.connection = None
-        self.connect()
+        self.__enter__()
 
-    def connect(self):
+    def __enter__(self):
         """Establish a connection to the Additel device."""
         self.connection = None
         try:
@@ -27,7 +27,7 @@ class WLANConnection(Connection):
             logging.error(f"Error connecting to Additel device: {e}")
             raise e
 
-    def disconnect(self):
+    def __exit__(self):
         """Close the connection to the Additel device."""
         if self.connection:
             self.connection.close()
