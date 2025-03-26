@@ -1,4 +1,3 @@
-from .channel.DI.time import TimeTick
 from typing import List, Union
 import re
 import logging

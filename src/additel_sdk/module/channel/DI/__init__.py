@@ -1,30 +1,26 @@
 # DI/__init__.py
 
-from .DIFunctionChannelConfig import DIFunctionChannelConfig
-from .DIFunctionChannelConfig import DIFunctionCurrentChannelConfig
-from .DIFunctionChannelConfig import DIFunctionCurrentTransmitterChannelConfig
-from .DIFunctionChannelConfig import DIFunctionCustomRTDChannelConfig
-from .DIFunctionChannelConfig import DIFunctionRTDChannelConfig
-from .DIFunctionChannelConfig import DIFunctionResistanceChannelConfig
-from .DIFunctionChannelConfig import DIFunctionSPRTChannelConfig
-from .DIFunctionChannelConfig import DIFunctionStandardResistanceChannelConfig
-from .DIFunctionChannelConfig import DIFunctionStandardTCChannelConfig
-from .DIFunctionChannelConfig import DIFunctionSwitchChannelConfig
-from .DIFunctionChannelConfig import DIFunctionTCChannelConfig
-from .DIFunctionChannelConfig import DIFunctionThermistorChannelConfig
-from .DIFunctionChannelConfig import DIFunctionVoltageChannelConfig
-from .DIFunctionChannelConfig import DIFunctionVoltageTransmitterChannelConfig
-
-from .DIScanInfo import DIScanInfo
-
-from .DIReading import DIReading
-from .DIReading import DIElectricalReading
-from .DIReading import DITCReading
-from .DIReading import DITemperatureReading
-
-from .DIModuleInfo import DIModuleInfo
-
-from .time import TimeTick
+from .FunctionChannelConfig import DIFunctionChannelConfig
+from .FunctionChannelConfig import DIFunctionCurrentChannelConfig
+from .FunctionChannelConfig import DIFunctionCurrentTransmitterChannelConfig
+from .FunctionChannelConfig import DIFunctionCustomRTDChannelConfig
+from .FunctionChannelConfig import DIFunctionRTDChannelConfig
+from .FunctionChannelConfig import DIFunctionResistanceChannelConfig
+from .FunctionChannelConfig import DIFunctionSPRTChannelConfig
+from .FunctionChannelConfig import DIFunctionStandardResistanceChannelConfig
+from .FunctionChannelConfig import DIFunctionStandardTCChannelConfig
+from .FunctionChannelConfig import DIFunctionSwitchChannelConfig
+from .FunctionChannelConfig import DIFunctionTCChannelConfig
+from .FunctionChannelConfig import DIFunctionThermistorChannelConfig
+from .FunctionChannelConfig import DIFunctionVoltageChannelConfig
+from .FunctionChannelConfig import DIFunctionVoltageTransmitterChannelConfig
+from .ScanInfo import DIScanInfo
+from .Reading import DIReading
+from .Reading import DIElectricalReading
+from .Reading import DITCReading
+from .Reading import DITemperatureReading
+from .ModuleInfo import DIModuleInfo
+from .TimeTick import TimeTick
 
 __all__ = [
     "DIFunctionChannelConfig",

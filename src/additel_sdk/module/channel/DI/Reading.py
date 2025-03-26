@@ -1,5 +1,5 @@
 
-from .time import TimeTick
+from .TimeTick import TimeTick
 from dataclasses import dataclass, field, fields
 from typing import Optional, List, get_origin, get_args
 

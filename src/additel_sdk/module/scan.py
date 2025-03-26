@@ -75,7 +75,7 @@ class Scan:
                 Defaults to False.
 
         Returns:
-            DI.DIReading: An object containing the latest scanning data.
+            DIReading: An object containing the latest scanning data.
         """
         response = self.parent.cmd(f"SCAN:DATA:Last? {2 if longformat else 1}")
         # FIXME: We're assuming temperature data for now
