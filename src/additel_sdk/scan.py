@@ -240,8 +240,8 @@ class Scan:
         """
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
-            return coerce(response)[0]
-        return []
+            if readings := coerce(response):
+                return readings[0]
 
     def get_intelligent_wiring_data_json(
         self, count: int = 1
