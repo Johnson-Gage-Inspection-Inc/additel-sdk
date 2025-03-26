@@ -122,6 +122,9 @@ class DIScanInfo:
     NPLC: int
     ChannelName: str
 
+    def __post_init__(self):
+        Channel._validate_name(self.ChannelName)
+
     @classmethod
     def from_str(cls, data: str) -> "DIScanInfo":
         """Parse the scanning information from a string."""
@@ -136,23 +139,23 @@ class Scan:
     def __init__(self, parent: "Additel"):
         self.parent = parent
 
-    def start(self, scan_info: DIScanInfo) -> None:
+    def start(self, scan_info: DIScanInfo, measure=False) -> None:
         """Set the configuration and start scanning.
 
         This command configures the scanning parameters and starts the scan.
 
         Args:
-            params (str): A comma-separated string containing:
-                - NPLC (Number of Power Line Cycles)
-                - Sample work frequency cycle (100, 1000, or 4000)
-                - Channel name
+            scan_info (DIScanInfo): The scanning configuration.
+            measure (bool, optional): If True, the device will measure the data.
+                If False, the device will only scan. Defaults
         """
         logging.warning("This command has not been tested.")
         json_params = json.dumps(scan_info.__dict__)
-        command = f"JSON:SCAN:STARt {json_params}"
+        meas = "MEASure:" if measure else ""
+        command = f"JSON:{meas}SCAN:STARt {json_params}"
         self.parent.send_command(command)
 
-    def get_configuration_json(self) -> DIScanInfo:
+    def get_configuration_json(self, measure=False) -> DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -164,7 +167,8 @@ class Scan:
                 - NPLC value
                 - Channel name
         """
-        if response := self.parent.cmd("JSON:SCAN:STARt?"):
+        meas = "MEASure:" if measure else ""
+        if response := self.parent.cmd(meas + "JSON:SCAN:STARt?"):
             return coerce(response)
 
     def get_configuration(self) -> DIScanInfo:
@@ -184,10 +188,11 @@ class Scan:
             assert response == str(DIScanInfo.from_str(response)), "Unexpected response"
             return DIScanInfo.from_str(response)
 
-    def stop(self) -> None:
+    def stop(self, measure=False) -> None:
         """This command stops any active scanning process on the device."""
         logging.warning("This command has not been tested.")
-        self.parent.send_command("SCAN:STOP")
+        meas = "MEASure:" if measure else ""
+        self.parent.send_command(f"{meas}SCAN:STOP")
 
     def get_latest_data(self, longformat=True) -> DIReading:
         """Retrieves the latest scanning data for all active channels.
@@ -243,19 +248,24 @@ class Scan:
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
 
-    def start_multi_channel_scan(self, sampling_rate: int, channel_list: List[str]) -> None:
+    def start_multi_channel_scan(self,
+                                 channel_list: List[str],
+                                 sampling_rate: int = 1000,
+                                 measure: bool = False
+                                 ) -> None:
         """Start scanning for multiple channels.
         
         Args:
             sampling_rate (int): The sampling rate (e.g., 1000).
             channel_list (List[str]): List of channel names.
         """
+        meas = "MEASure:" if measure else ""
         channels = ",".join(channel_list)
-        command = f'SCAN:MULT:STARt {sampling_rate},"{channels}"'
+        command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
         self.parent.send_command(command)
 
     
-    def get_readings(self, n: int) -> List["DIReading"]:
+    def get_readings(self, desired_channels: List[str]) -> List["DIReading"]:
         """Start a multi-channel scan and return the last reading from each channel 
         in Channel.valid_names[1:n].
 
@@ -265,26 +275,10 @@ class Scan:
         Returns:
             List[DIReading]: A list of readings, one per channel.
         """
-        # Get the channels to be scanned (skip the first channel at index 0 if required)
-        desired_channels = Channel.valid_names[1:n]
-        # Start multi-channel scanning with an example sampling rate (e.g., 1000)
-        self.start_multi_channel_scan(1000, desired_channels)
+        self.start_multi_channel_scan(desired_channels)
         # Allow some time for the device to perform the scan
-        sleep(0.2)
+        sleep(0.2) 
+        self.stop()
         # Retrieve the latest scanning data.
-        # Expecting a response like: "CH1-01A,1281,1,tick,...;CH1-02A,1281,1,tick,...;"
-        response = self.parent.cmd("SCAN:DATA:Last?")
-        if not response:
-            return []
-        # Remove the surrounding quotes and trailing semicolon if present.
-        raw = response.strip('"')
-        readings = []
-        for part in raw.split(";"):
-            part = part.strip()
-            if part:
-                # Reconstruct a valid string for the from_str method.
-                reading_str = f'"{part};"'
-                reading = DITemperatureReading.from_str(reading_str)
-                if reading.ChannelName in desired_channels:
-                    readings.append(reading)
-        return readings
+        # FIXME
+        return [self.get_latest_data()]

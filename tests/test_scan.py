@@ -6,6 +6,7 @@ from typing import List, TYPE_CHECKING
 from datetime import datetime
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
+from src.additel_sdk.channel import Channel
 
 
 @pytest.fixture
@@ -84,8 +85,12 @@ def test_intelligent_wire(scan_fixture: Scan):
     intel_wire = scan_fixture.get_intelligent_wiring_data_json()
     assert isinstance(intel_wire, list), "Should return a list"
 
+@pytest.mark.skip(reason="Must be tested on device")
 def test_get_readings(scan_fixture: Scan):
     """Test retrieval of scan readings."""
-    readings = scan_fixture.get_readings(5)
+    desired_channels = Channel.valid_names[:5]
+    readings = scan_fixture.get_readings(desired_channels)
     assert isinstance(readings, List), "Should return a list"
     assert all(isinstance(r, DIReading) for r in readings), "All elements should be DIReading objects"
+    for i, channel in enumerate(desired_channels):
+        assert channel == readings[i].ChannelName, f"Channel {i} should be {channel}"
