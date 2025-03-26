@@ -18,14 +18,13 @@ def test_get_channel_config(device):
 def test_get_channel_config_json(device):
     """Test retrieval of channel configuration in JSON format."""
     chan = Channel(device)
-    config = chan.get_configuration_json(["REF1", "REF2"])
-    assert isinstance(config, list), "Config should be a list"
-    assert len(config) == 2, "Should return 2 configurations"
-    assert all(
-        isinstance(x, DIFunctionChannelConfig) for x in config
-    ), "Each config must be a DIFunctionChannelConfig object"
-    assert config[0].Name == "REF1", "First config should be for REF1"
-    assert config[1].Name == "REF2", "Second config should be for REF2"
+    configs = chan.get_configuration_json(Channel.valid_names)
+    assert isinstance(configs, list), "Config should be a list"
+    assert len(configs) == len(Channel.valid_names), "Should return 2 configurations"
+    for name, config in zip(Channel.valid_names, configs):
+        warning = "Config should be a DIFunctionChannelConfig object"
+        assert isinstance(config, DIFunctionChannelConfig), warning
+        assert name == config.Name, "Config name should match channel name"
 
 
 @pytest.mark.skip(reason="Not yet implemented")
