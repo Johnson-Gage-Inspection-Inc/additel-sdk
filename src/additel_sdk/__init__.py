@@ -46,7 +46,7 @@ class Additel:
             print(f"Exception type: {exc_type}")
             print(f"Exception value: {exc_value}")
             print_tb(traceback)
-        self.connection.__exit__()
+        self.connection.__exit__(exc_type, exc_value, traceback)
 
     def send_command(self, command) -> None:
         """Send a command to the connected device and return the response."""
