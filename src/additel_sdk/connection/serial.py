@@ -1,8 +1,10 @@
-import serial  # pip install pyserial
+import serial
+from . import Connection
 
 
-class SerialConnection:
+class SerialConnection(Connection):
     """Class to handle Serial connection to the device."""
+    type = "serial"
 
     def __init__(self, parent, **kwargs):
         self.port = kwargs.get("port")

@@ -15,6 +15,7 @@ def test_set_state_disable(bluetooth_fixture):
     bluetooth_fixture.set_state(False)
     assert bluetooth_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 0"
 
+@pytest.mark.skip(reason="Response not yet catured.")
 def test_get_state_true(bluetooth_fixture):
     state = bluetooth_fixture.get_state()
     assert state in [True, False], f"Expected True or False, got {state}"

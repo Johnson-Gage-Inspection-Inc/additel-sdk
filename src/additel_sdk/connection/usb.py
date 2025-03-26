@@ -2,10 +2,12 @@ import usb.core
 import usb.util
 from usb.backend import libusb1
 import logging
+from . import Connection
 
 
-class USBConnection:
+class USBConnection(Connection):
     """Class to handle USB connection to the device."""
+    type = "usb"
 
     def __init__(self, parent, **kwargs):
         self.vendor_id = kwargs.get("vendor_id")

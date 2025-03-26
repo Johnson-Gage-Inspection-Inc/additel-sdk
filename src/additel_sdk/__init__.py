@@ -21,7 +21,7 @@ class Additel:
 
     def __init__(self, connection_type="wlan", **kwargs):
         self.connection_type = connection_type
-        self.connection = Connection(self, connection_type, **kwargs)
+        self.connection = Connection(self, connection_type = self.connection_type, **kwargs)
 
         # Initialize the submodules
         self.Module = Module(self)
@@ -54,8 +54,8 @@ class Additel:
     def send_command(self, command) -> None:
         """Send a command to the connected device and return the response."""
         try:
-            if hasattr(self.connection.connection, "send_command"):
-                self.connection.connection.send_command(command)
+            if hasattr(self.connection, "send_command"):
+                self.connection.send_command(command)
                 self.commands.append(command)
             else:
                 raise NotImplementedError(
@@ -68,8 +68,8 @@ class Additel:
     def read_response(self) -> str:
         """Read the response from the connected device."""
         try:
-            if hasattr(self.connection.connection, "read_response"):
-                return self.connection.connection.read_response()
+            if hasattr(self.connection, "read_response"):
+                return self.connection.read_response()
             else:
                 raise NotImplementedError(
                     "The current connection type does not support reading responses."

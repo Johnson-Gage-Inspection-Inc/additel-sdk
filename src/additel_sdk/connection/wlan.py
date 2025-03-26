@@ -1,15 +1,19 @@
 # Connection class for Additel devices over WLAN.
 import logging
 import socket
+import os
+from . import Connection
 
 
-class WLANConnection:
-    def __init__(self, parent, ip: str, **kwargs):
-        self.ip = ip
-        self.port: int = kwargs.pop("port", 8000)
-        self.timeout: int = kwargs.pop("timeout", 1)
-        if unused_kwargs := set(kwargs.keys()):
-            raise ValueError(f"Unused keyword arguments: {unused_kwargs}")
+class WLANConnection(Connection):
+    type = "wlan"
+
+    def __init__(self, parent, **kwargs):
+        self.parent = parent
+        self.ip = kwargs.pop("ip", os.environ.get("ADDITEL_IP"))
+        self.port = kwargs.pop("port", 8000)
+        self.timeout = kwargs.pop("timeout", 1)
+        self.connection = None
         self.connect()
 
     def connect(self):

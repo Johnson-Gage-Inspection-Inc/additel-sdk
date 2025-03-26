@@ -1,23 +1,24 @@
 import json
-from .wlan import WLANConnection
 import logging
+from . import Connection
 
 
-class MockConnection:
+class MockConnection(Connection):
     """A mock connection class for testing purposes.
 
     This connection type uses pre-defined responses from a JSON file to simulate
     device behavior without requiring an actual physical connection.
     """
+    type = "mock"
 
-    def __init__(self, parent, response_file, ip=None, use_wlan_fallback=False):
+    def __init__(self, parent, **kwargs):
         self.parent = parent
-        self.response_file = response_file
+        self.response_file = kwargs.pop("response_file")
         self.connected = False
         self._responses = {}
         self.wlan_connection = None  # Initialize wlan_connection
-        self.ip = ip  # Store the IP address
-        self.use_wlan_fallback = use_wlan_fallback
+        self.ip = kwargs.pop("ip", None)
+        self.use_wlan_fallback = kwargs.pop("use_wlan_fallback")
 
     def connect(self):
         """Simulates connecting to the device."""
@@ -32,6 +33,7 @@ class MockConnection:
 
         # If IP is provided, initialize WLAN connection for fallback
         if self.ip and self.use_wlan_fallback:
+            from .wlan import WLANConnection
             try:
                 self.wlan_connection = WLANConnection(self.parent, ip=self.ip)
             except Exception as e:

@@ -1,10 +1,12 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
 from queue import Queue, Empty
+from . import Connection
 
 
-class BluetoothConnection:
+class BluetoothConnection(Connection):
     """Class to handle Bluetooth connection to the device."""
+    type = "bluetooth"
 
     def __init__(self, parent, **kwargs):
         self.device_name = kwargs.get("device_name")

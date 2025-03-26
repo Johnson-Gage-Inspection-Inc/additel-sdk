@@ -1,8 +1,10 @@
 import socket
+from . import Connection
 
 
-class EthernetConnection:
+class EthernetConnection(Connection):
     """Class to handle Ethernet connection to the device."""
+    type = "ethernet"
 
     def __init__(self, parent, **kwargs):
         self.ip_address = kwargs.get("ip")
