@@ -83,3 +83,9 @@ def test_intelligent_wire(scan_fixture: Scan):
     """Test intelligent wiring data retrieval."""
     intel_wire = scan_fixture.get_intelligent_wiring_data_json()
     assert isinstance(intel_wire, list), "Should return a list"
+
+def test_get_readings(scan_fixture: Scan):
+    """Test retrieval of scan readings."""
+    readings = scan_fixture.get_readings(5)
+    assert isinstance(readings, List), "Should return a list"
+    assert all(isinstance(r, DIReading) for r in readings), "All elements should be DIReading objects"

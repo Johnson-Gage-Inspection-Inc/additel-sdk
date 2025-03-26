@@ -9,7 +9,7 @@ import json
 import logging
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
-
+from time import sleep
 
 def count_decimals(value: float) -> int:
     """Return the number of decimals for a float value."""
@@ -242,3 +242,49 @@ class Scan:
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
+
+    def start_multi_channel_scan(self, sampling_rate: int, channel_list: List[str]) -> None:
+        """Start scanning for multiple channels.
+        
+        Args:
+            sampling_rate (int): The sampling rate (e.g., 1000).
+            channel_list (List[str]): List of channel names.
+        """
+        channels = ",".join(channel_list)
+        command = f'SCAN:MULT:STARt {sampling_rate},"{channels}"'
+        self.parent.send_command(command)
+
+    
+    def get_readings(self, n: int) -> List["DIReading"]:
+        """Start a multi-channel scan and return the last reading from each channel 
+        in Channel.valid_names[1:n].
+
+        Args:
+            n (int): Upper bound index (non-inclusive) in Channel.valid_names.
+
+        Returns:
+            List[DIReading]: A list of readings, one per channel.
+        """
+        # Get the channels to be scanned (skip the first channel at index 0 if required)
+        desired_channels = Channel.valid_names[1:n]
+        # Start multi-channel scanning with an example sampling rate (e.g., 1000)
+        self.start_multi_channel_scan(1000, desired_channels)
+        # Allow some time for the device to perform the scan
+        sleep(0.2)
+        # Retrieve the latest scanning data.
+        # Expecting a response like: "CH1-01A,1281,1,tick,...;CH1-02A,1281,1,tick,...;"
+        response = self.parent.cmd("SCAN:DATA:Last?")
+        if not response:
+            return []
+        # Remove the surrounding quotes and trailing semicolon if present.
+        raw = response.strip('"')
+        readings = []
+        for part in raw.split(";"):
+            part = part.strip()
+            if part:
+                # Reconstruct a valid string for the from_str method.
+                reading_str = f'"{part};"'
+                reading = DITemperatureReading.from_str(reading_str)
+                if reading.ChannelName in desired_channels:
+                    readings.append(reading)
+        return readings
