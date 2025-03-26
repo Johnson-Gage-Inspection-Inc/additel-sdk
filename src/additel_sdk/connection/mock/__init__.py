@@ -21,7 +21,7 @@ class MockConnection(Connection):
     def __init__(self, parent: "Additel", **kwargs):
         self.parent = parent
         self.connected = False
-        self.ip = kwargs.pop("ip", None)
+        self.ip = kwargs.pop("ip", os.environ.get("ADDITEL_IP"))
         self.use_wlan_fallback = kwargs.pop("use_wlan_fallback")
 
     def __enter__(self):
@@ -45,6 +45,7 @@ class MockConnection(Connection):
 
     def read_response(self) -> str:
         """Returns the pre-defined or fallback response for the last command."""
+        
         last_command = self.parent.commands[-1]
         if last_command == "SYSTem:DATE?":
             from datetime import date
