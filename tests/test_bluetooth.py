@@ -11,7 +11,7 @@ def bluetooth_fixture(device) -> Bluetooth:
 def test_set_state_enable(bluetooth_fixture):
     bluetooth_fixture.set_state(True)
     assert (
-        bluetooth_fixture.parent.commands[-1]
+        bluetooth_fixture.parent.command_log[-1]
         == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 1"
     )
 
@@ -20,7 +20,7 @@ def test_set_state_enable(bluetooth_fixture):
 def test_set_state_disable(bluetooth_fixture):
     bluetooth_fixture.set_state(False)
     assert (
-        bluetooth_fixture.parent.commands[-1]
+        bluetooth_fixture.parent.command_log[-1]
         == "SYSTem:COMMunicate:SOCKet:BLUetooth:STATe 0"
     )
 

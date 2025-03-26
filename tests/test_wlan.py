@@ -9,9 +9,9 @@ def wlan_fixture(device) -> WLAN:
 
 def test_set_state(wlan_fixture: WLAN):
     wlan_fixture.set_state(True)
-    assert wlan_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:STATe 1"
+    assert wlan_fixture.parent.command_log[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:STATe 1"
     wlan_fixture.set_state(False)
-    assert wlan_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:STATe 0"
+    assert wlan_fixture.parent.command_log[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:STATe 0"
 
 
 def test_get_state_success(wlan_fixture: WLAN):
@@ -39,7 +39,7 @@ def test_set_ip(wlan_fixture: WLAN):
     ip_address = "192.168.1.223"
     wlan_fixture.set_ip(ip_address)
     assert (
-        wlan_fixture.parent.commands[-1]
+        wlan_fixture.parent.command_log[-1]
         == f"SYSTem:COMMunicate:SOCKet:WLAN:ADDRess {ip_address}"
     )
 
@@ -66,7 +66,7 @@ def test_set_subnet_mask(wlan_fixture: WLAN):
         f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"
     )
     assert (
-        wlan_fixture.parent.commands[-1]
+        wlan_fixture.parent.command_log[-1]
         == f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"
     )
 
@@ -93,7 +93,7 @@ def test_set_gateway(wlan_fixture: WLAN):
         f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {gateway}"
     )
     assert (
-        wlan_fixture.parent.commands[-1]
+        wlan_fixture.parent.command_log[-1]
         == f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {gateway}"
     )
 
@@ -132,9 +132,9 @@ def test_get_mac_no_response(wlan_fixture: WLAN):
 
 def test_set_dhcp(wlan_fixture: WLAN):
     wlan_fixture.set_dhcp(True)
-    assert wlan_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:DHCP 1"
+    assert wlan_fixture.parent.command_log[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:DHCP 1"
     wlan_fixture.set_dhcp(False)
-    assert wlan_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:DHCP 0"
+    assert wlan_fixture.parent.command_log[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:DHCP 0"
 
 
 def test_get_dhcp_success(wlan_fixture: WLAN):
@@ -161,7 +161,7 @@ def test_set_ssid_success(wlan_fixture: WLAN):
     ssid = "MyWiFi"
     wlan_fixture.parent.send_command(f"SYSTem:COMMunicate:SOCKet:WLAN:SSID {ssid}")
     assert (
-        wlan_fixture.parent.commands[-1]
+        wlan_fixture.parent.command_log[-1]
         == f"SYSTem:COMMunicate:SOCKet:WLAN:SSID {ssid}"
     )
 
@@ -173,7 +173,7 @@ def test_connect_with_password(wlan_fixture: WLAN):
         f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
     )
     assert (
-        wlan_fixture.parent.commands[-1]
+        wlan_fixture.parent.command_log[-1]
         == f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
     )
 
@@ -183,7 +183,7 @@ def test_connect_without_password(wlan_fixture: WLAN):
     wlan_fixture.connect(ssid)
     wlan_fixture.parent.send_command(f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid}")
     assert (
-        wlan_fixture.parent.commands[-1]
+        wlan_fixture.parent.command_log[-1]
         == f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid}"
     )
 
@@ -207,7 +207,7 @@ def test_get_connection_no_response(wlan_fixture: WLAN):
 def test_disconnect(wlan_fixture: WLAN):
     wlan_fixture.disconnect()
     assert (
-        wlan_fixture.parent.commands[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:DISConnect"
+        wlan_fixture.parent.command_log[-1] == "SYSTem:COMMunicate:SOCKet:WLAN:DISConnect"
     )
 
 

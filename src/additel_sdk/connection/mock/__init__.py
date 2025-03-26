@@ -1,7 +1,6 @@
 # connection/mock/__init__.py
 
 import json
-import logging
 from ..base import Connection
 import os
 from typing import TYPE_CHECKING
@@ -49,7 +48,7 @@ class MockConnection(Connection):
     def read_response(self) -> str:
         """Returns the pre-defined or fallback response for the last command."""
 
-        last_command = self.parent.commands[-1]
+        last_command = self.parent.command_log[-1]
         if last_command == "SYSTem:DATE?":
             from datetime import date
 
@@ -59,18 +58,14 @@ class MockConnection(Connection):
             return response
 
         if self.use_wlan_fallback:
-            try:
-                with Connection(self.parent,
-                                connection_type="wlan",
-                                ip=self.ip
-                                ) as wlan_connection:
-                    if response := wlan_connection.cmd(last_command):
-                        self.responses[last_command] = response
-                        self.save_response(last_command, response)
-                        return response
-            except Exception as e:
-                logging.warning(f"WLAN fallback failed: {e}")
-                return None
+            with Connection(self.parent,
+                            connection_type="wlan",
+                            ip=self.ip
+                            ) as wlan_connection:
+                if response := wlan_connection.cmd(last_command):
+                    self.responses[last_command] = response
+                    self.save_response(last_command, response)
+                    return response
 
     @classmethod
     def save_response(cls, command, response):
