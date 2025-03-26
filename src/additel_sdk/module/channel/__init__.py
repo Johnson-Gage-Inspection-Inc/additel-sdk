@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field, fields, MISSING
-from typing import List, Optional, Type, Union
-from .coerce import coerce
-from typing import get_origin, get_args, TYPE_CHECKING
+from typing import List, Optional, Type, Union, get_origin, get_args, TYPE_CHECKING
+from ..coerce import coerce
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
