@@ -6,7 +6,7 @@ import pytest
 from src.additel_sdk import Additel
 from src.additel_sdk.module.channel import Channel, DIFunctionChannelConfig
 from src.additel_sdk.module import Module
-from src.additel_sdk.scan import Scan, DIScanInfo
+from src.additel_sdk.module.scan import Scan, DIScanInfo
 from typing import List
 
 # Add the project root directory to Python path

@@ -1,7 +1,7 @@
 """Tests for the device SDK Scan functionality."""
 
 import pytest
-from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
+from src.additel_sdk.module.scan import DIScanInfo, DIReading, Scan
 from datetime import datetime
 
 

@@ -1,6 +1,6 @@
 # __init__.py - Base class for Additel SDK.
 from .module import Module
-from .scan import Scan
+from .module.scan import Scan
 from .module.channel import Channel
 from .connection import Connection
 

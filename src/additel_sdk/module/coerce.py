@@ -83,7 +83,7 @@ def json(obj) -> dict:
 
 def load_mapping():
     from . import channel, DIModuleInfo
-    from .. import scan
+    from . import scan
 
     return {
         "System.Double": float,

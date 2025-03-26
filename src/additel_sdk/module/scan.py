@@ -1,8 +1,8 @@
 # scan.py - This file contains the class for the Scan commands.
 
-from .module.coerce import coerce
-from .module.channel import Channel
-from .module.time import TimeTick
+from .coerce import coerce
+from .channel import Channel
+from .time import TimeTick
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
 import json
