@@ -32,3 +32,7 @@ class Connection:
 
     def disconnect(self):
         raise NotImplementedError
+
+    @classmethod
+    def available_types(cls):
+        return list(cls.registry.keys())
