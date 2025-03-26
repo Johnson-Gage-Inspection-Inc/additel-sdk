@@ -123,7 +123,7 @@ class DIScanInfo:
     ChannelName: str
 
     def __post_init__(self):
-        Channel._validate_name(self.ChannelName)
+        Channel.validate_name(self.ChannelName)
 
     @classmethod
     def from_str(cls, data: str) -> "DIScanInfo":
