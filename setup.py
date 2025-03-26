@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pyAdditel",
-    use_scm_version=True,  # Automatically sets version from Git tags.
+    use_scm_version=True,
     author="Jeff Hall",
     author_email="rhythmatician5@gmail.com",
     description="A Python SDK to communicate with Additel devices",
@@ -16,7 +16,7 @@ setuptools.setup(
     package_dir={"": "src"},
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",  # or your chosen license
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
