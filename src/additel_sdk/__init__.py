@@ -1,18 +1,36 @@
 # __init__.py - Base class for Additel SDK.
+import logging
+from traceback import print_tb
+
 from .module import Module
 from .scan import Scan
 from .channel import Channel
 from .connection import Connection
-
 # from .calibration import Calibration
 from .system import System
-
 # from .program import Program
 # from .display import Display, Diagnostic
 # from .pattern import Pattern
 from .unit import Unit
+from .errors import AdditelError
 
-from traceback import print_tb
+
+class ConnectionTypeFilter(logging.Filter):
+    def __init__(self, conn_type):
+        super().__init__()
+        self.conn_type = conn_type
+
+    def filter(self, record):
+        record.connection_type = self.conn_type
+        return True
+
+
+logging.basicConfig(
+    filename="additel.log",
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] (%(connection_type)s) %(message)s',
+    force=True
+)
 
 
 class Additel:
@@ -21,6 +39,9 @@ class Additel:
     """
 
     def __init__(self, connection_type="wlan", **kwargs):
+        _logger = logging.getLogger()
+        if not any(isinstance(f, ConnectionTypeFilter) for f in _logger.filters):
+            _logger.addFilter(ConnectionTypeFilter(connection_type))
         self.connection = Connection(self, connection_type=connection_type, **kwargs)
 
         # Initialize the submodules
@@ -35,7 +56,8 @@ class Additel:
         # self.Pattern = Pattern(self)
         self.Unit = Unit(self)
 
-        self.commands = []
+        self.command_log = []
+        logging.debug(f"Additel initialized with connection type: {connection_type}")
 
     def __enter__(self):
         self.connection.__enter__()
@@ -51,11 +73,20 @@ class Additel:
     def send_command(self, command) -> None:
         """Send a command to the connected device and return the response."""
         self.connection.send_command(command)
-        self.commands.append(command)
+        self.command_log.append(command)
+        logging.info(f"Command: {command}")
 
     def read_response(self) -> str:
-        """Read the response from the connected device."""
-        return self.connection.read_response()
+        try:
+            response = self.connection.read_response()
+            logging.info(f"Response: {response}")
+            return response
+        except TimeoutError as e:
+            try:
+                raise AdditelError(**self.System.get_error()) from e
+            except Exception as nested:
+                msg = "Failed to retrieve error details after timeout."
+                raise RuntimeError(msg) from nested
 
     def cmd(self, command) -> str:
         self.send_command(command)
