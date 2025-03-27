@@ -44,6 +44,7 @@ class MockConnection:
         self.connected = False
         if self.wlan_connection:
             self.wlan_connection.disconnect()
+            self.wlan_connection = None
 
     def send_command(self, command: str) -> None:
         """Stores the command to be processed by read_response."""
