@@ -3,7 +3,6 @@
 import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 from typing import List, TYPE_CHECKING
-from datetime import datetime
 from time import sleep
 from conftest import use_wlan, use_wlan_fallback
 
@@ -53,36 +52,13 @@ def test_get_latest_data(scan_fixture: Scan):
 def test_scan_consistency(scan_fixture: Scan):
     """Test consistency between scan data retrieval methods."""
     # Get data using both methods
-    data_json = scan_fixture.get_data_json(1)
+    [data_json] = scan_fixture.get_data_json(1)
     data_latest = scan_fixture.get_latest_data()
 
     # Compare the two data objects
     assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
     assert isinstance(data_json, DIReading), "JSON data must be a DIReading object"
-    for k in data_latest.__dict__.keys():
-        if getattr(data_latest, k) == getattr(data_json, k):
-            continue
-        elif isinstance(getattr(data_latest, k), list) and isinstance(
-            getattr(data_json, k), list
-        ):
-            for i in range(len(getattr(data_latest, k))):
-                if getattr(data_latest, k)[i] == getattr(data_json, k)[i]:
-                    continue
-                assert isinstance(
-                    getattr(data_latest, k)[i], type(getattr(data_json, k)[i])
-                ), "List values should be the same type"
-                type_ = type(getattr(data_latest, k)[i])
-                if type_ is float:
-                    assert (
-                        abs(getattr(data_latest, k)[i] - getattr(data_json, k)[i])
-                        < 0.01
-                    ), "List values should be close"
-                elif type_ is datetime:
-                    assert (
-                        getattr(data_latest, k)[i] - getattr(data_json, k)[i]
-                    ).total_seconds() < 3, "List values should be close"
-            continue
-        raise ValueError(f"Key {k} values do not match between data objects")
+    assert str(data_latest) == str(data_json), "Data should match"
 
 
 def test_intelligent_wire(scan_fixture: Scan):
