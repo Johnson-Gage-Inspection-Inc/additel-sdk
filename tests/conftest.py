@@ -108,6 +108,5 @@ def use_wlan(device: "Additel") -> bool:
 @pytest.fixture
 def use_wlan_fallback(device: "Additel") -> bool:
     """Fixture to determine if WLAN is in use."""
-    if hasattr(device.connection, "wlan_connection"):
-        return bool(device.connection.wlan_connection)
-    return False
+    return bool(getattr(device.connection, "use_wlan_fallback", False))
+
