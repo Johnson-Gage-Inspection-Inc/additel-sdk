@@ -1,6 +1,7 @@
 # __init__.py - Base class for Additel SDK.
 import logging
 from traceback import print_tb
+from time import time, sleep
 
 from .module import Module
 from .scan import Scan
@@ -76,6 +77,10 @@ class Additel:
         self.connection.send_command(command.strip())
         self.command_log.append(command)
         logging.info(f"Command: {command}")
+        self.wait_for_operation_complete()
+        error = self.System.get_error()
+        if error.error_code != 0:
+            raise AdditelError(**error)
 
     def read_response(self) -> str:
         try:
@@ -136,6 +141,32 @@ class Additel:
         This command resets the device's main software, reinitializing its state.
         """
         self.send_command("*RST")
+
+    def wait_for_operation_complete(self, timeout=30):
+        """Wait for the *OPC? command to return '1' indicating completion.
+
+        Args:
+            timeout (int): Maximum time (in seconds) to wait for completion.
+
+        Raises:
+            TimeoutError: If the operation does not complete before timing out.
+        """
+        start_time = time()
+        while time() - start_time < timeout:
+            response = self.opc()
+            if response == '1':
+                logging.info("Operation complete.")
+                return True
+            sleep(1)  # Wait for 1 second before retrying
+        raise TimeoutError("Operation did not complete within the timeout period.")
+
+    def opc(self) -> str:
+        """Send an operation complete query (*OPC?) and return the response.
+
+        Returns:
+            str: The response to the *OPC? command, usually "1" if operations complete.
+        """
+        return self.cmd("*OPC?")
 
     # Not in the manual:
     def get_event_status_enable(self) -> dict:
