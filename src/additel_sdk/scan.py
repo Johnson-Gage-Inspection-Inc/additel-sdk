@@ -1,17 +1,17 @@
 # scan.py - This file contains the class for the Scan commands.
 
+from .channel import Channel
 from .coerce import coerce
 from .registry import register_type
-from .channel import Channel
 from .time import TimeTick
 from contextlib import contextmanager
 from dataclasses import dataclass, field, fields
+from time import sleep
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
 import logging
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
-from time import sleep
 
 
 def count_decimals_str(value: str) -> int:
