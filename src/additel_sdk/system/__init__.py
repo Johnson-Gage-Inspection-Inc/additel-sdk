@@ -1,6 +1,6 @@
 # system.py = This file contains the class for the System commands.
 from datetime import date
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from .communicate import Communicate
 from .password import Password
 import logging
@@ -65,8 +65,7 @@ class System:
             month (int): Month to set (1-12).
             day (int): Day to set (1-31).
         """
-        command = f"SYSTem:DATE {year},{month},{day}"
-        self.parent.send_command(command)
+        self.parent.send_command(f"SYSTem:DATE {year},{month},{day}")
 
     # 1.4.4
     def get_date(self) -> date:
@@ -94,8 +93,7 @@ class System:
             minute (int): Minute to set (0-59).
             second (int): Second to set (0-59).
         """
-        command = f"SYSTem:TIME {hour},{minute},{second}"
-        self.parent.send_command(command)
+        self.parent.send_command(f"SYSTem:TIME {hour},{minute},{second}")
 
     # 1.4.6
     def set_local_lock(self, lock: bool) -> None:
@@ -105,10 +103,9 @@ class System:
             SYSTem:KLOCk <Boolean>|ON|OFF
 
         Args:
-            lock (bool): Set to True to lock the system (ON) or False to unlock it (OFF).
+            lock (bool): Set to True to lock the system (ON) or False to unlock it (OFF)
         """
-        command = f"SYSTem:KLOCk {int(lock)}"
-        self.parent.send_command(command)
+        self.parent.send_command(f"SYSTem:KLOCk {int(lock)}")
 
     # 1.4.7
     def get_local_lock(self) -> bool:
@@ -119,8 +116,7 @@ class System:
         Returns:
             bool: True if the system is locked (ON), False if unlocked (OFF).
         """
-        response = self.parent.cmd("SYSTem:KLOCk?")
-        if response:
+        if response := self.parent.cmd("SYSTem:KLOCk?"):
             return bool(response.strip())
         raise ValueError("No lock state information returned.")
 
@@ -132,10 +128,10 @@ class System:
             SYSTem:BEEPer:ALARm <Boolean>|ON|OFF
 
         Args:
-            enable (bool): Set to True to enable the warning tone (ON) or False to disable it (OFF).
+            enable (bool): Set to True to enable the warning tone (ON) or False to
+                           disable it (OFF).
         """
-        command = f"SYSTem:BEEPer:ALARm {int(enable)}"
-        self.parent.send_command(command)
+        self.parent.send_command(f"SYSTem:BEEPer:ALARm {int(enable)}")
 
     # 1.4.9
     def set_keypad_tone(self, enable: bool) -> None:
@@ -145,7 +141,8 @@ class System:
             SYSTem:BEEPer:TOUCh <Boolean>|ON|OFF
 
         Args:
-            enable (bool): Set to True to enable the keypad tone (ON) or False to disable it (OFF).
+            enable (bool): Set to True to enable the keypad tone (ON) or False to
+                           disable it (OFF).
         """
         command = f"SYSTem:BEEPer:TOUCh {int(enable)}"
         self.parent.send_command(command)
