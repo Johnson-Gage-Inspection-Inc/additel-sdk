@@ -111,3 +111,11 @@ def test_get_configuration(scan_fixture: Scan):
 def test_get_configuration_json(scan_fixture: Scan):
     config = scan_fixture.get_configuration_json()
     assert isinstance(config, DIScanInfo), "Config should be a DIScanInfo object"
+
+
+def test_start_command(scan_fixture: Scan):
+    scan_info = DIScanInfo(NPLC=1000, ChannelName="REF1")
+    scan_fixture.start(scan_info)
+    expected_command = f"SCAN:STARt {scan_info}"
+    assert scan_fixture.parent.command_log[-1] == expected_command, \
+        "The sent command should match the expected format."
