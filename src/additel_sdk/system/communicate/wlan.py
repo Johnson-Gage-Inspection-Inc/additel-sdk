@@ -200,7 +200,7 @@ class WLAN:
 
         Args:
             ssid (str): hot spot name, the character string with quotation
-            password (str, optional): password of the hot spot, the character string with quotation
+            password (str, optional): password of the hot spot, the character string
 
         Returns:
             Successfully,
@@ -215,7 +215,7 @@ class WLAN:
         if password is None:
             command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid}"
         else:
-            command = f"SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},{password}"
+            command = f'SYSTem:COMMunicate:SOCKet:WLAN:CONNect {ssid},"{password}"'
         if response := self.parent.cmd(command):
             logging.info(response.strip())
 
