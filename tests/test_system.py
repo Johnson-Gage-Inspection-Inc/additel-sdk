@@ -20,10 +20,22 @@ def test_get_version_no_module(system: System, device: "Additel"):
     assert result == expected
     assert device.command_log[-1] == "SYSTem:VERSion?"
 
-
-def test_get_version_with_module(system: System, device: "Additel"):
-    result = system.get_version("APPLication")
-    expected = {"Application": "v1.2"}
+@pytest.mark.parametrize("module,expected", [
+    ("APPLication", None),
+    ("ElECtricity:FIRMware", {"Electricity": "v1.2"}),
+    ("ElECtricity:HARDware", {"Electricity": "v1.2"}),
+    ("OS:FIRMware", {"OS": "v1.2"}),
+    ("OS:HARDware", {"OS": "v1.2"}),
+    ("JUNCtion:HARDware", {"Junction": "v1.2"}),
+    ("JUNCtion:FIRMware", {"Junction": "v1.2"}),
+])
+def test_get_version_with_module(
+        system: System,
+        device: "Additel",
+        module: str,
+        expected: str
+    ):
+    result = system.get_version(module)
     assert result == expected
     assert device.command_log[-1] == "SYSTem:VERSion? APPLication"
 
