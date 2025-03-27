@@ -147,6 +147,7 @@
     "SYSTem:ERRor:NEXT?": "-110,\"Command header error;SYSTem:COMMunicate:SOCKet:WLAN:SSID?ALL\"",
     "SYSTem:ERRor?": "-221,\"Settings conflict;SYSTem:COMMunicate:SOCKet:WLAN:SSID? ALL\"",
     "SYSTem:KLOCk?": "0",
+    "SYSTem:VERSion?": "1999.0",
     "SYSTem:PASSword:ENABle:SENSor?": "0",
     "UNIT:TEMPerature?": "\u00b0F,1002"
 }
