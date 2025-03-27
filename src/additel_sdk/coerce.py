@@ -1,4 +1,3 @@
-from .time import TimeTick
 from typing import List, Union, Any
 import re
 from json import loads
@@ -25,7 +24,7 @@ def coerce(adt: Union[dict, str, list]) -> Any:
         return [coerce(v) if isinstance(v, dict) else v for v in adt]
 
     if isinstance(adt, list):
-        return coerce_list(adt, TYPE_REGISTRY)
+        return coerce_list(adt)
 
     if isinstance(adt, str):
         adt = loads(adt)
@@ -58,46 +57,3 @@ def coerce(adt: Union[dict, str, list]) -> Any:
 
         return typ(**adt)  # Instantiate the type with the coerced dictionary
     raise TypeError(f"Type not found in mapping: {typeStr0}")
-
-
-def load_mapping():
-    from . import channel, module, scan
-
-    return {
-        "System.Double": float,
-        "TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig":
-            channel.DIFunctionVoltageChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig":
-            channel.DIFunctionCurrentChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionResistanceChannelConfig":
-            channel.DIFunctionResistanceChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig":
-            channel.DIFunctionRTDChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionThermistorChannelConfig":
-            channel.DIFunctionThermistorChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionTCChannelConfig":
-            channel.DIFunctionTCChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig":
-            channel.DIFunctionSwitchChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig":
-            channel.DIFunctionSPRTChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionVoltageTransmitterChannelConfig":
-            channel.DIFunctionVoltageTransmitterChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionCurrentTransmitterChannelConfig":
-            channel.DIFunctionCurrentTransmitterChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionStandardTCChannelConfig":
-            channel.DIFunctionStandardTCChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig":
-            channel.DIFunctionCustomRTDChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig":
-            channel.DIFunctionStandardResistanceChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionChannelConfig":
-            channel.DIFunctionChannelConfig,
-        "TAU.Module.Channels.DI.DIScanInfo": scan.DIScanInfo,
-        "TAU.Module.Channels.DI.DIModuleInfo": module.DIModuleInfo,
-        "TAU.Module.Channels.DI.DIReading": scan.DIReading,
-        "TAU.Module.Channels.DI.DITemperatureReading": scan.DITemperatureReading,
-        "TAU.Module.Channels.DI.DIElectricalReading": scan.DIElectricalReading,
-        "TAU.Module.Channels.DI.DITCReading": scan.DITCReading,
-        "TAU.Module.Channels.DI.TimeTick": TimeTick,
-    }
