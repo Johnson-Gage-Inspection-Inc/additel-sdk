@@ -298,7 +298,7 @@ class Channel:
 
     @classmethod
     def validate_name(cls, name):
-        if name not in cls.valid_names:
+        if name and name not in cls.valid_names:
             raise ValueError(f"Invalid channel name: {name}")
 
     def get_configuration_json(
