@@ -124,7 +124,7 @@ class Additel:
         """
         psn, svn = self.cmd("*IDN?").split(",")
         return {
-            "Product Sequence Number": int(psn[1:-1]),
+            "Product Sequence Number": psn[1:-1],
             "Software Version Number": svn,
         }
 

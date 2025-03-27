@@ -13,7 +13,7 @@ def test_identify(device: "Additel"):
     """Test device identification functionality."""
     identity = device.identify()
     assert identity == {
-        'Product Sequence Number': 685022040027,
+        'Product Sequence Number': '685022040027',
         'Software Version Number': 'TAU-HOST 1.1.1.0'
         }, "Identity must be correct"
 
