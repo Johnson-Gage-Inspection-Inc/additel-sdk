@@ -70,9 +70,9 @@ class Additel:
             print_tb(traceback)
         self.connection.__exit__(exc_type, exc_value, traceback)
 
-    def send_command(self, command) -> None:
+    def send_command(self, command: str) -> None:
         """Send a command to the connected device and return the response."""
-        self.connection.send_command(command)
+        self.connection.send_command(command.strip())
         self.command_log.append(command)
         logging.info(f"Command: {command}")
 
@@ -136,6 +136,7 @@ class Additel:
         """
         self.send_command("*RST")
 
+    # Not in the manual:
     def get_event_status_enable(self) -> dict:
         """Query and interpret the Standard Event Status Enable Register (*ESE?)."""
         raw = int(self.cmd("*ESE?"))
