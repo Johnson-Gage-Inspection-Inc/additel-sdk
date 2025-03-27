@@ -95,6 +95,8 @@ class DITemperatureReading(DIReading):
         treated_input = input[1:-2].replace("------", "-inf")
         array = [reading.split(",") for reading in treated_input.split(";")]
         transposed = list(map(list, zip(*array)))
+        if len(transposed) != 9:
+            raise ValueError("Incomplete data.")
 
         # Prepare initial mapping
         values = {}
