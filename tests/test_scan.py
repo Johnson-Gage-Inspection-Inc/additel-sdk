@@ -4,6 +4,7 @@ import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 from typing import List, TYPE_CHECKING
 from datetime import datetime
+from time import sleep
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
@@ -40,6 +41,8 @@ def test_get_scan_data_json(scan_fixture: Scan, count):
 
 def test_get_latest_data(scan_fixture: Scan):
     """Test retrieval of latest scan data."""
+    scan_fixture.start(DIScanInfo(1000, 'REF1'))
+    sleep(0.2)
     data = scan_fixture.get_latest_data()
     print(data)
     assert isinstance(data, DIReading), "Data must be a DIReading object"
@@ -63,7 +66,6 @@ def test_scan_consistency(scan_fixture: Scan):
             for i in range(len(getattr(data_latest, k))):
                 if getattr(data_latest, k)[i] == getattr(data_json, k)[i]:
                     continue
-                # assert that getattr(data_latest, k)[i] and getattr(data_json, k)[i] are the same type
                 assert isinstance(
                     getattr(data_latest, k)[i], type(getattr(data_json, k)[i])
                 ), "List values should be the same type"

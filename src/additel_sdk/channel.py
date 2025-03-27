@@ -1,27 +1,16 @@
 from dataclasses import dataclass, field, fields, MISSING
 from typing import List, Optional, Type, Union
 from .coerce import coerce
+from .registry import register_type
 from typing import get_origin, get_args, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionChannelConfig")
 @dataclass(kw_only=True)
 class DIFunctionChannelConfig:
-    """Base class for function channel configuration.
-
-    Attributes:
-        Name (str): The name of the channel.
-        Enabled (bool): Whether the channel is enabled.
-        Label (str): The label of the channel.
-        ElectricalFunctionType (int): The type of electrical function.
-        Range (int): The range of the channel.
-        Delay (int): The delay for the channel.
-        IsAutoRange (bool): Whether auto-ranging is enabled.
-        FilteringCount (int): The filtering count.
-        IsCurrentCommutation (Optional[bool]): Whether current commutation is enabled.
-    """
 
     Name: str
     Enabled: bool = field(metadata={"cast": int})
@@ -110,6 +99,7 @@ class DIFunctionChannelConfig:
         raise ValueError(f"Unsupported ElectricalFunctionType: {func_type}")
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig")
 @dataclass
 class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
     """func_type 0: Voltage – Function Channel Configuration"""
@@ -117,6 +107,7 @@ class DIFunctionVoltageChannelConfig(DIFunctionChannelConfig):
     highImpedance: int = None
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig")
 @dataclass
 class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
     """func_type 1: Current – extra parameters: None"""
@@ -124,6 +115,7 @@ class DIFunctionCurrentChannelConfig(DIFunctionChannelConfig):
     pass
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionResistanceChannelConfig")
 @dataclass
 class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     """func_type 2: Resistance
@@ -137,16 +129,9 @@ class DIFunctionResistanceChannelConfig(DIFunctionChannelConfig):
     IsOpenDetect: bool = field(metadata={"cast": int})
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionRTDChannelConfig")
 @dataclass
 class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
-    """func_type 3: RTD –
-
-    extra parameters:
-        Sensor Name,
-        wires,
-        compensation interval,
-        whether 1.4 times current
-    """
 
     Wire: int
     SensorName: str
@@ -156,22 +141,17 @@ class DIFunctionRTDChannelConfig(DIFunctionChannelConfig):
     CompensateInterval: int
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionThermistorChannelConfig")
 @dataclass
 class DIFunctionThermistorChannelConfig(DIFunctionChannelConfig):
-    """func_type 4: Thermistor – extra parameters: Sensor Name, wires"""
 
     Wire: int
     SensorName: str
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionTCChannelConfig")
 @dataclass
 class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
-    """func_type 100: Thermocouple (TC) – extra:
-    sensor name, whether the break couple
-    detection, cold junction type, cold
-    junction fixed value, custom cold
-    junction channel name
-    """
 
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
@@ -182,25 +162,16 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
     CjcChannelName: str
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig")
 @dataclass
 class DIFunctionSwitchChannelConfig(DIFunctionChannelConfig):
-    """func_type 101: Switch – extra: switch type"""
 
     SwitchType: int  # NOTE: The key might not be exactly right
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig")
 @dataclass
 class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
-    """func_type 102: SPRT
-
-    Attributes:
-        Wire (int): wires
-        SensorName (str): Sensor Name
-        SensorSN (str): Sensor Serial Number
-        Id (str): Sensor ID
-        IsSquareRooting2Current (bool): Whether to open 1.4 times current
-        CompensateInterval (int): Compensation interval
-    """
 
     Wire: int
     SensorName: str
@@ -210,9 +181,9 @@ class DIFunctionSPRTChannelConfig(DIFunctionChannelConfig):
     CompensateInterval: int
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionVoltageTransmitterChannelConfig")
 @dataclass
 class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
-    """func_type 103: Voltage Transmitter – extra: Wire, SensorName, SensorSN, Id"""
 
     Wire: int
     SensorName: str
@@ -220,9 +191,9 @@ class DIFunctionVoltageTransmitterChannelConfig(DIFunctionChannelConfig):
     Id: str
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionCurrentTransmitterChannelConfig")
 @dataclass
 class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
-    """func_type 104: Current Transmitter – extra: Wire, SensorName, SensorSN, Id"""
 
     Wire: int
     SensorName: str
@@ -230,9 +201,9 @@ class DIFunctionCurrentTransmitterChannelConfig(DIFunctionChannelConfig):
     Id: str
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionStandardTCChannelConfig")
 @dataclass
 class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
-    """func_type 105: Standard TC – extra: IsOpenDetect, SensorName, SensorSN, Id, CjcType, CJCFixedValue, CjcChannelName"""
 
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
@@ -243,9 +214,9 @@ class DIFunctionStandardTCChannelConfig(DIFunctionChannelConfig):
     CjcChannelName: str
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig")
 @dataclass
 class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
-    """func_type 106: Custom RTD – extra: Sensor Name, wires, compensation interval, whether 1.4 times current"""
 
     Wire: int
     SensorName: str
@@ -255,9 +226,9 @@ class DIFunctionCustomRTDChannelConfig(DIFunctionChannelConfig):
     CompensateInterval: int
 
 
+@register_type("TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig")
 @dataclass
 class DIFunctionStandardResistanceChannelConfig(DIFunctionChannelConfig):
-    """func_type 110: Standard Resistance – extra: None?"""
 
     pass
 

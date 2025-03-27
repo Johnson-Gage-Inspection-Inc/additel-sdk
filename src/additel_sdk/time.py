@@ -1,6 +1,8 @@
 from datetime import datetime as dt, timedelta as tΔ
+from .registry import register_type
 
 
+@register_type("TAU.Module.Channels.DI.TimeTick")
 class TimeTick(dt):
     def __new__(cls, TickTime):
         if "-" in TickTime:

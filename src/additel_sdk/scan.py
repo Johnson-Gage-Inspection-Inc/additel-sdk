@@ -1,11 +1,11 @@
 # scan.py - This file contains the class for the Scan commands.
 
 from .coerce import coerce
+from .registry import register_type
 from .channel import Channel
 from .time import TimeTick
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
-import json
 import logging
 
 if TYPE_CHECKING:
@@ -19,6 +19,7 @@ def count_decimals_str(value: str) -> int:
     return 0
 
 
+@register_type("TAU.Module.Channels.DI.DIReading")
 @dataclass
 class DIReading:
     ChannelName: str
@@ -37,11 +38,13 @@ class DIReading:
         assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
 
+@register_type("TAU.Module.Channels.DI.DIElectricalReading")
 @dataclass
 class DIElectricalReading(DIReading):
     pass
 
 
+@register_type("TAU.Module.Channels.DI.DITCReading")
 @dataclass
 class DITCReading(DIReading):
     NumElectrical: int = 0
@@ -55,6 +58,7 @@ class DITCReading(DIReading):
     TempDecimals: int = 0
 
 
+@register_type("TAU.Module.Channels.DI.DITemperatureReading")
 @dataclass
 class DITemperatureReading(DIReading):
     """
@@ -130,6 +134,7 @@ class DITemperatureReading(DIReading):
         return '"' + "".join(parts) + '"'
 
 
+@register_type("TAU.Module.Channels.DI.DIScanInfo")
 @dataclass
 class DIScanInfo:
     NPLC: int
@@ -164,9 +169,8 @@ class Scan:
                 If False, the device will only scan. Defaults
         """
         logging.warning("This command has not been tested.")
-        json_params = json.dumps(scan_info.__dict__)
         meas = "MEASure:" if measure else ""
-        command = f"JSON:{meas}SCAN:STARt {json_params}"
+        command = f"JSON:{meas}SCAN:STARt {scan_info}"
         self.parent.send_command(command)
 
     def get_configuration_json(self, measure=False) -> DIScanInfo:
@@ -290,4 +294,6 @@ class Scan:
         sleep(1)
         data = self.get_data_json()
         self.stop()
+        # To get back to a normal state, start a single channel scan
+        self.start(DIScanInfo(1, "CH1-01A"))
         return data

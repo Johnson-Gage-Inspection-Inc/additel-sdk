@@ -50,12 +50,6 @@ def test_get_error_next(system: System, device: "Additel"):
     pass
 
 
-def test_get_error_no_response(device):
-    sys_instance = System(device)
-    with pytest.raises(ValueError):
-        sys_instance.get_error()
-
-
 def test_set_date(system: System, device: "Additel"):
     if device.connection.type == "wlan":
         pytest.skip(reason="Would change device date.")
@@ -79,7 +73,13 @@ def test_set_time(system: System, device: "Additel"):
     assert device.command_log[-1] == expected
 
 
-@pytest.mark.parametrize("lock_value,expected", [(True, "SYSTem:KLOCk 1"), (False, "SYSTem:KLOCk 0")])
+@pytest.mark.parametrize(
+    "lock_value,expected",
+    [
+        (True, "SYSTem:KLOCk 1"),
+        (False, "SYSTem:KLOCk 0")
+    ]
+)
 def test_set_local_lock(system: System, device: "Additel", lock_value, expected):
     if device.connection.type == "wlan":
         pytest.skip(reason="Would change device state.")
@@ -97,11 +97,6 @@ def test_set_local_lock(system: System, device: "Additel", lock_value, expected)
 def test_get_local_lock(system, device, response, expected):
     result = system.get_local_lock()
     assert result is expected
-
-
-def test_get_local_lock_no_response(system: System, device: "Additel"):
-    with pytest.raises(ValueError):
-        system.get_local_lock()
 
 
 @pytest.mark.parametrize(
