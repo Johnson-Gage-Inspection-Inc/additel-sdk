@@ -18,23 +18,11 @@ class System:
         self.Password = Password(self)
 
     # 1.4.1
-    def get_version(self, module: Optional[str] = None) -> str:
+    def get_version(self) -> str:
         """Retrieve version information for the system or a specific module.
 
         Command:
-            SYSTem:VERSion? [<module>]
-
-        Args:
-            module (str, optional): The module for which to retrieve version information.
-                Valid options include:
-                +   "APPLication"
-                +   "ElECtricity:FIRMware"
-                +   "ElECtricity:HARDware"
-                +   "OS:FIRMware"
-                +   "OS:HARDware"
-                +   "JUNCtion:HARDware"
-                +   "JUNCtion:FIRMware".
-                If not provided, retrieves general SCIP version information.
+            SYSTem:VERSion?
 
         Returns:
             dict: A dictionary containing version information.
@@ -42,21 +30,7 @@ class System:
         Example:
             {"SCIP": "v1.0", "Application": "v1.2"}
         """
-        if module:
-            assert module in [
-                "APPLication",
-                "ElECtricity:FIRMware",
-                "ElECtricity:HARDware",
-                "OS:FIRMware",
-                "OS:HARDware",
-                "JUNCtion:HARDware",
-                "JUNCtion:FIRMware",
-            ], "Invalid module specified."
-            command = f"SYSTem:VERSion? {module}"
-        else:
-            command = "SYSTem:VERSion?"
-        if response := self.parent.cmd(command):
-            return response
+        return self.parent.cmd("SYSTem:VERSion?")
 
     # 1.4.2
     def get_error(self, next=False) -> dict:
