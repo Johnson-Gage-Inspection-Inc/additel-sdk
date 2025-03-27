@@ -179,7 +179,7 @@ class Scan:
             scan_info (DIScanInfo): The scanning configuration.
         """
         logging.warning("This command has not been tested.")
-        command = f"JSON:SCAN:STARt {scan_info}"
+        command = f"SCAN:STARt {scan_info}"
         self.parent.send_command(command)
 
     def get_configuration_json(self, measure=False) -> DIScanInfo:
