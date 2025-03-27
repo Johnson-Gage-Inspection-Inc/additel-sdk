@@ -26,16 +26,18 @@ def test_connection(device: "Additel"):
 def test_event_status_enable(device: "Additel"):
     """Test parsing of *ESE? (Event Status Enable Register)."""
     result = device.get_event_status_enable()
-    assert isinstance(result, dict), "Expected a dictionary from get_event_status_enable"
-    assert all(isinstance(k, str) and isinstance(v, bool) for k, v in result.items()), "Result must be a dict of str -> bool"
-    assert "Operation Complete" in result, "*ESE? result should contain known status names"
+    assert isinstance(result, dict), "Expected a dict from get_event_status_enable"
+    ok = all(isinstance(k, str) and isinstance(v, bool) for k, v in result.items())
+    assert ok, "Result must be a dict of str -> bool"
+    assert "Operation Complete" in result, "*ESE? result should have known status names"
 
 
 def test_event_status_register(device: "Additel"):
     """Test parsing of *ESR? (Event Status Register)."""
     result = device.get_event_status_register()
-    assert isinstance(result, dict), "Expected a dictionary from get_event_status_register"
-    assert all(isinstance(k, str) and isinstance(v, bool) for k, v in result.items()), "Result must be a dict of str -> bool"
+    assert isinstance(result, dict), "Expected a dict from get_event_status_register"
+    ok = all(isinstance(k, str) and isinstance(v, bool) for k, v in result.items())
+    assert ok, "Result must be a dict of str -> bool"
     assert "Command Error" in result, "*ESR? result should contain known status names"
 
 
@@ -46,11 +48,18 @@ def test_event_status_register(device: "Additel"):
         ("*ESR?", "48"),
         ("*OPC?", "1"),
         ("*IDN?", "'685022040027',TAU-HOST 1.1.1.0"),
-
-        ('MODule:INFormation?', '0,,0,,,2,;1,6851022030037,1,TAU-M1 V01.00.00.00,TAU-M1 V01.05,20,'),
-        ('MODule:CONFig? 0', 'REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0;REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0;'),
-        ('CHANnel:CONFig? "REF1"', 'REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0'),
-
+        (
+            'MODule:INFormation?',
+            '0,,0,,,2,;1,6851022030037,1,TAU-M1 V01.00.00.00,TAU-M1 V01.05,20,'
+            ),
+        (
+            'MODule:CONFig? 0',
+            'REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0;REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0;'
+            ),
+        (
+            'CHANnel:CONFig? "REF1"',
+            'REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0'
+        ),
         ("UNIT:TEMPerature?", "°F,1002"),
         ("DISPlay:THEMe:ALLNames?", "Dark,Light"),
         ("DISPlay:THEMe?", "Dark"),
