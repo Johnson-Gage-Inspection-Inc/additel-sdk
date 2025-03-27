@@ -119,3 +119,31 @@ def test_start_command(scan_fixture: Scan):
     expected_command = f"SCAN:STARt {scan_info}"
     assert scan_fixture.parent.command_log[-1] == expected_command, \
         "The sent command should match the expected format."
+
+
+def test_start_json_command(scan_fixture: Scan):
+    """Test that start_json sends the correct command with JSON configuration."""
+    scan_info = DIScanInfo(NPLC=1000, ChannelName="REF1")
+    scan_fixture.start_json(scan_info)
+    expected_command = f"JSON:SCAN:STARt {scan_info.to_json_payload()}"  # FIXME: Figure out what formatting the machine wants
+    assert scan_fixture.parent.command_log[-1] == expected_command, \
+        "The JSON start command does not match the expected format."
+    
+    actual = scan_fixture.get_configuration()
+    assert actual == scan_info, "The scan configuration should match the sent configuration."
+
+
+
+def test_start_json_command_fail(scan_fixture: Scan, use_wlan: bool):
+    """Test that start_json sends the correct command with JSON configuration."""
+    scan_info = DIScanInfo(NPLC=1000, ChannelName="REF2")
+    scan_fixture.start_json(scan_info)
+    expected_command = f"JSON:SCAN:STARt {scan_info.to_json_payload()}"  # FIXME: Figure out what formatting the machine wants
+    assert scan_fixture.parent.command_log[-1] == expected_command, \
+        "The JSON start command does not match the expected format."
+    
+    actual = scan_fixture.get_configuration()
+    if use_wlan:
+        assert actual == scan_info, "The scan configuration should match the sent configuration."
+    else:
+        assert actual != scan_info, "The scan configuration should not the sent configuration."

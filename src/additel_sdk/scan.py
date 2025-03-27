@@ -6,6 +6,7 @@ from .registry import register_type
 from .time import TimeTick
 from contextlib import contextmanager
 from dataclasses import dataclass, field, fields
+from json import dumps
 from time import sleep
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
 import logging
@@ -157,13 +158,11 @@ class DIScanInfo:
         """Convert the DIScanInfo object to a string representation."""
         return f"{self.NPLC},{self.ChannelName}"
     
-    def __dict__(self) -> dict:
-        return {
-            "$type": "TAU.Module.Channels.DI.DIScanInfo, TAU.Module.Channels",
-            "ChannelName": self.ChannelName,
-            "NPLC": self.NPLC,
-            "ClassName": "DIScanInfo"
-        }
+    def to_json_payload(self) -> str:
+        data = self.__dict__.copy()
+        data["$type"] = "TAU.Module.Channels.DI.DIScanInfo, TAU.Module.Channels"
+        data["ClassName"] = "DIScanInfo"
+        return dumps(data)
 
 
 class Scan:
@@ -180,6 +179,18 @@ class Scan:
         """
         logging.warning("This command has not been tested.")
         command = f"SCAN:STARt {scan_info}"
+        self.parent.send_command(command)
+
+    def start_json(self, scan_info: DIScanInfo) -> None:
+        """Set the configuration and start scanning.
+
+        This command configures the scanning parameters and starts the scan.
+
+        Args:
+            scan_info (DIScanInfo): The scanning configuration.
+        """
+        logging.warning("This command has not been tested.")
+        command = f"JSON:SCAN:STARt {scan_info.to_json_payload()}"  # FIXME: Figure out what formatting the machine wants
         self.parent.send_command(command)
 
     def get_configuration_json(self, measure=False) -> DIScanInfo:
