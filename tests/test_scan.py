@@ -5,6 +5,7 @@ from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 from typing import List, TYPE_CHECKING
 from datetime import datetime
 from time import sleep
+from conftest import use_wlan, use_wlan_fallback
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
@@ -89,8 +90,8 @@ def test_intelligent_wire(scan_fixture: Scan):
     intel_wire = scan_fixture.get_intelligent_wiring_data_json()
     assert isinstance(intel_wire, list), "Should return a list"
 
-
-@pytest.mark.skip(reason="Will change device state in mysterious ways")
+@pytest.mark.skipif(not use_wlan or use_wlan_fallback,
+                    reason="Must change device state to pass")
 def test_get_readings(scan_fixture: Scan):
     """Test retrieval of scan readings."""
     desired_channels = Channel.valid_names

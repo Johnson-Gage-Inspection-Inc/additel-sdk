@@ -39,10 +39,11 @@ class Additel:
     """
 
     def __init__(self, connection_type="wlan", **kwargs):
+        self.type = connection_type
         _logger = logging.getLogger()
         if not any(isinstance(f, ConnectionTypeFilter) for f in _logger.filters):
-            _logger.addFilter(ConnectionTypeFilter(connection_type))
-        self.connection = Connection(self, connection_type=connection_type, **kwargs)
+            _logger.addFilter(ConnectionTypeFilter(self.type))
+        self.connection = Connection(self, connection_type=self.type, **kwargs)
 
         # Initialize the submodules
         self.Module = Module(self)

@@ -99,3 +99,15 @@ def device(request: pytest.FixtureRequest, device_ip):
             "mock", ip=device_ip, use_wlan_fallback=use_wlan_fallback
         ) as mock_device:
             yield mock_device
+
+@pytest.fixture
+def use_wlan(device: "Additel") -> bool:
+    """Fixture to determine if WLAN is in use."""
+    return device.connection.type == "wlan"
+
+@pytest.fixture
+def use_wlan_fallback(device: "Additel") -> bool:
+    """Fixture to determine if WLAN is in use."""
+    if hasattr(device.connection, "wlan_connection"):
+        return bool(device.connection.wlan_connection)
+    return False

@@ -1,5 +1,6 @@
 import pytest
 from src.additel_sdk.system.communicate.wlan import WLAN
+from conftest import use_wlan
 
 
 @pytest.fixture
@@ -34,7 +35,7 @@ def test_get_state_no_response(wlan_fixture: WLAN):
         wlan_fixture.get_state()
 
 
-@pytest.skip(reason="Will change device state", allow_module_level=True)
+@pytest.mark.skipif(use_wlan, reason="Will change device state")
 def test_set_ip(wlan_fixture: WLAN):
     ip_address = "192.168.1.223"
     wlan_fixture.set_ip(ip_address)
