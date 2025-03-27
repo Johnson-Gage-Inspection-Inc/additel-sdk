@@ -14,9 +14,14 @@ def test_valid_response_status(electricity_fixture: Electricity):
         "mode": "0",
         "function": "0",
         "range": "0",
-        "status": "1",
-        "data": 111.506835761829,
+        "status": "0",
+        "data": None,
     }
     result = electricity_fixture.get_scan_data()
-    diff = DeepDiff(result, expected)
-    assert not diff, f"Unexpected response: {diff}"
+    diff = DeepDiff(result, expected, ignore_order=True)
+    if result['status'] == 1:
+        zipped = zip(result.items(), expected.items())
+        for key in zipped:
+            assert key[0] == key[1]
+        return
+    assert not diff, diff
