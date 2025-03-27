@@ -31,11 +31,11 @@ def test_scan_config(scan_config: DIScanInfo, scan_config_json: DIScanInfo):
 
 
 @pytest.mark.parametrize("count", [1, 2])
-def test_get_scan_data_json(scan_fixture, count):
+def test_get_scan_data_json(scan_fixture: Scan, count):
     """Test retrieval of scan data in JSON format."""
     data = scan_fixture.get_data_json(count)
-    assert len(data.Values) == count, f"Should return {count} data points"
     assert isinstance(data, DIReading), "Data must be a DIReading object"
+    assert len(data.Values) == count, f"Should return {count} data points"
 
 
 def test_get_latest_data(scan_fixture: Scan):
@@ -87,10 +87,9 @@ def test_intelligent_wire(scan_fixture: Scan):
     assert isinstance(intel_wire, list), "Should return a list"
 
 
-@pytest.mark.skip(reason="Must be tested on device")
 def test_get_readings(scan_fixture: Scan):
     """Test retrieval of scan readings."""
-    desired_channels = Channel.valid_names[:5]
+    desired_channels = Channel.valid_names
     readings = scan_fixture.get_readings(desired_channels)
     assert isinstance(readings, List), "Should return a list"
     assert all(
@@ -98,3 +97,13 @@ def test_get_readings(scan_fixture: Scan):
     ), "All elements should be DIReading objects"
     for i, channel in enumerate(desired_channels):
         assert channel == readings[i].ChannelName, f"Channel {i} should be {channel}"
+
+
+def test_get_configuration(scan_fixture: Scan):
+    config = scan_fixture.get_configuration()
+    assert isinstance(config, DIScanInfo), "Config should be a DIScanInfo object"
+
+
+def test_get_configuration_json(scan_fixture: Scan):
+    config = scan_fixture.get_configuration_json()
+    assert isinstance(config, DIScanInfo), "Config should be a DIScanInfo object"

@@ -177,9 +177,7 @@ class Scan:
             - The name of the current scanning channel
 
         Returns:
-            str: A comma-separated string containing the scanning configuration:
-                - NPLC value
-                - Channel name
+            DIScanInfo: An object containing the scanning configuration.
         """
         meas = "MEASure:" if measure else ""
         if response := self.parent.cmd(meas + "JSON:SCAN:STARt?"):
@@ -226,7 +224,7 @@ class Scan:
         assert str(instance) == response, "Unexpected response"
         return instance
 
-    def get_data_json(self, count: int = 1) -> DIReading:
+    def get_data_json(self, count: int = 1) -> List[DIReading]:
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of
@@ -240,8 +238,7 @@ class Scan:
         """
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
-            if readings := coerce(response):
-                return readings[0]
+            return coerce(response)
 
     def get_intelligent_wiring_data_json(
         self, count: int = 1
@@ -263,7 +260,7 @@ class Scan:
             return coerce(response)
 
     def start_multi_channel_scan(
-        self, channel_list: List[str], sampling_rate: int = 1000, measure: bool = False
+        self, channel_list: List[str], sampling_rate: int = 4000, measure: bool = False
     ) -> None:
         """Start scanning for multiple channels.
 
@@ -277,19 +274,20 @@ class Scan:
         self.parent.send_command(command)
 
     def get_readings(self, desired_channels: List[str]) -> List["DIReading"]:
-        """Start a multi-channel scan and return the last reading from each channel
-        in Channel.valid_names[1:n].
+        """Start a multi-channel scan and return the last reading from each specified
+        channel.
 
         Args:
-            n (int): Upper bound index (non-inclusive) in Channel.valid_names.
+            desired_channels (List[str]): List of channel names to scan.
 
         Returns:
             List[DIReading]: A list of readings, one per channel.
         """
-        self.start_multi_channel_scan(desired_channels)
-        # Allow some time for the device to perform the scan
-        sleep(0.2)
+        self.start_multi_channel_scan(desired_channels, measure=True)
+        error = self.parent.System.get_error()
+        if error['error_code'] != 0:
+            logging.error(error)
+        sleep(1)
+        data = self.get_data_json()
         self.stop()
-        # Retrieve the latest scanning data.
-        # FIXME
-        return [self.get_latest_data()]
+        return data
