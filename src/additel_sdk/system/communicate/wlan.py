@@ -81,11 +81,7 @@ class WLAN:
         Args:
             subnet_mask (str): The subnet mask to set.
         """
-        if response := self.parent.send_command(
-            f"SYSTem:COMMunicate:SOCKet:WLAN:MASK {subnet_mask}"
-        ):
-            return response.strip()
-        raise ValueError("No subnet mask information returned.")
+        self.parent.send_command(f'SYSTem:COMMunicate:SOCKet:WLAN:MASK "{subnet_mask}"')
 
     # 1.4.15
     def get_subnet_mask(self) -> str:
@@ -111,11 +107,7 @@ class WLAN:
         Args:
             IPaddress (str): The gateway to set.
         """
-        if response := self.parent.send_command(
-            f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}"
-        ):
-            return response.strip()
-        raise ValueError("No gateway information returned.")
+        self.parent.send_command(f"SYSTem:COMMunicate:SOCKet:WLAN:GATEway {IPaddress}")
 
     # 1.4.17
     def get_gateway(self) -> str:
