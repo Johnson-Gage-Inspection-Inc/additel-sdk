@@ -9,7 +9,6 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.testing.env": {
-        "WLAN_FALLBACK": "true",
         "ADDITEL_IP": "192.168.1.223",
     }
 }
