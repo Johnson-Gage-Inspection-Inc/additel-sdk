@@ -151,16 +151,17 @@ class Additel:
         logging.info(f"*ESR? = {raw:08b} => {parsed}")
         return parsed
 
+    # Table 4-3 Standard Event Register Bit Definition
     def parse_status_register(self, value: int) -> dict:
         """Parse a standard SCPI 488.2 status register bitmask."""
         bits = {
             7: "Power On",
-            6: "User Request",
-            5: "Command Error",
+            6: "User Request",  # Unused
+            5: "Command Error",  # Unused
             4: "Execution Error",
             3: "Device-Specific Error",
             2: "Query Error",
-            1: "Request Control",
+            1: "Request Control",  # Unused
             0: "Operation Complete",
         }
         return {
