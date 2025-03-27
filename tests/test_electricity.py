@@ -19,9 +19,11 @@ def test_valid_response_status(electricity_fixture: Electricity):
     }
     result = electricity_fixture.get_scan_data()
     diff = DeepDiff(result, expected, ignore_order=True)
-    if result['status'] == 1:
-        zipped = zip(result.items(), expected.items())
-        for key in zipped:
-            assert key[0] == key[1]
-        return
-    assert not diff, diff
+    if result['status'] == '1':
+        assert result['exception_code'] == '0', "Exception code should be 0"
+        assert result['mode'] == '0', "Mode should be 0"
+        assert result['function'] == '0', "Function should be 0"
+        assert result['range'] == '0', "Range should be 0"
+        assert result['data'] is not None, "Data should not be None"
+    else:
+        assert not diff, diff
