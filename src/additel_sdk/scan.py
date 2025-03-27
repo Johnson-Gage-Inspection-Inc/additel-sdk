@@ -155,6 +155,14 @@ class DIScanInfo:
     def __str__(self) -> str:
         """Convert the DIScanInfo object to a string representation."""
         return f"{self.NPLC},{self.ChannelName}"
+    
+    def __dict__(self) -> dict:
+        return {
+            "$type": "TAU.Module.Channels.DI.DIScanInfo, TAU.Module.Channels",
+            "ChannelName": self.ChannelName,
+            "NPLC": self.NPLC,
+            "ClassName": "DIScanInfo"
+        }
 
 
 class Scan:
