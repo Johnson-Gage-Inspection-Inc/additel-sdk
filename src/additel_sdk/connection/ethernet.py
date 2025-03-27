@@ -1,5 +1,6 @@
 import socket
 from . import Connection
+from json import loads, JSONDecodeError
 
 
 class EthernetConnection(Connection):
@@ -46,13 +47,20 @@ class EthernetConnection(Connection):
         except socket.error as e:
             raise IOError(f"Failed to send command '{command}' - {e}") from e
 
-    def read_response(self):
-        """Read a response from the device."""
-        if not self.socket:
-            raise ConnectionError("Ethernet connection is not established.")
-
-        try:
-            response = self.socket.recv(4096).decode().strip()
-            return response
-        except socket.error as e:
-            raise IOError(f"Failed to read response - {e}") from e
+    def read_response(self, chunk_size=16384) -> str:
+        """Read the response from the connected device in chunks until complete."""
+        response = ""
+        while chunk := self.socket.recv(chunk_size):
+            try:
+                response += chunk.decode()
+            except UnicodeDecodeError:
+                continue
+            response = response.strip()
+            if not response.startswith('{"$type":'):
+                # If the response does not appear to be a JSON object, return it
+                return response
+            try:
+                loads(response)
+                return response
+            except JSONDecodeError:
+                continue
