@@ -182,6 +182,7 @@ class Scan:
         logging.warning("This command has not been tested.")
         command = f"SCAN:STARt {scan_info}"
         self.parent.send_command(command)
+        sleep(scan_info.NPLC / 1000)
 
     def start_json(self, scan_info: DIScanInfo) -> None:
         """Set the configuration and start scanning.
@@ -298,7 +299,7 @@ class Scan:
         channels = ",".join(channel_list)
         command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
         self.parent.send_command(command)
-        sleep(sampling_rate / 1000)  # Wait for one cycle
+        sleep(len(channel_list) * sampling_rate / 1000)  # Wait for one cycle
 
     @contextmanager
     def preserve_scan_state(self):
