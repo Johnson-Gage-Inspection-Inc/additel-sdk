@@ -1,21 +1,25 @@
 # scan.py - This file contains the class for the Scan commands.
 
 from .coerce import coerce
+from .registry import register_type
 from .channel import Channel
 from .time import TimeTick
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
-import json
 import logging
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
+from time import sleep
 
 
-def count_decimals(value: float) -> int:
-    """Return the number of decimals for a float value."""
-    s = str(value)
-    return len(s.split(".")[1]) if "." in s else 0
+def count_decimals_str(value: str) -> int:
+    if '.' in value:
+        return len(value.split('.')[1].rstrip('\n').rstrip())
+    return 0
 
+
+@register_type("TAU.Module.Channels.DI.DIReading")
 @dataclass
 class DIReading:
     ChannelName: str
@@ -24,23 +28,23 @@ class DIReading:
     DateTimeTicks: List[TimeTick] = field(default_factory=list)
     Values: List[float] = field(default_factory=list)
     ValuesFiltered: List[float] = field(default_factory=list)
-    ValueDecimals: Optional[int] = None
+    ValueDecimals: Optional[int] = 6
 
     def __post_init__(self):
         self._post_init_common()
 
     def _post_init_common(self):
         self.ValuesCount = len(self.Values)
-        if self.ValueDecimals is None:
-            self.ValueDecimals = count_decimals(self.Values[0])
         assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
 
+@register_type("TAU.Module.Channels.DI.DIElectricalReading")
 @dataclass
 class DIElectricalReading(DIReading):
     pass
 
 
+@register_type("TAU.Module.Channels.DI.DITCReading")
 @dataclass
 class DITCReading(DIReading):
     NumElectrical: int = 0
@@ -54,6 +58,7 @@ class DITCReading(DIReading):
     TempDecimals: int = 0
 
 
+@register_type("TAU.Module.Channels.DI.DITemperatureReading")
 @dataclass
 class DITemperatureReading(DIReading):
     """
@@ -70,6 +75,7 @@ class DITemperatureReading(DIReading):
     Returns:
         _type_: _description_
     """
+
     TempUnit: int = 0
     TempValuesCount: int = 0
     TempValues: list[float] = field(default_factory=list)
@@ -78,16 +84,22 @@ class DITemperatureReading(DIReading):
     def __post_init__(self):
         super()._post_init_common()
         self.TempValuesCount = len(self.TempValues)
-        if self.TempDecimals is None and self.TempValues:
-            self.TempDecimals = count_decimals(self.TempValues[0])
 
     @classmethod
     def from_str(cls, input: str) -> "DITemperatureReading":
-        treated_input = input[1:-2].replace("------", '-inf')
+        treated_input = input[1:-2].replace("------", "-inf")
         array = [reading.split(",") for reading in treated_input.split(";")]
         transposed = list(map(list, zip(*array)))
-        fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
+
+        # Prepare initial mapping
         values = {}
+
+        # Use these to find decimals from raw values
+        raw_value_strs = transposed[4]  # Values
+        raw_temp_strs = transposed[8]  # TempValues
+
+        # Parse all the fields like before
+        fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
         for i, f in enumerate(fs):
             if get_origin(f.type) is list:
                 (type_,) = get_args(f.type)
@@ -98,6 +110,11 @@ class DITemperatureReading(DIReading):
                     values[f.name] = first_value if transposed[i] else None
                 else:
                     assert values[f.name] == first_value, "Unexpected type"
+
+        # Extract decimal counts from raw strings
+        values["ValueDecimals"] = count_decimals_str(raw_value_strs[0])
+        values["TempDecimals"] = count_decimals_str(raw_temp_strs[0])
+
         return cls(**values)
 
     def __str__(self):
@@ -117,10 +134,14 @@ class DITemperatureReading(DIReading):
         return '"' + "".join(parts) + '"'
 
 
+@register_type("TAU.Module.Channels.DI.DIScanInfo")
 @dataclass
 class DIScanInfo:
     NPLC: int
     ChannelName: str
+
+    def __post_init__(self):
+        Channel.validate_name(self.ChannelName)
 
     @classmethod
     def from_str(cls, data: str) -> "DIScanInfo":
@@ -132,27 +153,27 @@ class DIScanInfo:
         """Convert the DIScanInfo object to a string representation."""
         return f"{self.NPLC},{self.ChannelName}"
 
+
 class Scan:
     def __init__(self, parent: "Additel"):
         self.parent = parent
 
-    def start(self, scan_info: DIScanInfo) -> None:
+    def start(self, scan_info: DIScanInfo, measure=False) -> None:
         """Set the configuration and start scanning.
 
         This command configures the scanning parameters and starts the scan.
 
         Args:
-            params (str): A comma-separated string containing:
-                - NPLC (Number of Power Line Cycles)
-                - Sample work frequency cycle (100, 1000, or 4000)
-                - Channel name
+            scan_info (DIScanInfo): The scanning configuration.
+            measure (bool, optional): If True, the device will measure the data.
+                If False, the device will only scan. Defaults
         """
         logging.warning("This command has not been tested.")
-        json_params = json.dumps(scan_info.__dict__)
-        command = f"JSON:SCAN:STARt {json_params}"
+        meas = "MEASure:" if measure else ""
+        command = f"JSON:{meas}SCAN:STARt {scan_info}"
         self.parent.send_command(command)
 
-    def get_configuration_json(self) -> DIScanInfo:
+    def get_configuration_json(self, measure=False) -> DIScanInfo:
         """Acquire the scanning configuration.
 
         This command retrieves the current scanning configuration, including:
@@ -160,11 +181,10 @@ class Scan:
             - The name of the current scanning channel
 
         Returns:
-            str: A comma-separated string containing the scanning configuration:
-                - NPLC value
-                - Channel name
+            DIScanInfo: An object containing the scanning configuration.
         """
-        if response := self.parent.cmd("JSON:SCAN:STARt?"):
+        meas = "MEASure:" if measure else ""
+        if response := self.parent.cmd(meas + "JSON:SCAN:STARt?"):
             return coerce(response)
 
     def get_configuration(self) -> DIScanInfo:
@@ -184,10 +204,11 @@ class Scan:
             assert response == str(DIScanInfo.from_str(response)), "Unexpected response"
             return DIScanInfo.from_str(response)
 
-    def stop(self) -> None:
+    def stop(self, measure=False) -> None:
         """This command stops any active scanning process on the device."""
         logging.warning("This command has not been tested.")
-        self.parent.send_command("SCAN:STOP")
+        meas = "MEASure:" if measure else ""
+        self.parent.send_command(f"{meas}SCAN:STOP")
 
     def get_latest_data(self, longformat=True) -> DIReading:
         """Retrieves the latest scanning data for all active channels.
@@ -207,7 +228,7 @@ class Scan:
         assert str(instance) == response, "Unexpected response"
         return instance
 
-    def get_data_json(self, count: int = 1) -> DIReading:
+    def get_data_json(self, count: int = 1) -> List[DIReading]:
         """Acquire scanning data in JSON format.
 
         This command retrieves scanning data in JSON format for the specified number of
@@ -221,8 +242,7 @@ class Scan:
         """
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:DATA? {count}"):
-            return coerce(response)[0]
-        return []
+            return coerce(response)
 
     def get_intelligent_wiring_data_json(
         self, count: int = 1
@@ -242,3 +262,38 @@ class Scan:
         assert count > 0, "Count must be greater than 0."
         if response := self.parent.cmd(f"JSON:SCAN:SCONnection:DATA? {count}"):
             return coerce(response)
+
+    def start_multi_channel_scan(
+        self, channel_list: List[str], sampling_rate: int = 4000, measure: bool = False
+    ) -> None:
+        """Start scanning for multiple channels.
+
+        Args:
+            sampling_rate (int): The sampling rate (e.g., 1000).
+            channel_list (List[str]): List of channel names.
+        """
+        meas = "MEASure:" if measure else ""
+        channels = ",".join(channel_list)
+        command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
+        self.parent.send_command(command)
+
+    def get_readings(self, desired_channels: List[str]) -> List["DIReading"]:
+        """Start a multi-channel scan and return the last reading from each specified
+        channel.
+
+        Args:
+            desired_channels (List[str]): List of channel names to scan.
+
+        Returns:
+            List[DIReading]: A list of readings, one per channel.
+        """
+        self.start_multi_channel_scan(desired_channels, measure=True)
+        error = self.parent.System.get_error()
+        if error['error_code'] != 0:
+            logging.error(error)
+        sleep(1)
+        data = self.get_data_json()
+        self.stop()
+        # To get back to a normal state, start a single channel scan
+        self.start(DIScanInfo(1, "CH1-01A"))
+        return data

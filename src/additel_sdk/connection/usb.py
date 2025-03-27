@@ -2,10 +2,13 @@ import usb.core
 import usb.util
 from usb.backend import libusb1
 import logging
+from . import Connection
 
 
-class USBConnection:
+class USBConnection(Connection):
     """Class to handle USB connection to the device."""
+
+    type = "usb"
 
     def __init__(self, parent, **kwargs):
         self.vendor_id = kwargs.get("vendor_id")
@@ -26,7 +29,7 @@ class USBConnection:
             else None
         )
 
-    def connect(self):
+    def __enter__(self):
         """Establish connection to the USB device."""
         try:
             self.device = usb.core.find(
@@ -60,7 +63,7 @@ class USBConnection:
         except usb.core.USBError as e:
             raise ConnectionError(f"Failed to establish USB connection: {e}") from e
 
-    def disconnect(self):
+    def __exit__(self):
         """Release the USB device."""
         try:
             if self.device:

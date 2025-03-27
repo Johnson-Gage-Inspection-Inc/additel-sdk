@@ -1,9 +1,10 @@
 import pdfplumber
 import csv
-headers = ['NO.', 'Command', 'Explanation', 'Parameters', 'Returning']
+
+headers = ["NO.", "Command", "Explanation", "Parameters", "Returning"]
 new_tables = {}
 i = 0
-pdf_path = 'Programming Commands for 286.pdf'
+pdf_path = "Programming Commands for 286.pdf"
 with pdfplumber.open(pdf_path) as pdf:
     for page_index, page in enumerate(pdf.pages[0:38]):
         page_num = page_index + 1
@@ -11,11 +12,11 @@ with pdfplumber.open(pdf_path) as pdf:
         if tables:
             for table in tables:
                 for row in table:
-                    
-                    index = row[0].replace('.', '').strip() if row[0] else None
-                    is_header_row = index and not index.isdigit() and index != ''
+
+                    index = row[0].replace(".", "").strip() if row[0] else None
+                    is_header_row = index and not index.isdigit() and index != ""
                     for header, cell in zip(headers, row):
-                        if not cell or cell.strip() == '':
+                        if not cell or cell.strip() == "":
                             is_header_row = False
                         elif not cell.startswith(header):
                             is_header_row = False
@@ -29,7 +30,7 @@ with pdfplumber.open(pdf_path) as pdf:
                             last_row = new_tables[i][-1]
                             for k in range(len(row))[1:]:
                                 if row[k] and last_row[k]:
-                                    last_row[k] += '\n' + row[k]
+                                    last_row[k] += "\n" + row[k]
                                 elif row[k]:
                                     last_row[k] = row[k]
                             new_tables[i][-1] = last_row
@@ -39,10 +40,10 @@ with pdfplumber.open(pdf_path) as pdf:
                         if index == 1:
                             i = page_num
                             new_tables[i] = [headers]
-                    
+
                     new_tables[i].append(row)
 
 for key, value in new_tables.items():
-    with open(f'docs/table_{key}.csv', 'w', encoding='utf-8') as f:
+    with open(f"docs/table_{key}.csv", "w", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerows(value)

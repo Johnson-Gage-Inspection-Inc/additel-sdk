@@ -1,5 +1,6 @@
 from typing import List
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
@@ -130,7 +131,9 @@ class Electricity:
             3: [0, 1, 2],
             4: [0, 1, 2],
         }
-        assert range_ in range_map.get(function, []), "Invalid range for the function type"
+        assert range_ in range_map.get(
+            function, []
+        ), "Invalid range for the function type"
         count = len(points)
 
         points_str = ",".join(map(str, points))

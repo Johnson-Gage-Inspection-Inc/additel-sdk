@@ -1,17 +1,17 @@
 from .time import TimeTick
-from typing import List, Union
+from typing import List, Union, Any
 import re
-import logging
+from json import loads
+from .registry import TYPE_REGISTRY
 
 
-def coerce(adt: Union[dict, str, list], map: dict = None):
+def coerce(adt: Union[dict, str, list]) -> Any:
     """
     Dynamically coerces a dictionary-based object to its appropriate type
     using a provided type mapping.
 
     Args:
         adt (dict or str): The Additel-formatted data to coerce
-        map (dict): A mapping of type strings to Python types/classes.
         date_format (str): Optional format string for parsing datetime objects.
 
     Returns:
@@ -21,64 +21,43 @@ def coerce(adt: Union[dict, str, list], map: dict = None):
         TypeError: If `$type` is missing or not recognized in the provided map.
     """
 
-    def coerce_list(adt: list, map: dict):
-        return [coerce(v, map) if isinstance(v, dict) else v for v in adt]
+    def coerce_list(adt: list):
+        return [coerce(v) if isinstance(v, dict) else v for v in adt]
 
     if isinstance(adt, list):
-        return coerce_list(adt, map)
+        return coerce_list(adt, TYPE_REGISTRY)
 
-    adt = json(adt)  # Ensure it's a dictionary
+    if isinstance(adt, str):
+        adt = loads(adt)
 
-    if not map:
-        map = load_mapping()
+    typeStr = adt.pop("$type", None)
+    if not typeStr:
+        # Prevent an infinite loop by returning the dictionary if no type is specified
+        return adt
 
-    if typeStr := adt.pop("$type", None):
-        ClassName = adt.pop("ClassName", None)  # noqa: F841
-        listIndicator = r"System\.Collections\.Generic\.List`1\[\[([\w\.]+), ([\w\.]+)\]\], ([\w\.]+)"  # noqa: E501
-        if match := re.match(listIndicator, typeStr):
-            typ = List[map[match.group(1)]]
-            adt = adt["$values"]
-            return coerce_list(adt, map)
+    ClassName = adt.pop("ClassName", None)  # noqa: F841
+    listIndicator = re.compile(r"""
+        System\.Collections\.Generic\.List`1\[\[   # Outer List
+        ([\w\.]+),\s+                              # Type name
+        ([\w\.]+)\]\],\s+                          # Namespace
+        ([\w\.]+)                                  # Assembly
+    """, re.VERBOSE)
+    if match := re.match(listIndicator, typeStr):
+        typ = List[TYPE_REGISTRY[match.group(1)]]
+        adt = adt["$values"]
+        return coerce_list(adt)
 
-        typeStr = typeStr.split(",")[0]
-        typ = map.get(typeStr, None)
-        if typ is None:
-            raise TypeError(f"Unknown type: {typeStr}. Full map: {map}")
+    typeStr0 = typeStr.split(",")[0]
 
-        # Recursively coerce nested dictionaries:
+    if typ := TYPE_REGISTRY.get(typeStr0, None):
         for key, value in adt.items():
             if isinstance(value, dict):
-                adt[key] = coerce(value, map)
+                adt[key] = coerce(value)
             elif isinstance(value, list):
-                adt[key] = [coerce(v, map) for v in value]
+                adt[key] = [coerce(v) for v in value]
 
         return typ(**adt)  # Instantiate the type with the coerced dictionary
-
-    # If you made it this far, the dictionary was already coerced
-    # Prevent an infinite loop by returning the dictionary if no type is specified
-    return adt  # Return the already coerced dictionary
-
-
-def json(obj) -> dict:
-    """Coerce an object to a dictionary.
-
-    Args:
-        obj: A dictionary or JSON string.
-
-    Returns:
-        dict: The dictionary representation of the object.
-    """
-    if isinstance(obj, str):
-        from json import loads
-
-        try:
-            obj = loads(obj)
-        except ValueError:
-            logging.warning(f"Failed to parse JSON string: {obj}")
-            return obj
-    if isinstance(obj, dict):
-        return obj
-    raise NotImplementedError(f"Unsupported type for dictionary coercion: {type(obj)}")
+    raise TypeError(f"Type not found in mapping: {typeStr0}")
 
 
 def load_mapping():
@@ -86,20 +65,34 @@ def load_mapping():
 
     return {
         "System.Double": float,
-        "TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig": channel.DIFunctionVoltageChannelConfig,  # - 0: Voltage
-        "TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig": channel.DIFunctionCurrentChannelConfig,  # - 1: Current
-        "TAU.Module.Channels.DI.DIFunctionResistanceChannelConfig": channel.DIFunctionResistanceChannelConfig,  # - 2: Resistance
-        "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig": channel.DIFunctionRTDChannelConfig,
-        "TAU.Module.Channels.DI.DIFunctionThermistorChannelConfig": channel.DIFunctionThermistorChannelConfig,  # - 4: Thermistor
-        "TAU.Module.Channels.DI.DIFunctionTCChannelConfig": channel.DIFunctionTCChannelConfig,  # - 100: Thermocouple (TC)
-        "TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig": channel.DIFunctionSwitchChannelConfig,  # - 101: Switch
-        "TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig": channel.DIFunctionSPRTChannelConfig,  # - 102: SPRT
-        "TAU.Module.Channels.DI.DIFunctionVoltageTransmitterChannelConfig": channel.DIFunctionVoltageTransmitterChannelConfig,  # - 103: Voltage Transmitter
-        "TAU.Module.Channels.DI.DIFunctionCurrentTransmitterChannelConfig": channel.DIFunctionCurrentTransmitterChannelConfig,  # - 104: Current Transmitter
-        "TAU.Module.Channels.DI.DIFunctionStandardTCChannelConfig": channel.DIFunctionStandardTCChannelConfig,  # - 105: Standard TC
-        "TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig": channel.DIFunctionCustomRTDChannelConfig,  # - 106: Custom RTD
-        "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig": channel.DIFunctionStandardResistanceChannelConfig,  # - 110: Standard Resistance
-        "TAU.Module.Channels.DI.DIFunctionChannelConfig": channel.DIFunctionChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionVoltageChannelConfig":
+            channel.DIFunctionVoltageChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionCurrentChannelConfig":
+            channel.DIFunctionCurrentChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionResistanceChannelConfig":
+            channel.DIFunctionResistanceChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionRTDChannelConfig":
+            channel.DIFunctionRTDChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionThermistorChannelConfig":
+            channel.DIFunctionThermistorChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionTCChannelConfig":
+            channel.DIFunctionTCChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig":
+            channel.DIFunctionSwitchChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionSPRTChannelConfig":
+            channel.DIFunctionSPRTChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionVoltageTransmitterChannelConfig":
+            channel.DIFunctionVoltageTransmitterChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionCurrentTransmitterChannelConfig":
+            channel.DIFunctionCurrentTransmitterChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionStandardTCChannelConfig":
+            channel.DIFunctionStandardTCChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionCustomRTDChannelConfig":
+            channel.DIFunctionCustomRTDChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionStandardResistanceChannelConfig":
+            channel.DIFunctionStandardResistanceChannelConfig,
+        "TAU.Module.Channels.DI.DIFunctionChannelConfig":
+            channel.DIFunctionChannelConfig,
         "TAU.Module.Channels.DI.DIScanInfo": scan.DIScanInfo,
         "TAU.Module.Channels.DI.DIModuleInfo": module.DIModuleInfo,
         "TAU.Module.Channels.DI.DIReading": scan.DIReading,

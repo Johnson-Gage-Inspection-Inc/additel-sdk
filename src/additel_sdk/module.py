@@ -9,12 +9,15 @@ import json
 import logging
 from .channel import DIFunctionChannelConfig
 from .coerce import coerce
+from .registry import register_type
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
 
 
+@register_type("TAU.Module.Channels.DI.DIModuleInfo")
 @dataclass
 class DIModuleInfo:
     """Data structure for module information.

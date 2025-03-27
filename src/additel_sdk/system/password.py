@@ -1,7 +1,9 @@
 # system\password.py
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.additel_sdk.system import System
+
 
 class Password:
     def __init__(self, parent: "System"):

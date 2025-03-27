@@ -1,10 +1,13 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
 from queue import Queue, Empty
+from . import Connection
 
 
-class BluetoothConnection:
+class BluetoothConnection(Connection):
     """Class to handle Bluetooth connection to the device."""
+
+    type = "bluetooth"
 
     def __init__(self, parent, **kwargs):
         self.device_name = kwargs.get("device_name")
@@ -16,7 +19,7 @@ class BluetoothConnection:
         if not self.device_name:
             raise ValueError("Device name must be specified for Bluetooth connection.")
 
-    def connect(self):
+    def __enter__(self):
         """Establish a Bluetooth connection to the device."""
         asyncio.run(self._connect_async())
 
@@ -26,27 +29,25 @@ class BluetoothConnection:
             if device.name == self.device_name:
                 self.client = BleakClient(device)
                 try:
-                    await self.client.connect()
+                    await self.client.__enter__()
                     return
                 except Exception as e:
                     raise ConnectionError(
-                        f"Failed to connect to Bluetooth device '{self.device_name}' - {e}"
+                        f"Failed to __enter__ to Bluetooth device '{self.device_name}' - {e}"
                     )
         raise ConnectionError(f"Bluetooth device '{self.device_name}' not found.")
 
-    def disconnect(self):
+    def __exit__(self):
         """Close the Bluetooth connection."""
         asyncio.run(self._disconnect_async())
 
     async def _disconnect_async(self):
         if self.client and self.client.is_connected:
             try:
-                await self.client.disconnect()
+                await self.client.__exit__()
                 self.client = None
             except Exception as e:
-                raise ConnectionError(
-                    f"Failed to disconnect from Bluetooth device - {e}"
-                )
+                raise ConnectionError(f"Failed to __exit__ from Bluetooth device - {e}")
 
     def send_command(self, command):
         """Send a command to the Bluetooth device."""

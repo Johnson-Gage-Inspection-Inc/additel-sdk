@@ -1,6 +1,6 @@
 NO.,Error code,Error description,Explain
 1,0,"No error","No error"
-2,120,"Commandparameter error","Command parameter error"
+2,120,"Command parameter error","Command parameter error"
 3,-108,"Parameter not allowed","Too many parameters,or no parameters in the command withparameters"
 4,-109,"Missing parameter","Missing parameter"
 5,-110,"Command header error","The command header is error"

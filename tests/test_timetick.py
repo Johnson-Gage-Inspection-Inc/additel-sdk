@@ -10,4 +10,4 @@ def test_timetick():
     }
     result = coerce(data)
     assert isinstance(result, TimeTick)
-    assert result.time == datetime(2025, 3, 22, 14, 5, 12, 123456)
+    assert result == datetime(2025, 3, 22, 14, 5, 12, 123456)

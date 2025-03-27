@@ -1,8 +1,11 @@
-import serial  # pip install pyserial
+import serial
+from . import Connection
 
 
-class SerialConnection:
+class SerialConnection(Connection):
     """Class to handle Serial connection to the device."""
+
+    type = "serial"
 
     def __init__(self, parent, **kwargs):
         self.port = kwargs.get("port")
@@ -16,7 +19,7 @@ class SerialConnection:
         if not self.port:
             raise ValueError("Serial port must be specified.")
 
-    def connect(self):
+    def __enter__(self):
         """Establish a serial connection to the device."""
         try:
             self.serial_port = serial.Serial(
@@ -31,7 +34,7 @@ class SerialConnection:
             msg = f"Failed to open serial port {self.port} - {e}"
             raise ConnectionError(msg) from e
 
-    def disconnect(self):
+    def __exit__(self):
         """Close the serial connection."""
         if self.serial_port and self.serial_port.is_open:
             try:

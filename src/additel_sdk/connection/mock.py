@@ -10,14 +10,15 @@ class MockConnection:
     device behavior without requiring an actual physical connection.
     """
 
-    def __init__(self, parent, response_file, ip=None, use_wlan_fallback=False):
+    def __init__(
+        self, parent, response_file="tests/mockADT286.json", ip=None, **kwargs
+    ):
         self.parent = parent
         self.response_file = response_file
         self.connected = False
         self._responses = {}
         self.wlan_connection = None  # Initialize wlan_connection
         self.ip = ip  # Store the IP address
-        self.use_wlan_fallback = use_wlan_fallback
 
     def connect(self):
         """Simulates connecting to the device."""
@@ -31,7 +32,7 @@ class MockConnection:
             ) from e
 
         # If IP is provided, initialize WLAN connection for fallback
-        if self.ip and self.use_wlan_fallback:
+        if self.ip:
             try:
                 self.wlan_connection = WLANConnection(self.parent, ip=self.ip)
             except Exception as e:
@@ -52,12 +53,8 @@ class MockConnection:
 
     def read_response(self) -> str:
         """Returns the pre-defined or fallback response for the last command."""
-        if self.last_command == "SYSTem:DATE?":
-            from datetime import date
-            return date.today().strftime("%Y,%m,%d")
         response = self._responses.get(self.last_command)
-        self.last_command = None
-        if response is None and self.wlan_connection and self.use_wlan_fallback:
+        if response is None and self.wlan_connection:
             try:
                 response = self.wlan_connection.cmd(self.last_command)
                 if response:  # Save only non-trivial responses
