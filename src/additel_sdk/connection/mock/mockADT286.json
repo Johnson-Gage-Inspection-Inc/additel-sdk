@@ -145,10 +145,9 @@
     "SYSTem:COMMunicate:SOCKet:WLAN:STATe?": "1",
     "SYSTem:COMMunicate:SOCKet:WLAN?": "1",
     "SYSTem:DATE?": "2025,03,22",
-    "SYSTem:ERRor:NEXT?": "-110,\"Command header error;SYSTem:COMMunicate:SOCKet:WLAN:SSID?ALL\"",
-    "SYSTem:ERRor?": "-221,\"Settings conflict;SYSTem:COMMunicate:SOCKet:WLAN:SSID? ALL\"",
     "SYSTem:KLOCk?": "0",
     "SYSTem:VERSion?": "1999.0",
     "SYSTem:PASSword:ENABle:SENSor?": "0",
-    "UNIT:TEMPerature?": "\u00b0F,1002"
+    "UNIT:TEMPerature?": "\u00b0F,1002",
+    "SYSTem:COMMunicate:SOCKet:WLAN:GATEway?": "192.168.1.1"
 }
