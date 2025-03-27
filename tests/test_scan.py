@@ -50,8 +50,27 @@ def test_get_latest_data(scan_fixture: Scan):
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
-@pytest.mark.skipif(not use_wlan or use_wlan_fallback,
-                    reason="Must change device state to pass")
+@pytest.mark.parametrize("input", [
+        ("REF1,1281,1,638786852530400000,109.131327,109.131327,1001,1,22.7278;"),
+        ('"REF1,1281,1,638786859365600000,109.129097,109.129097,1001,1,22.7221;CH1-01A,1243,1,638786859365600000,------,------,1001,1,------,32767,0,1001,1,23.61;"'),
+        ()
+        ]
+    )
+def test_parse_DITemperatureReading_from_str(input):
+    assert str(DITemperatureReading.from_str(input)) == input, \
+        "The parsed object should match the expected object."
+
+
+@pytest.mark.parametrize("input", [
+        ('"REF1,1281,0,1001,0;CH1-01A,1243,0,1001,0,32767,0,1001,0;"'),
+        ('"REF1,1281,0,1001,0;REF2,1281,0,1001,0;CH1-01A,1243,0,1001,0,32767,0,1001,0;CH1-01B,1243,0,1001,0,32767,0,1001,0;CH1-02A,1243,0,1001,0,32767,0,1001,0;CH1-02B,1243,0,1001,0,32767,0,1001,0;CH1-03A,1243,0,1001,0,32767,0,1001,0;CH1-03B,1243,0,1001,0,32767,0,1001,0;CH1-04A,1243,0,1001,0,32767,0,1001,0;CH1-04B,1243,0,1001,0,32767,0,1001,0;CH1-05A,1243,0,1001,0,32767,0,1001,0;CH1-05B,1243,0,1001,0,32767,0,1001,0;CH1-06A,1243,0,1001,0,32767,0,1001,0;CH1-06B,1243,0,1001,0,32767,0,1001,0;CH1-07A,1243,0,1001,0,32767,0,1001,0;CH1-07B,1243,0,1001,0,32767,0,1001,0;CH1-08A,1243,0,1001,0,32767,0,1001,0;CH1-08B,1243,0,1001,0,32767,0,1001,0;CH1-09A,1243,0,1001,0,32767,0,1001,0;CH1-09B,1243,0,1001,0,32767,0,1001,0;CH1-10A,1243,0,1001,0,32767,0,1001,0;CH1-10B,1243,0,1001,0,32767,0,1001,0;"')
+        ]
+    )
+def test_parse_DITemperatureReading_from_str_error(input):
+    with pytest.raises(ValueError, match="Incomplete data."):
+        DITemperatureReading.from_str(input)
+
+
 @pytest.mark.parametrize("desired_channels", [
     ["REF1"],
     ["REF1", "CH1-01A"],
