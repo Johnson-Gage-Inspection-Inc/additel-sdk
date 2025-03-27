@@ -89,6 +89,7 @@ def test_intelligent_wire(scan_fixture: Scan):
     intel_wire = scan_fixture.get_intelligent_wiring_data_json()
     assert isinstance(intel_wire, list), "Should return a list"
 
+
 @pytest.mark.skipif(not use_wlan or use_wlan_fallback,
                     reason="Must change device state to pass")
 def test_get_readings(scan_fixture: Scan):
@@ -123,27 +124,17 @@ def test_start_command(scan_fixture: Scan):
 
 def test_start_json_command(scan_fixture: Scan):
     """Test that start_json sends the correct command with JSON configuration."""
-    scan_info = DIScanInfo(NPLC=1000, ChannelName="REF1")
-    scan_fixture.start_json(scan_info)
-    expected_command = f"JSON:SCAN:STARt {scan_info.to_json_payload()}"  # FIXME: Figure out what formatting the machine wants
-    assert scan_fixture.parent.command_log[-1] == expected_command, \
-        "The JSON start command does not match the expected format."
-    
-    actual = scan_fixture.get_configuration()
-    assert actual == scan_info, "The scan configuration should match the sent configuration."
 
+    # Clear the error queue and status, then stop the scan
+    scan_fixture.parent.System.flush_error_queue()
+    scan_fixture.parent.clear_status()
+    scan_fixture.stop()
+    sleep(0.5)
 
-
-def test_start_json_command_fail(scan_fixture: Scan, use_wlan: bool):
-    """Test that start_json sends the correct command with JSON configuration."""
+    # Start the scan
     scan_info = DIScanInfo(NPLC=1000, ChannelName="REF2")
     scan_fixture.start_json(scan_info)
-    expected_command = f"JSON:SCAN:STARt {scan_info.to_json_payload()}"  # FIXME: Figure out what formatting the machine wants
-    assert scan_fixture.parent.command_log[-1] == expected_command, \
-        "The JSON start command does not match the expected format."
-    
+    sleep(1.5)  # or longer depending on device
     actual = scan_fixture.get_configuration()
-    if use_wlan:
-        assert actual == scan_info, "The scan configuration should match the sent configuration."
-    else:
-        assert actual != scan_info, "The scan configuration should not the sent configuration."
+    assert actual == scan_info, \
+        AdditelError(**scan_fixture.parent.System.get_error())
