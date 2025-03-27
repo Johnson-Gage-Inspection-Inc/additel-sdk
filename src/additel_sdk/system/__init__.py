@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional, TYPE_CHECKING
 from .communicate import Communicate
 from .password import Password
+import logging
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
@@ -174,3 +175,13 @@ class System:
         """
         command = f"SYSTem:BEEPer:TOUCh {int(enable)}"
         self.parent.send_command(command)
+
+    def flush_error_queue(system):
+        i = 0
+        while True:
+            err = system.get_error(next=True)
+            print(err)
+            if err['error_code'] == 0:
+                break
+            i += 1
+        logging.debug(f"Flushed {i} errors.")
