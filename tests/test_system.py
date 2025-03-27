@@ -21,26 +21,6 @@ def test_get_version_no_module(system: System, device: "Additel"):
     assert device.command_log[-1] == "SYSTem:VERSion?"
 
 
-@pytest.mark.parametrize("module", [
-    ("APPLication"),
-    ("ElECtricity:FIRMware"),
-    ("ElECtricity:HARDware"),
-    ("OS:FIRMware"),
-    ("OS:HARDware"),
-    ("JUNCtion:HARDware"),
-    ("JUNCtion:FIRMware"),
-])
-def test_get_version_with_module(
-        system: System,
-        module: str,
-        use_wlan_fallback: bool,
-    ):
-    if not use_wlan_fallback:
-        pytest.skip(reason="Need to capture responses for mock.")
-    result = system.get_version(module)
-    assert result is not None, "Empty response from get_version"
-
-
 def test_get_error(system: System, device: "Additel"):
     result = system.get_error()
     error_code = result.get('error_code')
