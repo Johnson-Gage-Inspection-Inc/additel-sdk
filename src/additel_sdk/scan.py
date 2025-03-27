@@ -290,6 +290,8 @@ class Scan:
     @contextmanager
     def preserve_scan_state(self):
         original = self.get_configuration()
+        if not original:
+            raise ValueError("No scan state to preserve.")
         try:
             yield
         finally:
