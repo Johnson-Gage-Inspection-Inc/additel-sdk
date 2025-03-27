@@ -15,7 +15,7 @@ def test_valid_response_status(electricity_fixture: Electricity):
         "function": "0",
         "range": "0",
         "status": "1",
-        "data": 114.442191207159,
+        "data": 111.506835761829,
     }
     result = electricity_fixture.get_scan_data()
     diff = DeepDiff(result, expected)
