@@ -122,7 +122,11 @@ class Additel:
             str: A string containing the product sequence number and software version
             number.
         """
-        return self.cmd("*IDN?")
+        psn, svn = self.cmd("*IDN?").split(",")
+        return {
+            "Product Sequence Number": int(psn[1:-1]),
+            "Software Version Number": svn,
+        }
 
     # 1.1.3
     def reset(self) -> None:
@@ -131,3 +135,34 @@ class Additel:
         This command resets the device's main software, reinitializing its state.
         """
         self.send_command("*RST")
+
+    def get_event_status_enable(self) -> dict:
+        """Query and interpret the Standard Event Status Enable Register (*ESE?)."""
+        raw = int(self.cmd("*ESE?"))
+        parsed = self.parse_status_register(raw)
+        logging.info(f"*ESE? = {raw:08b} => {parsed}")
+        return parsed
+
+    def get_event_status_register(self) -> dict:
+        """Query and interpret the Standard Event Status Register (*ESR?)."""
+        raw = int(self.cmd("*ESR?"))
+        parsed = self.parse_status_register(raw)
+        logging.info(f"*ESR? = {raw:08b} => {parsed}")
+        return parsed
+
+    def parse_status_register(self, value: int) -> dict:
+        """Parse a standard SCPI 488.2 status register bitmask."""
+        bits = {
+            7: "Power On",
+            6: "User Request",
+            5: "Command Error",
+            4: "Execution Error",
+            3: "Device-Specific Error",
+            2: "Query Error",
+            1: "Request Control",
+            0: "Operation Complete",
+        }
+        return {
+            name: bool(value & (1 << bit))
+            for bit, name in bits.items()
+        }
