@@ -2,15 +2,20 @@
 
 import pytest
 from datetime import date
+from deepdiff import DeepDiff
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.additel_sdk import Additel
 
 
-def test_identify(device):
+def test_identify(device: "Additel"):
     """Test device identification functionality."""
     identity = device.identify()
     assert identity == "'685022040027',TAU-HOST 1.1.1.0", "Identity must be correct"
 
 
-def test_connection(device):
+def test_connection(device: "Additel"):
     """Test that connection is properly established."""
     assert device.connection is not None, "Connection was not established"
 
@@ -100,7 +105,7 @@ def test_connection(device):
         ),
     ],
 )
-def test_cmd(device, command, expected):
+def test_cmd(device: "Additel", command, expected):
     """Test command execution functionality."""
     response = device.cmd(command)
     diff = DeepDiff(expected, response)
