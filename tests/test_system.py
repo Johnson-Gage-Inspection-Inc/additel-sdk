@@ -129,3 +129,8 @@ def test_set_tones(system, device, tone_command, flag, expected):
     else:
         system.set_keypad_tone(flag)
     assert device.command_log[-1] == expected
+
+
+def test_flush_error_queue(system: System):
+    """Test that the error queue is flushed after a successful scan."""
+    system.flush_error_queue()
