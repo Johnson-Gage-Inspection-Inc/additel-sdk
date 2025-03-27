@@ -3,6 +3,7 @@
 import pytest
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 from typing import List, TYPE_CHECKING
+from deepdiff import DeepDiff
 from time import sleep
 from conftest import use_wlan, use_wlan_fallback
 
@@ -49,7 +50,29 @@ def test_get_latest_data(scan_fixture: Scan):
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
-def test_scan_consistency(scan_fixture: Scan):
+@pytest.mark.skipif(not use_wlan or use_wlan_fallback,
+                    reason="Must change device state to pass")
+@pytest.mark.parametrize("desired_channels", [
+    ["REF1"],
+    ["REF1", "CH1-01A"],
+    Channel.valid_names,
+    ]
+    )
+def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str]):
+    """_summary_
+
+    Args:
+        scan_fixture (Scan): _description_
+    """
+    with scan_fixture.preserve_scan_state():
+        scan_fixture.start_multi_channel_scan(desired_channels)
+        json_data = scan_fixture.get_data_json()
+        latest_data = scan_fixture.get_latest_data()
+    diff = DeepDiff(json_data, latest_data, ignore_order=True)
+    assert not diff, f"Data objects should be the same: {diff}"
+
+
+def test_single_scan_consistency(scan_fixture: Scan):
     """Test consistency between scan data retrieval methods."""
     # Get data using both methods
     [data_json] = scan_fixture.get_data_json(1)
