@@ -77,10 +77,6 @@ class Additel:
         self.connection.send_command(command.strip())
         self.command_log.append(command)
         logging.info(f"Command: {command}")
-        self.wait_for_operation_complete()
-        error = self.System.get_error()
-        if error.error_code != 0:
-            raise AdditelError(**error)
 
     def read_response(self) -> str:
         try:
