@@ -158,19 +158,16 @@ class Scan:
     def __init__(self, parent: "Additel"):
         self.parent = parent
 
-    def start(self, scan_info: DIScanInfo, measure=False) -> None:
+    def start(self, scan_info: DIScanInfo) -> None:
         """Set the configuration and start scanning.
 
         This command configures the scanning parameters and starts the scan.
 
         Args:
             scan_info (DIScanInfo): The scanning configuration.
-            measure (bool, optional): If True, the device will measure the data.
-                If False, the device will only scan. Defaults
         """
         logging.warning("This command has not been tested.")
-        meas = "MEASure:" if measure else ""
-        command = f"JSON:{meas}SCAN:STARt {scan_info}"
+        command = f"JSON:SCAN:STARt {scan_info}"
         self.parent.send_command(command)
 
     def get_configuration_json(self, measure=False) -> DIScanInfo:
