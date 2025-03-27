@@ -50,7 +50,6 @@ def test_event_status_register(device: "Additel"):
         ('MODule:INFormation?', '0,,0,,,2,;1,6851022030037,1,TAU-M1 V01.00.00.00,TAU-M1 V01.05,20,'),
         ('MODule:CONFig? 0', 'REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0;REF2,0,,3,1,0,1,10,4,Pt100(385),,,0,0;'),
         ('CHANnel:CONFig? "REF1"', 'REF1,1,,102,1,0,1,10,4,AM1660,1624273,291f5ef50aff4ccabb4e2a421d6fd8e0,0,0'),
-        ('SCAN:DATA:Last?', '"REF1,1281,1,109.353868,109.353868,1001,1,23.2893;"'),
 
         ("UNIT:TEMPerature?", "°F,1002"),
         ("DISPlay:THEMe:ALLNames?", "Dark,Light"),
