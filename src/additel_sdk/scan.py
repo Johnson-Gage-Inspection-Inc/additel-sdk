@@ -37,6 +37,9 @@ class DIReading:
         self.ValuesCount = len(self.Values)
         assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
 
 @register_type("TAU.Module.Channels.DI.DIElectricalReading")
 @dataclass
