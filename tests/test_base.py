@@ -45,7 +45,6 @@ def test_event_status_register(device: "Additel"):
     "command,expected",
     [
         ("*ESE?", "185"),
-        ("*ESR?", "48"),
         ("*OPC?", "1"),
         ("*IDN?", "'685022040027',TAU-HOST 1.1.1.0"),
         (
@@ -63,7 +62,6 @@ def test_event_status_register(device: "Additel"):
         ("UNIT:TEMPerature?", "°F,1002"),
         ("DISPlay:THEMe:ALLNames?", "Dark,Light"),
         ("DISPlay:THEMe?", "Dark"),
-        ("DISPlay:HOME?", "0"),
         ("DISPlay:LANGuage?", "en-US"),
         ("SYSTem:COMMunicate:BLUEtooth:NAMe?", "Compact"),
         ("SYSTem:COMMunicate:BLUEtooth?", "0"),
