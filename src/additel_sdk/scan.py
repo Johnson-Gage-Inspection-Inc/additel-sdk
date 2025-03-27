@@ -308,6 +308,5 @@ class Scan:
             List[DIReading]: A list of readings, one per channel.
         """
         with self.preserve_scan_state():
-            self.stop()
             self.start_multi_channel_scan(desired_channels)
             return self.get_data_json()
