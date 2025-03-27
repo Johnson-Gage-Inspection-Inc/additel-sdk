@@ -35,8 +35,9 @@ def test_scan_config(scan_config: DIScanInfo, scan_config_json: DIScanInfo):
 def test_get_scan_data_json(scan_fixture: Scan, count):
     """Test retrieval of scan data in JSON format."""
     data = scan_fixture.get_data_json(count)
-    assert isinstance(data, DIReading), "Data must be a DIReading object"
-    assert len(data.Values) == count, f"Should return {count} data points"
+    assert len(data) == 1, "Should return a list of one object"
+    assert isinstance(data[0], DIReading), "Data must be a DIReading object"
+    assert len(data[0].Values) == count, f"Should return {count} data points"
 
 
 def test_get_latest_data(scan_fixture: Scan):
@@ -89,6 +90,7 @@ def test_intelligent_wire(scan_fixture: Scan):
     assert isinstance(intel_wire, list), "Should return a list"
 
 
+@pytest.mark.skip(reason="Will change device state in mysterious ways")
 def test_get_readings(scan_fixture: Scan):
     """Test retrieval of scan readings."""
     desired_channels = Channel.valid_names
