@@ -1,9 +1,9 @@
 """Tests for the device SDK Scan functionality."""
 
 import pytest
-from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
+from src.additel_sdk.errors import AdditelError
+from src.additel_sdk.scan import DIScanInfo, DIReading, Scan, DITemperatureReading
 from typing import List, TYPE_CHECKING
-from deepdiff import DeepDiff
 from time import sleep
 from conftest import use_wlan, use_wlan_fallback
 
@@ -83,12 +83,16 @@ def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str])
     Args:
         scan_fixture (Scan): _description_
     """
+
+    pytest.mark.skipif((not use_wlan) or use_wlan_fallback,
+                       reason="Must change device state to pass")
     with scan_fixture.preserve_scan_state():
         scan_fixture.start_multi_channel_scan(desired_channels)
+        sleep(3)
         json_data = scan_fixture.get_data_json()
         latest_data = scan_fixture.get_latest_data()
-    diff = DeepDiff(json_data, latest_data, ignore_order=True)
-    assert not diff, f"Data objects should be the same: {diff}"
+        pass
+        assert str(json_data[0]) == str(latest_data), "Data should match"
 
 
 def test_single_scan_consistency(scan_fixture: Scan):
