@@ -4,6 +4,7 @@ from .coerce import coerce
 from .registry import register_type
 from .channel import Channel
 from .time import TimeTick
+from contextlib import contextmanager
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
 import logging
@@ -243,7 +244,7 @@ class Scan:
         data points.
 
         Args:
-            count (int): The number of scanning data points to retrieve.
+            count (int): The number of scanning data points to retrieve, per channel.
 
         Returns:
             DIReading: An object containing the scanning data.
@@ -272,18 +273,27 @@ class Scan:
             return coerce(response)
 
     def start_multi_channel_scan(
-        self, channel_list: List[str], sampling_rate: int = 4000, measure: bool = False
+        self, channel_list: List[str], sampling_rate: int = 1000, measure: bool = False
     ) -> None:
         """Start scanning for multiple channels.
 
         Args:
-            sampling_rate (int): The sampling rate (e.g., 1000).
+            sampling_rate (int): The sampling rate in ms (e.g., 1000).
             channel_list (List[str]): List of channel names.
         """
         meas = "MEASure:" if measure else ""
         channels = ",".join(channel_list)
         command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
         self.parent.send_command(command)
+        sleep(sampling_rate / 1000)  # Wait for one cycle
+
+    @contextmanager
+    def preserve_scan_state(self):
+        original = self.get_configuration()
+        try:
+            yield
+        finally:
+            self.start(original)
 
     def get_readings(self, desired_channels: List[str]) -> List["DIReading"]:
         """Start a multi-channel scan and return the last reading from each specified
@@ -295,13 +305,7 @@ class Scan:
         Returns:
             List[DIReading]: A list of readings, one per channel.
         """
-        self.start_multi_channel_scan(desired_channels, measure=True)
-        error = self.parent.System.get_error()
-        if error['error_code'] != 0:
-            logging.error(error)
-        sleep(1)
-        data = self.get_data_json()
-        self.stop()
-        # To get back to a normal state, start a single channel scan
-        self.start(DIScanInfo(1, "CH1-01A"))
-        return data
+        with self.preserve_scan_state():
+            self.stop()
+            self.start_multi_channel_scan(desired_channels)
+            return self.get_data_json()
