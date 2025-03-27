@@ -156,11 +156,11 @@ class DIFunctionTCChannelConfig(DIFunctionChannelConfig):
 
     IsOpenDetect: bool = field(metadata={"cast": int})
     SensorName: str
-    SensorSN: str
-    Id: str
     CjcType: int
     CJCFixedValue: float
     CjcChannelName: str
+    SensorSN: Optional[str] = None
+    Id: Optional[str] = None
 
 
 @register_type("TAU.Module.Channels.DI.DIFunctionSwitchChannelConfig")
