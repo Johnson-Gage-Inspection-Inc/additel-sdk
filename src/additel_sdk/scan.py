@@ -3,7 +3,7 @@
 from .channel import Channel
 from .coerce import coerce
 from .registry import register_type
-from .time import TimeTick
+from .TimeTick import TimeTick
 from contextlib import contextmanager
 from dataclasses import dataclass, field, fields
 from json import dumps
