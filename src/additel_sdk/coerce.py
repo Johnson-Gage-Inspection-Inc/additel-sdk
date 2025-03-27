@@ -20,11 +20,11 @@ def coerce(adt: Union[dict, str, list]) -> Any:
         TypeError: If `$type` is missing or not recognized in the provided map.
     """
 
-    def coerce_list(adt: list):
+    def _coerce_list(adt: list):
         return [coerce(v) if isinstance(v, dict) else v for v in adt]
 
     if isinstance(adt, list):
-        return coerce_list(adt)
+        return _coerce_list(adt)
 
     if isinstance(adt, str):
         adt = loads(adt)
@@ -44,7 +44,7 @@ def coerce(adt: Union[dict, str, list]) -> Any:
     if match := re.match(listIndicator, typeStr):
         typ = List[TYPE_REGISTRY[match.group(1)]]
         adt = adt["$values"]
-        return coerce_list(adt)
+        return _coerce_list(adt)
 
     typeStr0 = typeStr.split(",")[0]
 
@@ -53,7 +53,7 @@ def coerce(adt: Union[dict, str, list]) -> Any:
             if isinstance(value, dict):
                 adt[key] = coerce(value)
             elif isinstance(value, list):
-                adt[key] = [coerce(v) for v in value]
+                adt[key] = _coerce_list(value)
 
         return typ(**adt)  # Instantiate the type with the coerced dictionary
     raise TypeError(f"Type not found in mapping: {typeStr0}")
