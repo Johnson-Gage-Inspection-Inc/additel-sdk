@@ -3,6 +3,7 @@ from typing import List, Optional, Type, Union
 from .coerce import coerce
 from .registry import register_type
 from typing import get_origin, get_args, TYPE_CHECKING
+import logging
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
@@ -292,7 +293,7 @@ class Channel:
         Args:
             config (DIFunctionChannelConfig): A channel configuration object.
         """
-        raise NotImplementedError("This function is not implemented yet.")
+        logging.warning("This function has not yet been tested.")
         command = f"CHANnel:CONFig {config};"
         self.parent.send_command(command)
 
