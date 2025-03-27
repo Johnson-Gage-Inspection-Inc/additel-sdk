@@ -17,7 +17,7 @@ class System:
         self.Password = Password(self)
 
     # 1.4.1
-    def getVersion(self, module: Optional[str] = None) -> dict:
+    def get_version(self, module: Optional[str] = None) -> str:
         """Retrieve version information for the system or a specific module.
 
         Command:
@@ -25,8 +25,14 @@ class System:
 
         Args:
             module (str, optional): The module for which to retrieve version information.
-                Valid options include "APPLication", "ElECtricity:FIRMware", "ElECtricity:HARDware",
-                "OS:FIRMware", "OS:HARDware", "JUNCtion:HARDware", "JUNCtion:FIRMware".
+                Valid options include:
+                +   "APPLication"
+                +   "ElECtricity:FIRMware"
+                +   "ElECtricity:HARDware"
+                +   "OS:FIRMware"
+                +   "OS:HARDware"
+                +   "JUNCtion:HARDware"
+                +   "JUNCtion:FIRMware".
                 If not provided, retrieves general SCIP version information.
 
         Returns:
@@ -35,17 +41,24 @@ class System:
         Example:
             {"SCIP": "v1.0", "Application": "v1.2"}
         """
-        command = f"SYSTem:VERSion? {module}" if module else "SYSTem:VERSion?"
-        response = self.parent.cmd(command)
-        if response:
-            return {
-                key_value.split(":")[0]: key_value.split(":")[1]
-                for key_value in response.split(",")
-            }
-        return {}
+        if module:
+            assert module in [
+                "APPLication",
+                "ElECtricity:FIRMware",
+                "ElECtricity:HARDware",
+                "OS:FIRMware",
+                "OS:HARDware",
+                "JUNCtion:HARDware",
+                "JUNCtion:FIRMware",
+            ], "Invalid module specified."
+            command = f"SYSTem:VERSion? {module}"
+        else:
+            command = "SYSTem:VERSion?"
+        if response := self.parent.cmd(command):
+            return response
 
     # 1.4.2
-    def get_next_error(self, next=False) -> dict:
+    def get_error(self, next=False) -> dict:
         """Retrieve the next error in the system error queue.
 
         Command:
