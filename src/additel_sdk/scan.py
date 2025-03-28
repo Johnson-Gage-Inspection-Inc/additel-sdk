@@ -77,7 +77,7 @@ class DIElectricalReading(DIReading):
 @dataclass
 class DITCReading(DIReading):
     NumElectrical: int = 0
-    CJCs: List[int] = field(default_factory=list)
+    CJCs: List[float] = field(default_factory=list)
     CJCUnit: int = 0
     CjcRaws: List[float] = field(default_factory=list)
     CJCRawsUnit: int = 0
@@ -85,6 +85,10 @@ class DITCReading(DIReading):
     TempValues: List[float] = field(default_factory=list)
     TempUnit: int = 0
     TempDecimals: int = 0
+
+    def __post_init__(self):
+        super()._post_init_common()
+        self.NumElectrical = len(self.TempValues)
 
     @classmethod
     def from_str(cls, row: str) -> "DITCReading":
