@@ -44,7 +44,7 @@ def test_get_scan_data_json(scan_fixture: Scan, count):
 
 def test_get_latest_data(scan_fixture: Scan):
     """Test retrieval of latest scan data."""
-    scan_fixture.start(DIScanInfo(100, 'REF1'))
+    scan_fixture.start(DIScanInfo(1000, 'REF1'))
     for d in scan_fixture.get_latest_data():
         assert isinstance(d, DIReading), "Data must be a DIReading object"
 
