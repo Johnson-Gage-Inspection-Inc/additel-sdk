@@ -98,8 +98,8 @@ def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str])
 def test_single_scan_consistency(scan_fixture: Scan):
     """Test consistency between scan data retrieval methods."""
     # Get data using both methods
-    [data_json] = scan_fixture.get_data_json(1)
     [data_latest] = scan_fixture.get_latest_data()
+    [data_json] = scan_fixture.get_data_json(1)
 
     # Compare the two data objects
     assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
