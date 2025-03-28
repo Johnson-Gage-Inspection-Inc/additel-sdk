@@ -92,7 +92,7 @@ def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str])
         json_data = scan_fixture.get_data_json()
         latest_data = scan_fixture.get_latest_data()
         pass
-        assert str(json_data[0]) == str(latest_data), "Data should match"
+        assert str(json_data[0]) == str(latest_data[0]), "Data should match"
 
 
 def test_single_scan_consistency(scan_fixture: Scan):
