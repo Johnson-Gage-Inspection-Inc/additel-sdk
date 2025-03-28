@@ -74,6 +74,8 @@ def test_parse_DIReading_from_str_error(input):
 @pytest.mark.parametrize("desired_channels", [
     ["REF1"],
     ["REF1", "CH1-01A"],
+    ["REF1", "CH1-01A", "CH1-01B"],
+    ["REF1", "CH1-01A", "CH1-01B", "CH1-02A", "CH1-02B"],
     Channel.valid_names,
     ]
     )
