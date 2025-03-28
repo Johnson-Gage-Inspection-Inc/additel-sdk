@@ -56,12 +56,14 @@ class DIReading:
             array = reading.split(",")
             if array[2] == "0":
                 raise ValueError("No data available for this channel.")
-            if len(array) == 9:
+            elif len(array) == 9:
                 readings.append(DITemperatureReading.from_str(f'"{reading};"'))
             elif len(array) == 14:
                 readings.append(DITCReading.from_str(f'"{reading};"'))
             else:
-                raise ValueError(f"Unrecognized DIReading format with {len(array)} fields.")
+                raise ValueError(
+                    f"Unrecognized DIReading format with {len(array)} fields."
+                    )
 
         return readings
 
