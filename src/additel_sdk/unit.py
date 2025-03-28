@@ -26,6 +26,10 @@ class Unit:
     def __init__(self, parent: "Additel"):
         self.parent = parent
 
+    @staticmethod
+    def lookup(unit_id: int) -> str:
+        return Unit.unit_lookup.get(str(unit_id), "Unknown")
+
     # 1.8.2
     def set_temp_unit(self, unit: Union[int, str]) -> None:
         """Set the temperature unit of the device
