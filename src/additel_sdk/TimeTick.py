@@ -28,3 +28,6 @@ class TimeTick(dt):
 
     def to_short_format(self) -> str:
         return self.strftime("%Y:%m:%d %H:%M:%S %f")[:-3]
+
+    def __str__(self):
+        return self.to_ticks()
