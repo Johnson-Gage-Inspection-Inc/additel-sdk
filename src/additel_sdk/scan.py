@@ -215,7 +215,7 @@ class Scan:
             scan_info (DIScanInfo): The scanning configuration.
         """
         logging.warning("This command has not been tested.")
-        command = f"SCAN:STARt {scan_info}"
+        command = f'SCAN:STARt "{scan_info}"'
         self.parent.send_command(command)
         sleep(scan_info.NPLC / 1000)
 
