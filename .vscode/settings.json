@@ -1,6 +1,4 @@
 {
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
     "python.testing.pytestArgs": [
         // "--real",
         // "--wlan_fallback",
@@ -8,7 +6,4 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.testing.env": {
-        "ADDITEL_IP": "192.168.1.223",
-    }
 }
