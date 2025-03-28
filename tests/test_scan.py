@@ -3,6 +3,7 @@
 import pytest
 from src.additel_sdk.errors import AdditelError
 from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
+from src.additel_sdk.coerce import coerce
 from typing import List, TYPE_CHECKING
 from time import sleep
 from conftest import use_wlan, use_wlan_fallback
@@ -161,3 +162,12 @@ def test_start_json_command(scan_fixture: Scan):
     actual = scan_fixture.get_configuration()
     assert actual == scan_info, \
         AdditelError(**scan_fixture.parent.System.get_error())
+
+
+def test_coerce():
+    """Test coercion of scan data."""
+    input = "{\"$type\":\"System.Collections.Generic.List`1[[TAU.Module.Channels.DI.DIReading, TAU.Module.Channels]], mscorlib\",\"$values\":[{\"$type\":\"TAU.Module.Channels.DI.DITemperatureReading, TAU.Module.Channels\",\"TempValues\":{\"$type\":\"System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib\",\"$values\":[22.8423405060657,22.842136353163234]},\"TempUnit\":1001,\"TempDecimals\":4,\"ChannelName\":\"REF1\",\"Values\":{\"$type\":\"System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib\",\"$values\":[109.17707063261533,109.17705702387433]},\"ValuesFiltered\":{\"$type\":\"System.Collections.Generic.List`1[[System.Double, mscorlib]], mscorlib\",\"$values\":[109.17674309577542,109.17666218028845]},\"DateTimeTicks\":{\"$type\":\"System.Collections.Generic.List`1[[TAU.Module.Channels.DI.TimeTick, TAU.Module.Channels]], mscorlib\",\"$values\":[{\"$type\":\"TAU.Module.Channels.DI.TimeTick, TAU.Module.Channels\",\"TickTime\":\"2025-03-22 16:37:20 160\"},{\"$type\":\"TAU.Module.Channels.DI.TimeTick, TAU.Module.Channels\",\"TickTime\":\"2025-03-22 16:37:19 120\"}]},\"Unit\":1281,\"ValueDecimals\":6,\"ClassName\":\"DITemperatureReading\"}]}"
+    coerced = coerce(input)
+    assert isinstance(coerced, list), "Coerced data should be a list"
+    assert all(isinstance(d, DIReading) for d in coerced), \
+        "All elements should be DIReading objects"
