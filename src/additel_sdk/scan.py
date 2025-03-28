@@ -216,7 +216,6 @@ class Scan:
         Args:
             scan_info (DIScanInfo): The scanning configuration.
         """
-        logging.warning("This command has not been tested.")
         command = f'SCAN:STARt "{scan_info}"'
         self.parent.send_command(command)
         sleep(scan_info.NPLC / 1000)
@@ -229,7 +228,6 @@ class Scan:
         Args:
             scan_info (DIScanInfo): The scanning configuration.
         """
-        logging.warning("This command has not been tested.")
         command = 'JSON:SCAN:STARt "{}"'.format(scan_info.__dict__)
         self.parent.send_command(command)
 
@@ -266,7 +264,6 @@ class Scan:
 
     def stop(self, measure=False) -> None:
         """This command stops any active scanning process on the device."""
-        logging.warning("This command has not been tested.")
         meas = "MEASure:" if measure else ""
         self.parent.send_command(f"{meas}SCAN:STOP")
 
