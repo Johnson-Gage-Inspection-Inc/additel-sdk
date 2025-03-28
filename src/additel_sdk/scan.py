@@ -331,7 +331,7 @@ class Scan:
         channels = ",".join(channel_list)
         command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
         self.parent.send_command(command)
-        self.parent.wait_for_operation_complete()
+        sleep(len(channel_list) * sampling_rate / 1000 + 1)  # FIXME: Figure out what it takes to get all readings.
 
     @contextmanager
     def preserve_scan_state(self):
