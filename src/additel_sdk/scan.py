@@ -5,9 +5,9 @@ from .coerce import coerce
 from .registry import register_type
 from .TimeTick import TimeTick
 from contextlib import contextmanager
-from dataclasses import dataclass, field, fields
+from dataclasses import dataclass, field
 from time import sleep
-from typing import TYPE_CHECKING, Optional, List, get_origin, get_args
+from typing import TYPE_CHECKING, Optional, List
 import logging
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ class DIReading:
     ChannelName: str
     Unit: int
     ValuesCount: int = 0
-    DateTimeTicks: List[TimeTick] = field(default_factory=list)
+    DateTimeTicks: List[TimeTick] = field(default_factory=List[TimeTick])
     Values: List[float] = field(default_factory=list)
     ValuesFiltered: List[float] = field(default_factory=list)
     ValueDecimals: Optional[int] = 6
@@ -35,11 +35,30 @@ class DIReading:
         self._post_init_common()
 
     def _post_init_common(self):
+        if not isinstance(self.Values, list):
+            self.Values = [self.Values]
         self.ValuesCount = len(self.Values)
         assert self.ChannelName in Channel.valid_names, "Invalid channel name"
 
     def __eq__(self, other):
         return str(self) == str(other)
+
+    @classmethod
+    def from_str(cls, input: str) -> List["DIReading"]:
+        readings = []
+
+        for reading in input[1:-2].replace("------", "-inf").split(";"):
+            array = reading.split(",")
+            if array[2] == "0":
+                raise ValueError("No data available for this channel.")
+            if len(array) == 9:
+                readings.append(DITemperatureReading.from_str(f'"{reading};"'))
+            elif len(array) == 14:
+                readings.append(DITCReading.from_str(f'"{reading};"'))
+            else:
+                raise ValueError(f"Unrecognized DIReading format with {len(array)} fields.")
+
+        return readings
 
 
 @register_type("TAU.Module.Channels.DI.DIElectricalReading")
@@ -60,6 +79,46 @@ class DITCReading(DIReading):
     TempValues: List[float] = field(default_factory=list)
     TempUnit: int = 0
     TempDecimals: int = 0
+
+    @classmethod
+    def from_str(cls, row: str) -> "DITCReading":
+        fields = row[1:-2].split(",")
+        return cls(
+            ChannelName=fields[0],
+            Unit=int(fields[1]),
+            Values=[float(fields[4])],
+            ValuesFiltered=[float(fields[5])],
+            DateTimeTicks=[TimeTick(fields[3])],
+            TempUnit=int(fields[6]),
+            TempValues=[float(fields[8])],
+            CJCRawsUnit=int(fields[9]),
+            CJCUnit=int(fields[11]),
+            NumElectrical=int(fields[12]),
+            CJCs=[float(fields[13])],
+            CJCDecimals=count_decimals_str(fields[13]),
+            ValueDecimals=6,
+            TempDecimals=3,
+        )
+
+    def __str__(self):
+        def fmt(val, dec):
+            if val == float("-inf"):
+                return "------"
+            return f"{val:.{dec}f}"
+
+        parts = []
+        for i in range(len(self.Values)):
+            ticks = self.DateTimeTicks[i].to_ticks()
+            parts.append(
+                f"{self.ChannelName},{self.Unit},1,{ticks},"
+                f"{fmt(self.Values[i], self.ValueDecimals)},"
+                f"{fmt(self.ValuesFiltered[i], self.ValueDecimals)},"
+                f"{self.TempUnit},1,"
+                f"{fmt(self.TempValues[i], self.TempDecimals)},"
+                f"{self.CJCRawsUnit},0,{self.CJCUnit},"
+                f"{self.NumElectrical},{fmt(self.CJCs[i], self.CJCDecimals)};"
+            )
+        return '"' + ''.join(parts) + '"'
 
 
 @register_type("TAU.Module.Channels.DI.DITemperatureReading")
@@ -90,38 +149,21 @@ class DITemperatureReading(DIReading):
         self.TempValuesCount = len(self.TempValues)
 
     @classmethod
-    def from_str(cls, input: str) -> "DITemperatureReading":
-        treated_input = input[1:-2].replace("------", "-inf")
-        array = [reading.split(",") for reading in treated_input.split(";")]
-        transposed = list(map(list, zip(*array)))
-        if len(transposed) != 9:
-            raise ValueError("Incomplete data.")
-
-        # Prepare initial mapping
-        values = {}
-
-        # Use these to find decimals from raw values
-        raw_value_strs = transposed[4]  # Values
-        raw_temp_strs = transposed[8]  # TempValues
-
-        # Parse all the fields like before
-        fs = [f for f in fields(cls)[:-1] if f.name != "ValueDecimals"]
-        for i, f in enumerate(fs):
-            if get_origin(f.type) is list:
-                (type_,) = get_args(f.type)
-                values[f.name] = [type_(v) for v in transposed[i]]
-            else:
-                first_value = f.type(transposed[i][0])
-                if values.get(f.name) is None:
-                    values[f.name] = first_value if transposed[i] else None
-                else:
-                    assert values[f.name] == first_value, "Unexpected type"
-
-        # Extract decimal counts from raw strings
-        values["ValueDecimals"] = count_decimals_str(raw_value_strs[0])
-        values["TempDecimals"] = count_decimals_str(raw_temp_strs[0])
-
-        return cls(**values)
+    def from_str(cls, row: str) -> "DITemperatureReading":
+        fields = row[1:-2].split(",")
+        return cls(
+            ChannelName=fields[0],
+            Unit=int(fields[1]),
+            ValuesCount=int(fields[2]),
+            DateTimeTicks=[TimeTick(fields[3])],
+            Values=[float(fields[4])],
+            ValueDecimals=count_decimals_str(fields[4]),
+            ValuesFiltered=[float(fields[5])],
+            TempUnit=int(fields[6]),
+            TempValuesCount=int(fields[7]),
+            TempValues=[float(fields[8])],
+            TempDecimals=count_decimals_str(fields[8]),
+        )
 
     def __str__(self):
         def fmt(val, dec):
@@ -239,9 +281,8 @@ class Scan:
             DIReading: An object containing the latest scanning data.
         """
         response = self.parent.cmd(f"SCAN:DATA:Last? {2 if longformat else 1}")
-        # FIXME: We're assuming temperature data for now
-        instance = DITemperatureReading.from_str(response)
-        assert str(instance) == response, "Unexpected response"
+        instance = DIReading.from_str(response)
+        # assert str(instance) == response, "Unexpected response"
         return instance
 
     def get_data_json(self, count: int = 1) -> List[DIReading]:
@@ -292,7 +333,7 @@ class Scan:
         channels = ",".join(channel_list)
         command = f'{meas}SCAN:MULT:STARt {sampling_rate},"{channels}"'
         self.parent.send_command(command)
-        sleep(len(channel_list) * sampling_rate / 1000)  # Wait for one cycle
+        self.parent.wait_for_operation_complete()
 
     @contextmanager
     def preserve_scan_state(self):

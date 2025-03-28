@@ -2,7 +2,7 @@
 
 import pytest
 from src.additel_sdk.errors import AdditelError
-from src.additel_sdk.scan import DIScanInfo, DIReading, Scan, DITemperatureReading
+from src.additel_sdk.scan import DIScanInfo, DIReading, Scan
 from typing import List, TYPE_CHECKING
 from time import sleep
 from conftest import use_wlan, use_wlan_fallback
@@ -43,32 +43,32 @@ def test_get_scan_data_json(scan_fixture: Scan, count):
 
 def test_get_latest_data(scan_fixture: Scan):
     """Test retrieval of latest scan data."""
-    scan_fixture.start(DIScanInfo(1000, 'REF1'))
-    sleep(0.2)
+    scan_fixture.start(DIScanInfo(100, 'REF1'))
     data = scan_fixture.get_latest_data()
     print(data)
     assert isinstance(data, DIReading), "Data must be a DIReading object"
 
 
 @pytest.mark.parametrize("input", [
-        ("REF1,1281,1,638786852530400000,109.131327,109.131327,1001,1,22.7278;"),
+        ('"REF1,1281,1,638786852530400000,109.131327,109.131327,1001,1,22.7278;"'),
+        ('"CH1-01A,1243,1,638786859365600000,------,------,1001,1,------,32767,0,1001,1,23.61;"'),
         ('"REF1,1281,1,638786859365600000,109.129097,109.129097,1001,1,22.7221;CH1-01A,1243,1,638786859365600000,------,------,1001,1,------,32767,0,1001,1,23.61;"'),
-        ()
         ]
     )
-def test_parse_DITemperatureReading_from_str(input):
-    assert str(DITemperatureReading.from_str(input)) == input, \
-        "The parsed object should match the expected object."
+def test_parse_DIReading_from_str(input):
+    result = DIReading.from_str(input)
+    assert ";".join([str(r)[1:-2] for r in result]) == input[1:-2], "Data should match"
 
 
 @pytest.mark.parametrize("input", [
         ('"REF1,1281,0,1001,0;CH1-01A,1243,0,1001,0,32767,0,1001,0;"'),
-        ('"REF1,1281,0,1001,0;REF2,1281,0,1001,0;CH1-01A,1243,0,1001,0,32767,0,1001,0;CH1-01B,1243,0,1001,0,32767,0,1001,0;CH1-02A,1243,0,1001,0,32767,0,1001,0;CH1-02B,1243,0,1001,0,32767,0,1001,0;CH1-03A,1243,0,1001,0,32767,0,1001,0;CH1-03B,1243,0,1001,0,32767,0,1001,0;CH1-04A,1243,0,1001,0,32767,0,1001,0;CH1-04B,1243,0,1001,0,32767,0,1001,0;CH1-05A,1243,0,1001,0,32767,0,1001,0;CH1-05B,1243,0,1001,0,32767,0,1001,0;CH1-06A,1243,0,1001,0,32767,0,1001,0;CH1-06B,1243,0,1001,0,32767,0,1001,0;CH1-07A,1243,0,1001,0,32767,0,1001,0;CH1-07B,1243,0,1001,0,32767,0,1001,0;CH1-08A,1243,0,1001,0,32767,0,1001,0;CH1-08B,1243,0,1001,0,32767,0,1001,0;CH1-09A,1243,0,1001,0,32767,0,1001,0;CH1-09B,1243,0,1001,0,32767,0,1001,0;CH1-10A,1243,0,1001,0,32767,0,1001,0;CH1-10B,1243,0,1001,0,32767,0,1001,0;"')
+        ('"REF1,1281,0,1001,0;REF2,1281,0,1001,0;CH1-01A,1243,0,1001,0,32767,0,1001,0;CH1-01B,1243,0,1001,0,32767,0,1001,0;CH1-02A,1243,0,1001,0,32767,0,1001,0;CH1-02B,1243,0,1001,0,32767,0,1001,0;CH1-03A,1243,0,1001,0,32767,0,1001,0;CH1-03B,1243,0,1001,0,32767,0,1001,0;CH1-04A,1243,0,1001,0,32767,0,1001,0;CH1-04B,1243,0,1001,0,32767,0,1001,0;CH1-05A,1243,0,1001,0,32767,0,1001,0;CH1-05B,1243,0,1001,0,32767,0,1001,0;CH1-06A,1243,0,1001,0,32767,0,1001,0;CH1-06B,1243,0,1001,0,32767,0,1001,0;CH1-07A,1243,0,1001,0,32767,0,1001,0;CH1-07B,1243,0,1001,0,32767,0,1001,0;CH1-08A,1243,0,1001,0,32767,0,1001,0;CH1-08B,1243,0,1001,0,32767,0,1001,0;CH1-09A,1243,0,1001,0,32767,0,1001,0;CH1-09B,1243,0,1001,0,32767,0,1001,0;CH1-10A,1243,0,1001,0,32767,0,1001,0;CH1-10B,1243,0,1001,0,32767,0,1001,0;"'),
+        ('"REF1,1281,1,638786933576800000,109.160738,109.160738,1001,1,22.8020;REF2,1281,1,638786930960400000,308.972246,308.972246,1001,1,585.3100;CH1-01A,1243,1,638786933600000000,------,------,1001,1,------,32767,0,1001,1,23.74;CH1-01B,1243,0,1001,0,32767,0,1001,0;CH1-02A,1243,0,1001,0,32767,0,1001,0;CH1-02B,1243,0,1001,0,32767,0,1001,0;CH1-03A,1243,0,1001,0,32767,0,1001,0;CH1-03B,1243,0,1001,0,32767,0,1001,0;CH1-04A,1243,0,1001,0,32767,0,1001,0;CH1-04B,1243,0,1001,0,32767,0,1001,0;CH1-05A,1243,0,1001,0,32767,0,1001,0;CH1-05B,1243,0,1001,0,32767,0,1001,0;CH1-06A,1243,0,1001,0,32767,0,1001,0;CH1-06B,1243,0,1001,0,32767,0,1001,0;CH1-07A,1243,0,1001,0,32767,0,1001,0;CH1-07B,1243,0,1001,0,32767,0,1001,0;CH1-08A,1243,0,1001,0,32767,0,1001,0;CH1-08B,1243,0,1001,0,32767,0,1001,0;CH1-09A,1243,0,1001,0,32767,0,1001,0;CH1-09B,1243,0,1001,0,32767,0,1001,0;CH1-10A,1243,0,1001,0,32767,0,1001,0;CH1-10B,1243,0,1001,0,32767,0,1001,0;"')
         ]
     )
-def test_parse_DITemperatureReading_from_str_error(input):
-    with pytest.raises(ValueError, match="Incomplete data."):
-        DITemperatureReading.from_str(input)
+def test_parse_DIReading_from_str_error(input):
+    with pytest.raises(ValueError, match="No data available for this channel."):
+        DIReading.from_str(input)
 
 
 @pytest.mark.parametrize("desired_channels", [
@@ -87,7 +87,7 @@ def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str])
     pytest.mark.skipif((not use_wlan) or use_wlan_fallback,
                        reason="Must change device state to pass")
     with scan_fixture.preserve_scan_state():
-        scan_fixture.start_multi_channel_scan(desired_channels)
+        scan_fixture.start_multi_channel_scan(desired_channels, 100)
         sleep(3)
         json_data = scan_fixture.get_data_json()
         latest_data = scan_fixture.get_latest_data()
@@ -99,7 +99,7 @@ def test_single_scan_consistency(scan_fixture: Scan):
     """Test consistency between scan data retrieval methods."""
     # Get data using both methods
     [data_json] = scan_fixture.get_data_json(1)
-    data_latest = scan_fixture.get_latest_data()
+    [data_latest] = scan_fixture.get_latest_data()
 
     # Compare the two data objects
     assert isinstance(data_latest, DIReading), "Latest data must be a DIReading object"
@@ -113,10 +113,10 @@ def test_intelligent_wire(scan_fixture: Scan):
     assert isinstance(intel_wire, list), "Should return a list"
 
 
-@pytest.mark.skipif(not use_wlan or use_wlan_fallback,
-                    reason="Must change device state to pass")
-def test_get_readings(scan_fixture: Scan):
+def test_get_readings(scan_fixture: Scan, use_wlan, use_wlan_fallback):
     """Test retrieval of scan readings."""
+    pytest.mark.skipif(use_wlan_fallback or not use_wlan,
+                       reason="Must change device state to pass")
     desired_channels = Channel.valid_names
     readings = scan_fixture.get_readings(desired_channels)
     assert isinstance(readings, List), "Should return a list"
