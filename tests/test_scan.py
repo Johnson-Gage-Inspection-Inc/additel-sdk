@@ -89,8 +89,7 @@ def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str])
     pytest.mark.skipif((not use_wlan) or use_wlan_fallback,
                        reason="Must change device state to pass")
     with scan_fixture.preserve_scan_state():
-        scan_fixture.start_multi_channel_scan(desired_channels, 100)
-        sleep(3)
+        scan_fixture.start_multi_channel_scan(desired_channels)
         latest_data = scan_fixture.get_latest_data()
         json_data = scan_fixture.get_data_json()
         assert len(json_data) == len(latest_data), "Data lengths should match"
