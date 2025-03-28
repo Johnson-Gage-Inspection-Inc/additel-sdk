@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from time import sleep
 from typing import TYPE_CHECKING, Optional, List
-import logging
 
 if TYPE_CHECKING:
     from src.additel_sdk import Additel
