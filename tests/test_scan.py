@@ -89,10 +89,11 @@ def test_multi_scan_consistency(scan_fixture: Scan, desired_channels: List[str])
     with scan_fixture.preserve_scan_state():
         scan_fixture.start_multi_channel_scan(desired_channels, 100)
         sleep(3)
-        json_data = scan_fixture.get_data_json()
         latest_data = scan_fixture.get_latest_data()
-        pass
-        assert str(json_data[0]) == str(latest_data[0]), "Data should match"
+        json_data = scan_fixture.get_data_json()
+        assert len(json_data) == len(latest_data), "Data lengths should match"
+        for i in range(len(json_data)):
+            assert str(json_data[i]) == str(latest_data[i]), "Data should match"
 
 
 def test_single_scan_consistency(scan_fixture: Scan):
