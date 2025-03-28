@@ -36,6 +36,7 @@ def test_scan_config(scan_config: DIScanInfo, scan_config_json: DIScanInfo):
 @pytest.mark.parametrize("count", [1, 2])
 def test_get_scan_data_json(scan_fixture: Scan, count):
     """Test retrieval of scan data in JSON format."""
+    scan_fixture.start(DIScanInfo(1000, 'REF1'))
     data = scan_fixture.get_data_json(count)
     assert len(data) == 1, "Should return a list of one object"
     assert isinstance(data[0], DIReading), "Data must be a DIReading object"
