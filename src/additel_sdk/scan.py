@@ -20,6 +20,12 @@ def count_decimals_str(value: str) -> int:
     return 0
 
 
+def fmt(val, dec):
+    if val in (float("-inf"), float("inf")):
+        return "------"
+    return f"{round(val, dec):.{dec}f}"
+
+
 @register_type("TAU.Module.Channels.DI.DIReading")
 @dataclass
 class DIReading:
@@ -101,11 +107,6 @@ class DITCReading(DIReading):
         )
 
     def __str__(self):
-        def fmt(val, dec):
-            if val == float("-inf"):
-                return "------"
-            return f"{val:.{dec}f}"
-
         parts = []
         for i in range(len(self.Values)):
             ticks = self.DateTimeTicks[i].to_ticks()
@@ -166,9 +167,6 @@ class DITemperatureReading(DIReading):
         )
 
     def __str__(self):
-        def fmt(val, dec):
-            return f"{round(val, dec):.{dec}f}"
-
         parts = []
         for i in range(len(self.Values)):
             ticks = self.DateTimeTicks[i].to_ticks()
