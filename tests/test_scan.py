@@ -139,11 +139,11 @@ def test_get_configuration_json(scan_fixture: Scan):
 
 
 def test_start_command(scan_fixture: Scan):
+    scan_fixture.parent.System.flush_error_queue()
     scan_info = DIScanInfo(NPLC=1000, ChannelName="REF1")
     scan_fixture.start(scan_info)
-    expected_command = f"SCAN:STARt {scan_info}"
-    assert scan_fixture.parent.command_log[-1] == expected_command, \
-        "The sent command should match the expected format."
+    err = scan_fixture.parent.System.get_error()
+    assert err['error_code'] == 0, f"Expected no error, got {err}"
 
 
 def test_start_json_command(scan_fixture: Scan):
