@@ -44,9 +44,8 @@ def test_get_scan_data_json(scan_fixture: Scan, count):
 def test_get_latest_data(scan_fixture: Scan):
     """Test retrieval of latest scan data."""
     scan_fixture.start(DIScanInfo(100, 'REF1'))
-    data = scan_fixture.get_latest_data()
-    print(data)
-    assert isinstance(data, DIReading), "Data must be a DIReading object"
+    for d in scan_fixture.get_latest_data():
+        assert isinstance(d, DIReading), "Data must be a DIReading object"
 
 
 @pytest.mark.parametrize("input", [
